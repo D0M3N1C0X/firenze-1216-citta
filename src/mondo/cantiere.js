@@ -33,7 +33,15 @@ export class Cantiere {
     if (g.index) g = g.toNonIndexed();
     for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
     g.clearGroups();
-    if (m) g.applyMatrix4(m);
+    if (m) {
+      g.applyMatrix4(m);
+      // ogni edificio sfasa le texture in modo diverso: la stessa foto non
+      // si ripete identica da una casa all'altra
+      const e = m.elements, fr = v => v - Math.floor(v);
+      const du = fr(e[12] * 0.1371 + e[14] * 0.0713) * 7, dv = fr(e[12] * 0.0517 + e[14] * 0.1931) * 7;
+      const uv = g.attributes.uv;
+      if (uv) for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) + du, uv.getY(i) + dv);
+    }
     const n = g.attributes.position.count;
     const c = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) { c[i * 3] = tinta[0]; c[i * 3 + 1] = tinta[1]; c[i * 3 + 2] = tinta[2]; }

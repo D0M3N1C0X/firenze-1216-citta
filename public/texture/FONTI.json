@@ -1,0 +1,106 @@
+{
+ "conci": {
+  "id": "large_sandstone_blocks_01",
+  "nome": "Large Sandstone Blocks 01",
+  "dimensioni_mm": [
+   3000,
+   3000
+  ],
+  "autori": [
+   "Rob Tuytel"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/large_sandstone_blocks_01"
+ },
+ "pietrame": {
+  "id": "rustic_stone_wall",
+  "nome": "Rustic Stone Wall",
+  "dimensioni_mm": [
+   1519.9998617172241,
+   1519.9998617172241
+  ],
+  "autori": [
+   "Dimitrios Savva"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/rustic_stone_wall"
+ },
+ "intonaco": {
+  "id": "worn_plaster_wall",
+  "nome": "Worn Plaster Wall",
+  "dimensioni_mm": [
+   1800.0000715255737,
+   1800.0000715255737
+  ],
+  "autori": [
+   "Dimitrios Savva"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/worn_plaster_wall"
+ },
+ "coppi": {
+  "id": "clay_roof_tiles_02",
+  "nome": "Clay Roof Tiles 02",
+  "dimensioni_mm": [
+   2500,
+   2500
+  ],
+  "autori": [
+   "Amal Kumar"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/clay_roof_tiles_02"
+ },
+ "terra": {
+  "id": "brown_mud_dry",
+  "nome": "Brown Mud Dry",
+  "dimensioni_mm": [
+   1299.996018409729,
+   1299.996018409729
+  ],
+  "autori": [
+   "Rob Tuytel"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/brown_mud_dry"
+ },
+ "legno": {
+  "id": "old_planks_02",
+  "nome": "Old Planks 02",
+  "dimensioni_mm": [
+   2000,
+   2000
+  ],
+  "autori": [
+   "Rob Tuytel"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/old_planks_02"
+ },
+ "lastre": {
+  "id": "rock_tile_floor",
+  "nome": "Rock Tile Floor",
+  "dimensioni_mm": [
+   1960.0000381469727,
+   1960.0000381469727
+  ],
+  "autori": [
+   "Charlotte Baglioni"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/rock_tile_floor"
+ },
+ "ghiaia": {
+  "id": "gravelly_sand",
+  "nome": "Gravelly Sand",
+  "dimensioni_mm": [
+   2480.0000190734863,
+   2480.0000190734863
+  ],
+  "autori": [
+   "Dario Barresi"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/gravelly_sand"
+ }
+}

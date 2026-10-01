@@ -1,0 +1,58 @@
+{
+ "cammina": {
+  "durata": 1.0,
+  "velocita": 1.594,
+  "fotogrammi": 31,
+  "fonte": "CMU 08_01",
+  "scarto_chiusura": 0.873
+ },
+ "cammina2": {
+  "durata": 1.033,
+  "velocita": 1.104,
+  "fotogrammi": 32,
+  "fonte": "CMU 35_01",
+  "scarto_chiusura": 0.344
+ },
+ "cammina_lento": {
+  "durata": 1.267,
+  "velocita": 0.803,
+  "fotogrammi": 39,
+  "fonte": "CMU 37_01",
+  "scarto_chiusura": 0.201
+ },
+ "passeggia": {
+  "durata": 1.233,
+  "velocita": 1.045,
+  "fotogrammi": 38,
+  "fonte": "CMU 104_19",
+  "scarto_chiusura": 0.272
+ },
+ "fermo": {
+  "durata": 4.933,
+  "velocita": 0,
+  "fotogrammi": 149,
+  "fonte": "CMU 77_02",
+  "scarto_chiusura": 0.152
+ },
+ "attesa": {
+  "durata": 4.8,
+  "velocita": 0,
+  "fotogrammi": 145,
+  "fonte": "CMU 141_20",
+  "scarto_chiusura": 2.384
+ },
+ "guarda": {
+  "durata": 4.6,
+  "velocita": 0,
+  "fotogrammi": 139,
+  "fonte": "CMU 77_01",
+  "scarto_chiusura": 0.695
+ },
+ "parla": {
+  "durata": 8.767,
+  "velocita": 0,
+  "fotogrammi": 264,
+  "fonte": "CMU 18_08",
+  "scarto_chiusura": -0.246
+ }
+}
