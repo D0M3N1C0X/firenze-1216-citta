@@ -119,7 +119,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 1. ~~Le figure umane~~: decisa il 1° ottobre la strada Blender + MakeHuman + motion capture.
 2. ~~Le texture~~: decise il 1° ottobre le fotografiche CC0.
 3. **Il catasto CASTORE.** Prima di usarlo va controllata la licenza. Domenico ha un contatto, o si chiede direttamente alla Regione?
-4. **L'hardware per le prove.** Il Mac di lavoro (2017, grafica integrata) non basta a giudicare la fluidità: serve una macchina di fascia alta per una prova ogni tanto.
+4. **L’hardware per le prove.** Per giudicare la fluidità serve una macchina di fascia alta, almeno per una prova ogni tanto.
 
 ## 10. Lacune (da aggiungere a quelle del dossier)
 

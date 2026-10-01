@@ -1,0 +1,57 @@
+name: Pubblica la città
+
+# Costruisce la città con Vite e la pubblica su GitHub Pages a ogni push
+# su main. Le texture e le figure stanno in public/ e finiscono così come
+# sono nel sito: nessun passaggio le rigenera qui.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  costruisci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # il sito si apre davvero: la pagina, il codice e i dati principali ci sono
+      - name: Verifica del pacchetto
+        run: |
+          test -f dist/index.html
+          ls dist/assets/*.js > /dev/null
+          test -f dist/texture/FONTI.json
+          test -f dist/figure/figure.json
+          test -f dist/figure/movimenti.glb
+          echo "dimensione del sito: $(du -sh dist | cut -f1)"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  pubblica:
+    needs: costruisci
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pagine.outputs.page_url }}
+    steps:
+      - id: pagine
+        uses: actions/deploy-pages@v4
