@@ -1,0 +1,103 @@
+:root {
+  --carta: #f3ece0;
+  --inchiostro: #2b241c;
+  --vetro: rgba(24, 20, 16, 0.72);
+  --vetro-chiaro: rgba(36, 30, 24, 0.55);
+  --testo: #f1ebe0;
+  --tenue: #c8bca9;
+  --accento: #d9a441;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #14110e; color: var(--testo); font-family: var(--sans); }
+#app, #app canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+[hidden] { display: none !important; }
+
+/* ------------------------------------------------------------ avvio */
+#avvio {
+  position: fixed; inset: 0; display: grid; place-items: center; padding: 16px;
+  background: radial-gradient(ellipse at 50% 35%, rgba(70, 58, 42, 0.55), rgba(10, 8, 6, 0.92)), #14110e;
+  z-index: 10;
+}
+#avvio .carta {
+  max-width: 620px; width: 100%; padding: 32px 34px 26px; border-radius: 6px;
+  background: var(--carta); color: var(--inchiostro); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  max-height: calc(100vh - 32px); overflow: auto;
+}
+#avvio .sopra { margin: 0 0 6px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #7b6a52; }
+#avvio h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(26px, 4.4vw, 36px); line-height: 1.12; margin: 0 0 6px; }
+#avvio .data { font-family: var(--serif); font-style: italic; margin: 0 0 18px; color: #5d4d39; }
+#avvio p { line-height: 1.5; }
+#avvio details { margin: 4px 0 12px; }
+#avvio summary { cursor: pointer; font-weight: 600; }
+#avvio ul { padding-left: 20px; margin: 8px 0 0; line-height: 1.45; }
+#progresso { font-size: 14px; color: #6b5a42; min-height: 1.5em; margin: 14px 0 10px; }
+#entra {
+  border: 0; border-radius: 4px; padding: 12px 28px; font-size: 17px; font-weight: 600;
+  background: #3d2f1f; color: #f6efe2;
+}
+#entra:disabled { opacity: 0.45; cursor: progress; }
+#entra:not(:disabled):hover { background: #574330; }
+.comandi { font-size: 12.5px; color: #6b5a42; margin: 16px 0 0; }
+.comandi span { font-weight: 600; color: #3d2f1f; }
+
+/* ------------------------------------------------------- interfaccia */
+#testata {
+  position: fixed; top: 14px; left: 16px; padding: 8px 14px; border-radius: 4px;
+  background: var(--vetro); font-family: var(--serif); font-size: 15px; display: flex; gap: 14px;
+  backdrop-filter: blur(6px);
+}
+#ora { color: var(--tenue); font-style: italic; }
+#vicino {
+  position: fixed; left: 16px; bottom: 76px; max-width: min(460px, calc(100vw - 32px));
+  padding: 10px 14px; border-radius: 4px; background: var(--vetro); backdrop-filter: blur(6px); font-size: 14px;
+}
+#vicino b { font-family: var(--serif); font-size: 17px; font-weight: 600; }
+#vicino .tasto { color: var(--accento); }
+#barra {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 6px; border-radius: 6px; background: var(--vetro); backdrop-filter: blur(6px);
+  max-width: calc(100vw - 32px); justify-content: center;
+}
+#barra button, #barra label {
+  background: transparent; border: 1px solid rgba(241, 235, 224, 0.18); border-radius: 4px; padding: 7px 12px; font-size: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+#barra button[aria-pressed="true"] { background: var(--accento); color: #1d160d; border-color: var(--accento); }
+#barra input[type=range] { width: 130px; accent-color: var(--accento); }
+
+#legenda {
+  position: fixed; right: 16px; top: 14px; padding: 10px 14px; border-radius: 4px; background: var(--vetro);
+  font-size: 13px; max-width: 290px; backdrop-filter: blur(6px);
+}
+#legenda div { display: flex; gap: 8px; align-items: flex-start; margin: 4px 0; }
+#legenda i { flex: 0 0 14px; height: 14px; border-radius: 2px; margin-top: 2px; }
+#legenda small { color: var(--tenue); display: block; }
+
+#scheda, #elenco {
+  position: fixed; right: 16px; top: 14px; bottom: 76px; width: min(400px, calc(100vw - 32px)); overflow: auto;
+  padding: 22px 22px 18px; border-radius: 6px; background: var(--carta); color: var(--inchiostro);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+.chiudi { position: absolute; top: 6px; right: 10px; border: 0; background: transparent; font-size: 26px; color: #6b5a42; }
+#scheda h2, #elenco h2 { font-family: var(--serif); font-size: 24px; margin: 0 26px 10px 0; line-height: 1.15; }
+#scheda p { line-height: 1.5; font-size: 15px; }
+.livelli { display: grid; gap: 6px; margin: 12px 0; font-size: 13px; }
+.livello { display: grid; grid-template-columns: 74px 1fr; gap: 8px; align-items: start; }
+.livello b { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b5a42; padding-top: 2px; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 3px; color: #fff; font-size: 12px; font-weight: 600; margin-right: 6px; }
+.fonti { font-size: 13px; color: #4b3e2e; padding-left: 18px; }
+.fonti li { margin: 4px 0; }
+.verifica { background: #f1d9a6; padding: 0 3px; border-radius: 2px; }
+#elenco ul { list-style: none; padding: 0; margin: 0; }
+#elenco li button { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid #ddd0bb; padding: 10px 2px; font-size: 15px; display: flex; gap: 8px; align-items: center; }
+#elenco li button:hover { background: #ebe1cf; }
+#elenco i { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 10px; }
+
+@media (max-width: 640px) {
+  #testata { font-size: 13px; flex-direction: column; gap: 0; }
+  #vicino { bottom: 120px; }
+  #scheda, #elenco { left: 16px; right: 16px; width: auto; top: 70px; bottom: 120px; }
+}
