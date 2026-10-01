@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Firenze 1216 — la città</title>
+<meta name="description" content="Firenze la mattina di Pasqua del 1216, da percorrere a piedi. Prototipo: il capo del Ponte Vecchio.">
+<link rel="stylesheet" href="./src/stile.css">
+</head>
+<body>
+<div id="app"></div>
+
+<section id="avvio" aria-labelledby="titolo">
+  <div class="carta">
+    <p class="sopra">Cosa fatta capo ha · la città</p>
+    <h1 id="titolo">Firenze, la mattina di Pasqua del 1216</h1>
+    <p class="data">Domenica 10 aprile 1216 · al capo del Ponte Vecchio</p>
+    <p>Una città da percorrere a piedi, costruita a partire dalle fonti. Dove le fonti si fermano, il modello lo dice: l'interruttore <b>Certezza</b> colora ogni cosa secondo quanto ne sappiamo.</p>
+    <details>
+      <summary>Che cosa non è</summary>
+      <ul>
+        <li><b>Non è una ricostruzione validata.</b> È un prototipo, e un medievista non l'ha ancora visto.</li>
+        <li><b>Le case sono generate.</b> Solo le chiese e le torri con un nome hanno la pianta di un edificio vero.</li>
+        <li><b>Il delitto non c'è.</b> Il modello mostra il luogo, non l'uccisione.</li>
+      </ul>
+    </details>
+    <p id="progresso" role="status">Preparazione…</p>
+    <button id="entra" disabled>Entra</button>
+    <p class="comandi"><span>WASD / frecce</span> cammina · <span>mouse</span> guarda · <span>Maiusc</span> svelto · <span>F</span> volo · <span>C</span> certezza · <span>I</span> scheda · <span>Esc</span> libera il mouse</p>
+  </div>
+</section>
+
+<header id="testata" hidden>
+  <span id="quando">Domenica 10 aprile 1216</span>
+  <span id="ora"></span>
+</header>
+
+<div id="vicino" hidden></div>
+
+<nav id="barra" hidden aria-label="Comandi">
+  <label class="ora">Ora <input id="cursore-ora" type="range" min="5.2" max="12" step="0.05" value="8.5"></label>
+  <button id="b-certezza" aria-pressed="false" title="Colora secondo il livello di certezza (C)">Certezza</button>
+  <button id="b-volo" aria-pressed="false" title="Vola sopra i tetti (F)">Volo</button>
+  <button id="b-luoghi" title="Elenco dei luoghi">Luoghi</button>
+  <button id="b-qualita" title="Qualità grafica">Qualità: alta</button>
+</nav>
+
+<aside id="legenda" hidden aria-label="Legenda della certezza"></aside>
+
+<aside id="scheda" hidden aria-live="polite">
+  <button class="chiudi" aria-label="Chiudi la scheda">×</button>
+  <div id="scheda-corpo"></div>
+</aside>
+
+<aside id="elenco" hidden>
+  <button class="chiudi" aria-label="Chiudi l'elenco">×</button>
+  <h2>Luoghi</h2>
+  <ul id="elenco-luoghi"></ul>
+</aside>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

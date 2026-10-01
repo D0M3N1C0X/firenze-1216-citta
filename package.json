@@ -1,0 +1,21 @@
+{
+  "name": "firenze-1216-citta",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Firenze esplorabile a piedi: la città del 1216 e le sue fasi",
+  "type": "module",
+  "license": "MIT",
+  "author": "Domenico Perroni",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "osm": "node scripts/osm-estrai.mjs"
+  },
+  "dependencies": {
+    "three": "0.169.0"
+  },
+  "devDependencies": {
+    "vite": "^7.3.6"
+  }
+}
