@@ -3,6 +3,7 @@ import {
   falda, ghiera, matriceLotto, muro, piramide, scatola, tamponamento, timpano
 } from './cantiere.js';
 import { EDIFICIO, LIBERO } from './griglia.js';
+import { MAT } from './materiali.js';
 import { quota, distanzaFiume } from './terreno.js';
 import { rng } from './rumore.js';
 
@@ -35,7 +36,8 @@ function riempi(cant, M, a, t, R, tipo) {
   // o resta aperta sul buio dell'interno
   const fondo = t * 0.55;
   if (tipo === 'bottega' || tipo === 'porta') {
-    const g = tamponamento(a, 0.08, 7, true); g.translate(0, 0, fondo);
+    // le assi vanno girate solo nel legno generato: nella foto sono già verticali
+    const g = tamponamento(a, 0.08, 7, Boolean(MAT.legno?.map?.isDataTexture)); g.translate(0, 0, fondo);
     cant.aggiungi(g, 'legnoScuro', LIV, M, [R.tra(0.8, 1.1), R.tra(0.8, 1.0), R.tra(0.75, 0.95)]);
     return;
   }

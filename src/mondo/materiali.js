@@ -1,11 +1,11 @@
 import {
   Color, DataTexture, LinearFilter, LinearMipmapLinearFilter, MeshStandardMaterial,
-  NoColorSpace, RGBAFormat, RepeatWrapping, SRGBColorSpace, UnsignedByteType
+  NoColorSpace, RGBAFormat, RepeatWrapping, SRGBColorSpace, TextureLoader, UnsignedByteType
 } from 'three';
 import { GENERATORI } from './texture-gen.js';
 
 /* =====================================================================
-   MATERIALI — tutti generati nel codice, niente immagini scaricate.
+   MATERIALI — fotografie CC0 dove le abbiamo, texture generate per il resto.
 
    Ogni materiale ha tre mappe: colore, rilievo (normal map) e ruvidità.
    Le coordinate di texture della geometria sono in METRI, quindi ogni
@@ -46,21 +46,69 @@ function materiale(tex, opz = {}) {
 
 export const MAT = {};
 
-// risoluzione di ogni texture: piena per i materiali che si vedono da vicino
+/**
+ * Una variazione di tono su larga scala (qualche metro), calcolata dalla
+ * posizione nel mondo: sporco, dilavamento, pietre di cave diverse. Rompe
+ * la ripetizione delle foto sulle pareti grandi.
+ */
+function variaTono(m) {
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vPosMondo;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPosMondo = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', `#include <common>
+varying vec3 vPosMondo;
+float hashT(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float rumoreT(vec2 p) {
+  vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hashT(i), hashT(i + vec2(1, 0)), f.x), mix(hashT(i + vec2(0, 1)), hashT(i + vec2(1, 1)), f.x), f.y);
+}`)
+      .replace('#include <map_fragment>', `#include <map_fragment>
+        vec2 qT = vPosMondo.xz * 0.21 + vec2(vPosMondo.y * 0.13, -vPosMondo.y * 0.09);
+        float nT = rumoreT(qT) * 0.6 + rumoreT(qT * 2.7 + 5.3) * 0.4;
+        diffuseColor.rgb *= 0.8 + 0.34 * nT;`);
+  };
+  m.customProgramCacheKey = () => 'variaTono';
+}
+
+// risoluzione delle texture generate: piena per quelle che si vedono da vicino
 const GRANDI = new Set(['conci', 'intonaco', 'coppi', 'terra']);
 
-/**
- * Genera tutte le texture in parallelo nei worker. Se i worker non ci sono
- * (o falliscono) le genera qui, più lentamente.
+/*
+ * Texture fotografiche CC0 di Poly Haven, in public/texture/ (autori e
+ * misure in FONTI.json). Sono scansioni di materiali veri, ma non dei
+ * materiali di Firenze: la tinta le avvicina alla pietraforte grigio-bruna
+ * e ai coppi toscani. «scala» allarga una texture che copre troppo poco.
  */
-export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
-  const S = qualita === 'alta' ? 1024 : 512;
-  const nomi = Object.keys(GENERATORI);
+const FOTO = {
+  conci: { tinta: [0.96, 0.9, 0.86] },
+  pietrame: { tinta: [0.95, 0.92, 0.9] },
+  intonaco: {},
+  coppi: { tinta: [1.0, 0.92, 0.86] },
+  terra: { scala: 2.2, tinta: [0.78, 0.74, 0.7] },
+  legno: {},
+  lastre: { tinta: [0.88, 0.84, 0.78] },
+  ghiaia: { tinta: [0.9, 0.88, 0.84] }
+};
+
+async function caricaFoto(nome, info) {
+  const loader = new TextureLoader();
+  const base = `./texture/${nome}/`;
+  const [map, normalMap, roughnessMap] = await Promise.all(['colore', 'rilievo', 'ruvidita'].map(f => loader.loadAsync(base + f + '.jpg')));
+  for (const t of [map, normalMap, roughnessMap]) {
+    t.wrapS = t.wrapT = RepeatWrapping; t.anisotropy = ANISO; t.colorSpace = NoColorSpace;
+  }
+  map.colorSpace = SRGBColorSpace;
+  return { map, normalMap, roughnessMap, dim: info.dimensioni_mm[0] / 1000 * (FOTO[nome].scala || 1) };
+}
+
+/** Genera nei worker le texture che servono; se i worker mancano, qui. */
+async function generaProcedurali(nomi, S, avanzamento) {
   const dim = n => GRANDI.has(n) ? S : S / 2;
   const risultati = {};
-  let fatti = 0;
   try {
-    const n = Math.max(2, Math.min(nomi.length, (navigator.hardwareConcurrency || 4) - 1));
+    const n = Math.max(1, Math.min(nomi.length, (navigator.hardwareConcurrency || 4) - 1));
     const coda = [...nomi].sort((a, b) => dim(b) - dim(a));
     await Promise.all(Array.from({ length: n }, async () => {
       const w = new Worker(new URL('./tex-worker.js', import.meta.url), { type: 'module' });
@@ -72,16 +120,45 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
             w.onerror = ko;
             w.postMessage({ nome, S: dim(nome) });
           });
-          avanzamento(++fatti, nomi.length);
+          avanzamento();
         }
       } finally { w.terminate(); }
     }));
   } catch (e) {
     console.warn('worker non disponibili, genero le texture sul filo principale', e);
-    for (const nome of nomi) if (!risultati[nome]) { risultati[nome] = GENERATORI[nome](dim(nome)); avanzamento(++fatti, nomi.length); }
+    for (const nome of nomi) if (!risultati[nome]) { risultati[nome] = GENERATORI[nome](dim(nome)); avanzamento(); }
   }
-  const tex = r => ({ map: dataTex(r.col, r.S, true), normalMap: dataTex(r.nor, r.S, false), roughnessMap: dataTex(r.rgh, r.S, false), dim: r.dim });
-  for (const nome of nomi) MAT[nome] = materiale(tex(risultati[nome]));
+  const out = {};
+  for (const [k, r] of Object.entries(risultati))
+    out[k] = { map: dataTex(r.col, r.S, true), normalMap: dataTex(r.nor, r.S, false), roughnessMap: dataTex(r.rgh, r.S, false), dim: r.dim };
+  return out;
+}
+
+/** Prepara tutti i materiali: foto dove ci sono, texture generate per il resto. */
+export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
+  const S = qualita === 'alta' ? 1024 : 512;
+  const tex = {};
+  let fatti = 0;
+  const totale = Object.keys(GENERATORI).length;
+  const passo = () => avanzamento(++fatti, totale);
+
+  let fonti = {};
+  try { fonti = await (await fetch('./texture/FONTI.json')).json(); } catch { /* senza foto si va avanti */ }
+  await Promise.all(Object.keys(FOTO).map(async nome => {
+    if (!fonti[nome]) return;
+    try { tex[nome] = await caricaFoto(nome, fonti[nome]); passo(); }
+    catch (e) { console.warn('foto non caricata, la genero:', nome, e); }
+  }));
+  // il legno scuro, se c'è la foto del legno, sono le stesse assi più scure
+  const mancanti = Object.keys(GENERATORI).filter(n => !tex[n] && !(n === 'legnoScuro' && tex.legno));
+  Object.assign(tex, await generaProcedurali(mancanti, S, passo));
+
+  for (const nome of Object.keys(GENERATORI)) {
+    if (nome === 'legnoScuro' && tex.legno && !tex.legnoScuro) { MAT.legnoScuro = materiale(tex.legno, { color: new Color(0.5, 0.4, 0.33) }); continue; }
+    const t = FOTO[nome]?.tinta;
+    MAT[nome] = materiale(tex[nome], t ? { color: new Color(...t) } : {});
+    if (['conci', 'pietrame', 'intonaco', 'coppi', 'lastre'].includes(nome)) variaTono(MAT[nome]);
+  }
   MAT.scuro = new MeshStandardMaterial({ color: 0x0d0b09, roughness: 1, metalness: 0, vertexColors: true });
   MAT.marmoVerde = new MeshStandardMaterial({ color: 0x2f4a3c, roughness: 0.4, metalness: 0, vertexColors: true });
   return MAT;

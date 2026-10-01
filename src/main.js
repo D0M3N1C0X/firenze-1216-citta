@@ -21,6 +21,7 @@ import { PONTE_ASSE, costruisciMonumenti, sulPonte } from './mondo/monumenti.js'
 import { costruisciFondale } from './mondo/fondale.js';
 import { creaVegetazione } from './mondo/vegetazione.js';
 import { Abitanti } from './mondo/abitanti.js';
+import { caricaFigure } from './mondo/figure.js';
 import { Suoni } from './mondo/suoni.js';
 import { formatoOra, oraCanonica } from './mondo/sole.js';
 import { Controlli } from './controlli.js';
@@ -73,6 +74,8 @@ async function costruisci() {
     tf = t; fase = msg; ui.progresso(msg); await pausa();
   };
   await passo('Impasto la calce e cuocio i coppi…');
+  // le figure si caricano mentre si fa il resto; se mancano si usano quelle generate
+  const figure = caricaFigure().catch(e => { console.warn('figure di Blender non caricate:', e); return null; });
   await Promise.all([
     creaMateriali('alta', (k, n) => ui.progresso(`Impasto la calce e cuocio i coppi… ${k}/${n}`)),
     preparaCampo()
@@ -112,6 +115,7 @@ async function costruisci() {
   await passo('La gente esce di casa…');
   const quotaIn = (x, z) => { const p = sulPonte(x, z); return p === null ? quota(x, z) : p; };
   const abitanti = new Abitanti(scene, strade, griglia, quotaIn, {
+    modelli: params.has('manichini') ? null : await figure,
     numero: +(params.get('gente') || 150),
     extra: [{ punti: [PONTE_ASSE.A, PONTE_ASSE.B], larghezza: 5.5 }],
     // dove la gente si ferma a parlare: davanti alle chiese, ai capi del ponte, al mercato

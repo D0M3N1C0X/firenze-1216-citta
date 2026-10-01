@@ -64,21 +64,29 @@ function materialeTerreno() {
     sh.uniforms.tErba = { value: MAT.erba.map };
     sh.uniforms.tGhiaia = { value: MAT.ghiaia.map };
     sh.uniforms.tRuvTerra = { value: MAT.terra.roughnessMap };
+    // quanti cicli di texture per metro: dipende da quanto copre ogni immagine
+    sh.uniforms.rT = { value: MAT.terra.map.repeat.x };
+    sh.uniforms.cTerra = { value: MAT.terra.color };
+    sh.uniforms.cGhiaia = { value: MAT.ghiaia.color };
+    sh.uniforms.rE = { value: MAT.erba.map.repeat.x };
+    sh.uniforms.rG = { value: MAT.ghiaia.map.repeat.x };
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nattribute vec3 peso;\nattribute vec2 xz;\nvarying vec3 vPeso;\nvarying vec2 vXZ;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPeso = peso;\nvXZ = xz;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform sampler2D tTerra, tErba, tGhiaia, tRuvTerra;\nvarying vec3 vPeso;\nvarying vec2 vXZ;')
+      .replace('#include <common>', '#include <common>\nuniform sampler2D tTerra, tErba, tGhiaia, tRuvTerra;\nuniform float rT, rE, rG;\nuniform vec3 cTerra, cGhiaia;\nvarying vec3 vPeso;\nvarying vec2 vXZ;')
       .replace('#include <map_fragment>', `
-        vec3 cT = texture2D(tTerra, vXZ / 8.0).rgb;
-        vec3 cE = texture2D(tErba, vXZ / 6.0).rgb;
-        vec3 cG = texture2D(tGhiaia, vXZ / 3.0).rgb;
+        // ogni texture letta a due scale e mescolata: spezza la ripetizione
+        vec3 cT = mix(texture2D(tTerra, vXZ * rT).rgb, texture2D(tTerra, vXZ * rT * 0.23 + 0.37).rgb, 0.4);
+        vec3 cE = mix(texture2D(tErba, vXZ * rE).rgb, texture2D(tErba, vXZ * rE * 0.27 + 0.61).rgb, 0.4);
+        vec3 cG = mix(texture2D(tGhiaia, vXZ * rG).rgb, texture2D(tGhiaia, vXZ * rG * 0.31 + 0.13).rgb, 0.35);
+        cT *= cTerra; cG *= cGhiaia;
         vec3 w = vPeso / max(0.001, vPeso.x + vPeso.y + vPeso.z);
         diffuseColor.rgb *= cT * w.x + cE * w.y + cG * w.z;`)
       .replace('#include <roughnessmap_fragment>', `
         float roughnessFactor = roughness;
-        float rT = texture2D(tRuvTerra, vXZ / 8.0).g;
-        roughnessFactor = rT * w.x + 0.94 * w.y + 0.8 * w.z;`);
+        float ruvT = texture2D(tRuvTerra, vXZ * rT).g;
+        roughnessFactor = ruvT * w.x + 0.94 * w.y + 0.8 * w.z;`);
   };
   // la ripetizione della normal map è già impostata da materiali.js (1/8 m)
   return m;

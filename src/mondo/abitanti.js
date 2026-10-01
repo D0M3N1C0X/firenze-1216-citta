@@ -1,7 +1,8 @@
 import {
-  Bone, BufferGeometry, Float32BufferAttribute, MeshStandardMaterial, Skeleton, SkinnedMesh,
+  AnimationMixer, Bone, BufferGeometry, Float32BufferAttribute, MeshStandardMaterial, Skeleton, SkinnedMesh,
   Uint16BufferAttribute, Vector3
 } from 'three';
+import { clone as clonaScheletro } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { rng, smooth } from './rumore.js';
 
 /* =====================================================================
@@ -281,15 +282,20 @@ export class Abitanti {
     const g = grafo(strade, opz.extra || [], opz.raggio || 330);
     this.g = g;
     this.figure = [];
-    const varianti = [];
-    for (let i = 0; i < (opz.varianti || 48); i++) varianti.push(creaFigura(1000 + i));
+    // le figure di Blender, se ci sono; altrimenti quelle generate qui
+    const modelli = opz.modelli;
+    this.infoMov = modelli?.infoMov;
+    const varianti = modelli ? modelli.varianti : [];
+    if (!modelli) for (let i = 0; i < (opz.varianti || 48); i++) varianti.push(creaFigura(1000 + i));
+    const altezza = v => modelli ? v.info.altezza : v.altezza;
     const archi = g.archi.filter(([a, b]) => g.nodi[a].vicini.length + g.nodi[b].vicini.length > 2);
     for (let i = 0; i < (opz.numero || 140); i++) {
       const v = varianti[i % varianti.length];
       const [a, b, larg] = R.scegli(archi.length ? archi : g.archi);
-      const f = this.nuova(v, R);
+      const f = modelli ? this.nuovaModello(v, R, 'cammina') : this.nuova(v, R);
       f.da = a; f.a = b; f.t = R(); f.corsiaMax = Math.max(0, larg / 2 - 0.6); f.corsia = R.tra(-1, 1) * f.corsiaMax * 0.7;
-      f.vel = R.tra(0.95, 1.35) * (v.altezza / 1.68);
+      f.vel = (f.clipVel ? f.clipVel * R.tra(0.9, 1.1) : R.tra(0.95, 1.35)) * (altezza(v) / 1.68);
+      if (f.azione && f.clipVel) f.azione.timeScale = f.vel / f.clipVel;
       this.figure.push(f);
     }
     // gruppi fermi a parlare, dove la gente si raduna
@@ -300,7 +306,7 @@ export class Abitanti {
         const a = k / n * Math.PI * 2 + R.tra(-0.3, 0.3), r = 0.75 + 0.15 * n;
         const x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r;
         if (!griglia.percorribile(x, z)) continue;
-        const f = this.nuova(v, R);
+        const f = modelli ? this.nuovaModello(v, R, k === 0 ? 'parla' : R.scegli(['fermo', 'guarda', 'fermo', 'parla'])) : this.nuova(v, R);
         f.fermo = true; f.x = x; f.z = z;
         f.dir = Math.atan2(cx - f.x, cz - f.z);
         f.parla = R.tra(0, 10);
@@ -325,6 +331,26 @@ export class Abitanti {
     return { mesh, o, fase: R.tra(0, 6.28), x: 0, z: 0, dir: 0, fermo: false, sfasa: R.tra(0, 100), v };
   }
 
+  /** Una figura di Blender: copia dello scheletro e un mixer di animazione. */
+  nuovaModello(v, R, ruolo) {
+    const radice = clonaScheletro(v.scene);
+    const maglie = [];
+    radice.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; maglie.push(o); } });
+    this.scene.add(radice);
+    const mixer = new AnimationMixer(radice);
+    let nome = ruolo;
+    if (ruolo === 'cammina') nome = v.info.eta > 0.75 ? 'cammina_lento' : R.scegli(['cammina2', 'cammina2', 'passeggia', 'cammina_lento']);
+    const clip = v.clip[nome] || v.clip.cammina2 || Object.values(v.clip)[0];
+    const azione = mixer.clipAction(clip);
+    azione.play();
+    azione.time = R() * clip.duration;
+    const info = this.infoMov?.[clip.name] || {};
+    return {
+      mesh: radice, maglie, mixer, azione, clipVel: info.velocita ? info.velocita * v.scala : 0, ombra: true, accum: 0,
+      x: 0, z: 0, dir: 0, fermo: false, sfasa: R.tra(0, 100), v: { altezza: v.info.altezza }, modello: true
+    };
+  }
+
   visibili(on) { for (const f of this.figure) f.mesh.visible = on; this.nascosti = !on; }
 
   aggiorna(dt, cam) {
@@ -338,6 +364,7 @@ export class Abitanti {
         const A = g.nodi[f.da], Bn = g.nodi[f.a];
         const L = Math.hypot(Bn.x - A.x, Bn.z - A.z) || 1;
         f.t += (f.velEff ?? f.vel) * dt / L;
+        if (f.azione && f.clipVel) f.azione.timeScale = (f.velEff ?? f.vel) / f.clipVel;
         if (f.t >= 1) {
           const prima = f.da; f.da = f.a; f.t = 0;
           const scelte = g.nodi[f.da].vicini.filter(v => v.n !== prima);
@@ -365,6 +392,15 @@ export class Abitanti {
       if (!vis) continue;
       f.mesh.position.set(f.x, this.quotaIn(f.x, f.z), f.z);
       f.mesh.rotation.y = f.dir;
+      if (f.modello) {
+        const ombra = d < 50;
+        if (ombra !== f.ombra) { f.ombra = ombra; for (const m of f.maglie) m.castShadow = ombra; }
+        // da lontano si anima meno spesso, ma il tempo non si perde
+        f.accum += dt;
+        if (d > 70 && ((this.tempo * 20 + f.sfasa) | 0) % 3) continue;
+        f.mixer.update(f.accum); f.accum = 0;
+        continue;
+      }
       f.mesh.castShadow = d < 50;
       if (d > 70 && ((this.tempo * 20 + f.sfasa) | 0) % 3) continue;   // da lontano si anima meno spesso
       if (f.fermo) this.posaFerma(f); else this.posaCammino(f);

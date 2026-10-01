@@ -20,6 +20,8 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 | **Abitanti** | animati, in movimento |
 | **Calendario** | tutto a dicembre 2026, insieme al gioco. **Se il tempo non basta, si tagliano prima le fasi extra**: il 1216 esce comunque, perché serve al gioco |
 | **Pubblicazione** | il repo diventa pubblico a dicembre (GitHub Pages); il PDF di Faini e la corrispondenza restano esclusi |
+| **Figure** (1° ottobre, dopo il prototipo) | catena di produzione in Blender: corpi MakeHuman (MPFB, CC0), vesti costruite da script, movimenti del CMU Motion Capture Database |
+| **Texture** (1° ottobre) | fotografiche CC0 da Poly Haven, tinte verso i materiali fiorentini |
 
 ## 2. Che cosa c'è nel prototipo
 
@@ -95,7 +97,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 | Settimana | Città | Note |
 |---|---|---|
 | 1–4 ott | ✅ prototipo v0.1 | giudizio di Domenico sulle figure umane |
-| 5–11 ott | figure umane (strada scelta da Domenico); caricamento sotto gli 8 s | |
+| 5–11 ott | ✅ figure (anticipato al 1° ott.); vesti migliori; caricamento sotto gli 8 s | |
 | 12–25 ott | il 1216 su tutta la cerchia: mura e porte, strade, Mercato Vecchio, case delle famiglie del gioco | serve il catasto pre-Risanamento |
 | 26 ott–1 nov | monumenti del 1216 e primi **interni** (casa Amidei, Santa Maria sopra Porta, Santa Reparata) | |
 | 2–8 nov | mestieri, mercato, suoni per luogo | |
@@ -107,16 +109,17 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 
 ## 8. Rischi
 
-1. **Le persone realistiche.** Il prototipo genera figure nel codice: funzionano da lontano, da vicino sono manichini. Il realismo pieno richiede modelli con scheletro e animazioni catturate dal vero; si veda la domanda aperta 1.
+1. **Le persone realistiche.** Dal 1° ottobre ci sono 20 figure MakeHuman animate con movimenti catturati dal vero (`strumenti/figure/`). Restano da migliorare le vesti (pieghe, tessuto) e la varietà; i volti sono quelli di MakeHuman, non studiati sul Duecento.
 2. **Le fonti topografiche.** Del 1216 non esiste nessuna pianta. Tutto ciò che si vede è ricostruito a ritroso, ed è per questo che la scheda dei luoghi e i colori della certezza non sono un accessorio.
 3. **Il caricamento**: oggi circa 18 s, di cui 7 per le texture. I rimedi sono la cache nel browser e la costruzione nei worker.
 4. **Il tempo.** Città e gioco insieme in dieci settimane: la regola dei tagli è già decisa.
 
 ## 9. Domande aperte per Domenico
 
-1. **Le figure umane.** Si resta con le figure generate nel codice, migliorandole, oppure si passa a una vera catena di produzione? Quest'ultima vorrebbe dire Blender e MakeHuman (gratuiti, uscite CC0) per i corpi e animazioni catturate dal vero per i movimenti, con un'installazione sul Mac.
-2. **Le texture.** Si restano generate nel codice o si scaricano texture fotografiche CC0 (Poly Haven, ambientCG)? Queste ultime sono più realistiche, ma pesano sull'app e si scaricano una volta.
+1. ~~Le figure umane~~: decisa il 1° ottobre la strada Blender + MakeHuman + motion capture.
+2. ~~Le texture~~: decise il 1° ottobre le fotografiche CC0.
 3. **Il catasto CASTORE.** Prima di usarlo va controllata la licenza. Domenico ha un contatto, o si chiede direttamente alla Regione?
+4. **L'hardware per le prove.** Il Mac di lavoro (2017, grafica integrata) non basta a giudicare la fluidità: serve una macchina di fascia alta per una prova ogni tanto.
 
 ## 10. Lacune (da aggiungere a quelle del dossier)
 
