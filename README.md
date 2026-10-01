@@ -1,10 +1,14 @@
 # Firenze 1216 — la città
 
-La Firenze della mattina di Pasqua del 1216, da percorrere a piedi. È la sezione esplorabile del progetto *Cosa fatta capo ha*: il gioco racconta il delitto, la città mostra i luoghi.
+La Firenze della mattina di Pasqua del 1216, da percorrere a piedi. È la sezione esplorabile del progetto *Cosa fatta capo ha*: il gioco, in preparazione, racconta il delitto; la città mostra i luoghi.
 
-**Prototipo v0.1** (1° ottobre 2026): il capo del Ponte Vecchio, con circa 400 metri di città intorno e il resto come fondale. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
+**[▶ Apri la città](https://d0m3n1c0x.github.io/firenze-1216-citta/)**
 
-## Avviare
+Serve un computer o un tablet con una buona scheda grafica: il modello è pensato per l'hardware di fascia alta e la prima apertura richiede qualche decina di secondi.
+
+**Prototipo** (ottobre 2026): il capo del Ponte Vecchio, con circa 400 metri di città intorno e il resto come fondale; texture fotografiche e persone animate. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
+
+## Avviare in locale
 
 ```bash
 npm install
@@ -47,7 +51,8 @@ dati-osm/        estratto OpenStreetMap del 01/10/2026 (ODbL)
 
 ## Licenze e attribuzioni
 
-- **Codice:** MIT (vedi [../LICENSE](../LICENSE)). **Testi e schede:** CC BY 4.0 (vedi [../LICENSE-CONTENUTI.md](../LICENSE-CONTENUTI.md)).
+- **Codice:** MIT (vedi [LICENSE](LICENSE)). **Testi e schede:** CC BY 4.0 (vedi [LICENSE-CONTENUTI.md](LICENSE-CONTENUTI.md)).
+- **Citare:** vedi [CITATION.cff](CITATION.cff).
 - **Dati cartografici:** © OpenStreetMap contributors, licenza [ODbL 1.0](https://opendatacommons.org/licenses/odbl/). Il letto dell'Arno, i tracciati delle strade e le impronte delle torri e delle chiese vengono da lì.
 - **three.js** (MIT), incluso nel pacchetto.
 - **Texture fotografiche:** Poly Haven, licenza CC0 (autori: Rob Tuytel, Dimitrios Savva, Amal Kumar, Charlotte Baglioni, Dario Barresi; dettagli in `public/texture/FONTI.json`). Erba, marmo e suoni sono generati dal codice.

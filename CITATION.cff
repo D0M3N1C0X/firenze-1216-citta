@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "Se usi questo modello o le sue schede, cita come segue."
+title: "Firenze 1216: la città la mattina di Pasqua, da percorrere a piedi"
+abstract: >-
+  Modello urbano navigabile della Firenze del 1216, attorno al capo del Ponte
+  Vecchio dove la mattina di Pasqua fu ucciso Buondelmonte dei Buondelmonti.
+  Ogni luogo ha una scheda con le fonti e due livelli di certezza, sul luogo e
+  sulla forma; un interruttore colora il modello secondo quanto ne sappiamo.
+  Le case sono generate, le torri superstiti e le chiese seguono le impronte
+  reali. Prototipo non ancora validato da un medievista.
+type: software
+authors:
+  - family-names: Perroni
+    given-names: Domenico
+version: 0.2.0
+date-released: "2026-10-01"
+license: MIT
+keywords:
+  - Firenze
+  - Medioevo
+  - storia urbana
+  - Buondelmonte
+  - public history
+  - visualizzazione 3D
+  - WebGL
+  - media education
+repository-code: "https://github.com/D0M3N1C0X/firenze-1216-citta"
+url: "https://d0m3n1c0x.github.io/firenze-1216-citta/"

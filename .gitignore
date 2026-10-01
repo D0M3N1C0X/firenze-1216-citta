@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.catture/
+.claude/
+.DS_Store
+__pycache__/
+strumenti/figure/mocap/
