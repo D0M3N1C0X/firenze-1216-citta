@@ -10,7 +10,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "osm": "node scripts/osm-estrai.mjs"
+    "osm": "node scripts/osm-estrai.mjs",
+    "copione": "node scripts/copione-estrai.mjs",
+    "verifica": "node scripts/verifica.mjs"
   },
   "dependencies": {
     "three": "0.169.0"

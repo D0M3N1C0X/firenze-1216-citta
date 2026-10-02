@@ -24,9 +24,10 @@
         <li><b>Il delitto non c'è.</b> Il modello mostra il luogo, non l'uccisione.</li>
       </ul>
     </details>
+    <p id="avvio-scena" hidden></p>
     <p id="progresso" role="status">Preparazione…</p>
     <button id="entra" disabled>Entra</button>
-    <p class="comandi"><span>WASD / frecce</span> cammina · <span>mouse</span> guarda · <span>Maiusc</span> svelto · <span>F</span> volo · <span>C</span> certezza · <span>I</span> scheda · <span>Esc</span> libera il mouse</p>
+    <p class="comandi"><span>WASD / frecce</span> cammina · <span>mouse</span> guarda · <span>Maiusc</span> svelto · <span>F</span> volo · <span>C</span> certezza · <span>I</span> scheda · <span>R</span> racconto · <span>Esc</span> libera il mouse</p>
     <p class="crediti">Dati cartografici © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · texture Poly Haven (CC0) · persone MakeHuman (CC0) con i movimenti del <a href="http://mocap.cs.cmu.edu" target="_blank" rel="noopener">CMU Motion Capture Database</a></p>
   </div>
 </section>
@@ -42,6 +43,8 @@
   <label class="ora">Ora <input id="cursore-ora" type="range" min="5.2" max="12" step="0.05" value="8.5"></label>
   <button id="b-certezza" aria-pressed="false" title="Colora secondo il livello di certezza (C)">Certezza</button>
   <button id="b-volo" aria-pressed="false" title="Vola sopra i tetti (F)">Volo</button>
+  <button id="b-racconto" aria-pressed="false" title="Le scene del gioco, nei loro luoghi (R)">Racconto</button>
+  <button id="b-giorno" title="Passa all'altra giornata">Giorno: Pasqua</button>
   <button id="b-luoghi" title="Elenco dei luoghi">Luoghi</button>
   <button id="b-qualita" title="Qualità grafica">Qualità: alta</button>
 </nav>
@@ -52,6 +55,8 @@
   <button class="chiudi" aria-label="Chiudi la scheda">×</button>
   <div id="scheda-corpo"></div>
 </aside>
+
+<aside id="racconto" hidden aria-label="Il racconto" aria-live="polite"></aside>
 
 <aside id="elenco" hidden>
   <button class="chiudi" aria-label="Chiudi l'elenco">×</button>

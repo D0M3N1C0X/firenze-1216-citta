@@ -14,7 +14,8 @@ import { lerp, smooth } from './rumore.js';
 
    La foschia del mattino sull'Arno è una scelta di atmosfera, non un
    dato: non sappiamo che tempo facesse il 10 aprile 1216. Le fonti
-   dicono solo «la mattina di Pasqua».
+   dicono solo «la mattina di Pasqua». Il 10 febbraio la foschia è più
+   densa (giornate.js): è la mattina d'inverno, non il meteo di quel giorno.
    ===================================================================== */
 
 export class Cielo {
@@ -58,17 +59,25 @@ export class Cielo {
     scene.fog = new FogExp2(0xc8c6bc, 0.0016);
     this.dir = new Vector3();
     this.ora = -1;
+    this.doy = 108;             // Pasqua, finché una giornata non dice altro
+    this.foschia = 1;
     // equilibrio tra sole diretto e luce del cielo: il cielo di Preetham è
     // molto luminoso, e a forza piena cancellerebbe le ombre
     this.forzaSole = 4.2;
     this.forzaCielo = 0.28;
   }
 
+  /** Giorno dell'anno (gregoriano) e foschia della giornata; poi ricalcola l'ora corrente. */
+  giornata(g) {
+    this.doy = g.doy; this.foschia = g.foschia ?? 1;
+    if (this.ora >= 0) this.imposta(this.ora);
+  }
+
   /** Imposta l'ora solare vera e aggiorna cielo, sole, ambiente e foschia. */
   imposta(ora) {
     this.ora = ora;
-    direzioneSole(ora, this.dir);
-    const { el } = posizioneSole(ora);
+    direzioneSole(ora, this.dir, this.doy);
+    const { el } = posizioneSole(ora, this.doy);
     const p = this.dir.clone().multiplyScalar(1000);
     this.sky.material.uniforms.sunPosition.value.copy(p);
     this.envSky.material.uniforms.sunPosition.value.copy(p);
@@ -82,7 +91,7 @@ export class Cielo {
     // la foschia si scalda all'alba e si dirada salendo
     const nebbia = this.scene.fog;
     nebbia.color.setRGB(lerp(0.80, 0.78, alto), lerp(0.74, 0.79, alto), lerp(0.66, 0.80, alto));
-    nebbia.density = lerp(0.0021, 0.0009, alto);
+    nebbia.density = lerp(0.0021, 0.0009, alto) * this.foschia;
 
     if (this.envRT) this.envRT.dispose();
     this.envRT = this.pmrem.fromScene(this.envScene, 0.02);

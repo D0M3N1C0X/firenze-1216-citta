@@ -1,6 +1,6 @@
 # La città — piano di lavoro
 
-**Stato:** prototipo v0.2 del 1° ottobre 2026 (la v0.1, dello stesso giorno, non aveva ancora figure e texture fotografiche): il capo del Ponte Vecchio, la mattina di Pasqua del 1216.
+**Stato:** prototipo v0.2 del 1° ottobre 2026 (la v0.1, dello stesso giorno, non aveva ancora figure e texture fotografiche): il capo del Ponte Vecchio, la mattina di Pasqua del 1216. Dal 2 ottobre: due giornate (10 febbraio e Pasqua), le scene del copione con il racconto guidato, la città estesa fino alle case delle famiglie e a Santa Reparata.
 **Metodo:** lo stesso di *Dopo il 79* e del dossier del gioco. La fonte accanto a ogni affermazione, **[da verificare]** dove manca il controllo sulla fonte, **le fonti divergono** dove le fonti non concordano. In più, una sezione **Lacune** e un **Registro delle verifiche** (in fondo).
 
 ---
@@ -23,6 +23,10 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 | **Pubblicazione anticipata** (1° ottobre) | la città esce subito, da sola, nel repository pubblico D0M3N1C0X/firenze-1216-citta con GitHub Pages, prima del parere del medievista; l'avviso «non è validato» resta in apertura. Il resto del progetto resta privato |
 | **Figure** (1° ottobre, dopo il prototipo) | catena di produzione in Blender: corpi MakeHuman (MPFB, CC0), vesti costruite da script, movimenti del CMU Motion Capture Database |
 | **Texture** (1° ottobre) | fotografiche CC0 da Poly Haven, tinte verso i materiali fiorentini |
+| **Collegamento al gioco** (2 ottobre) | dal gioco alla città, con un link a ogni scena (`?scena=IV3`); e nella città un **racconto** guidato, scena per scena, con i testi del copione e le note del quaderno. Niente viste della città dentro il gioco: il gioco resta leggero |
+| **Le altre giornate** (2 ottobre) | il 10 febbraio con la luce e la stagione giuste, giorno feriale e botteghe aperte; Pasqua resta com'è |
+| **Estensione** (2 ottobre) | case delle famiglie, verso Santa Reparata, mura e porte, Mercato Vecchio |
+| **Fonti per le posizioni nuove** (2 ottobre) | fonti aperte e dichiarate: Faini, OpenStreetMap, toponimi. Ogni posizione è dedotta o ipotesi, e le domande vanno al medievista (§ 10) |
 
 ## 2. Che cosa c'è nel prototipo
 
@@ -30,13 +34,18 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 - **Il ponte del 1216**: quattro arcate ribassate con rostri, impalcato a schiena d'asino, nessuna bottega. È tutto ipotesi tranne il fatto che il ponte c'era, ed era l'unico.
 - **La pietra di Marte** sul suo pilastro, al capo del ponte dal lato della città.
 - **Le strade del 1216.** Sono i tracciati di oggi, tolti quelli che nel 1216 non c'erano (`src/dati/strade-1216.js`, con il motivo di ogni esclusione), con il fondo in terra battuta.
-- **Circa 2.000 case generate** lungo le strade e sulle rive: case-torri, botteghe chiuse per la festa, sporti di legno, gronde a travicelli, ballatoi sull'acqua.
+- **Circa 2.750 case generate** lungo le strade e sulle rive, entro 480 m dal ponte e lungo il percorso verso Santa Reparata: case-torri, botteghe, sporti di legno, gronde a travicelli, ballatoi sull'acqua.
+- **Due giornate** (`src/dati/giornate.js`). **Il 10 febbraio**, la promessa rotta: sole del 17 febbraio gregoriano, foschia d'inverno, botteghe aperte con il banco sulla strada, banchi al Mercato Vecchio, rintocchi lenti e niente rondini. **La mattina di Pasqua**, il delitto: botteghe chiuse, campane a festa. Si passa dall'una all'altra con il pulsante «Giorno» o con `?giorno=febbraio`.
+- **Le case delle famiglie del gioco**, ciascuna con la sua scheda: Amidei, Buondelmonti (a San Felice in Piazza), Donati (la torre presso il Corso), Uberti (dove poi sarà piazza della Signoria), Lamberti, la torre dei Fifanti.
+- **Il Mercato Vecchio**, sul foro romano, e **la piazza di San Giovanni** con il Battistero e **Santa Reparata**, che ora si raggiungono a piedi; le strade aggiunte a mano sono in `src/dati/strade-1216.js` (AGGIUNTE), ciascuna con il suo motivo.
+- **La cerchia del 1172–75** (`src/dati/cerchia.js`): il muro si vede nel fondale, lungo un tracciato ancora provvisorio; nell'area percorribile c'è solo la porta sulla strada per San Felice.
+- **Il racconto** (pulsante «Racconto», tasto R): le scene del copione dal prologo al corteo funebre, ciascuna nel suo luogo, giornata e ora, con le scelte della classe, le note del quaderno, le parole delle fonti e la base storica. Le scene che non hanno un luogo nella città (il convito di Campi, la bottega del giudice) dicono perché. Il gioco apre la città su una scena con `?scena=CODICE`.
 - **Le torri che esistono ancora** (Amidei, Baldovinetti, Buondelmonti, Mannelli, Rossi-Cerchi, Marsili e altre), costruite sulla loro impronta reale.
-- **Le chiese**: Santo Stefano al Ponte, Santi Apostoli, Santa Felicita, San Jacopo, Santa Trinita, Santa Maria sopra Porta. Sullo sfondo il Battistero e Santa Reparata.
+- **Le chiese**: Santo Stefano al Ponte, Santi Apostoli, Santa Felicita, San Jacopo, Santa Trinita, Santa Maria sopra Porta; il Battistero e Santa Reparata.
 - **Porta Santa Maria**, in posizione ipotetica.
-- **Il sole del 17 aprile gregoriano**, che corrisponde al 10 aprile giuliano, calcolato per Firenze; l'ora si regola dall'alba a mezzogiorno, con le ore canoniche.
-- **150 persone che camminano** e alcuni gruppi fermi a parlare davanti alle chiese e ai capi del ponte.
-- **Campane a festa** da cinque chiese, il fiume, il brusio, le rondini.
+- **Il sole** calcolato per Firenze nel giorno gregoriano della giornata (17 aprile per Pasqua, 17 febbraio per il 10 febbraio); l'ora si regola dall'alba a mezzogiorno, con le ore canoniche.
+- **150 persone a Pasqua, 190 il 10 febbraio**, che camminano, e gruppi fermi a parlare: davanti alle chiese a Pasqua, al mercato nei giorni feriali.
+- **Le campane** (a festa a Pasqua, rintocchi lenti il 10 febbraio), il fiume, il brusio, le rondini ad aprile.
 - **L'interruttore «Certezza»**, che colora tutto secondo quanto ne sappiamo. Ogni luogo ha una **scheda** con due livelli, *luogo* e *forma*, e le fonti.
 
 ## 3. Che cosa NON è
@@ -91,7 +100,10 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 - **Coordinate:** 1 unità = 1 metro, con origine al capo nord del Ponte Vecchio (x verso est, z verso sud).
 - **Il cantiere** (`src/mondo/cantiere.js`) fonde migliaia di pezzi in pochi oggetti, divisi per materiale, livello di certezza e riquadro di 80 m. Per questo l'interruttore «Certezza» costa un cambio di materiale.
 - **La griglia** (`src/mondo/griglia.js`) è una mappa del suolo a celle di 50 cm: strade, fiume, ponte, edifici. Decide dove si costruisce, dove si cammina e dove camminano gli abitanti.
-- **Il seme è fisso**: la città è uguale a ogni apertura, così il registro delle verifiche può riferirsi a qualcosa.
+- **Il seme è fisso**: la città è uguale a ogni apertura, così il registro delle verifiche può riferirsi a qualcosa. Attenzione: aggiungere o togliere una strada cambia la sequenza e quindi le case.
+- **Le varianti di giornata.** Il cantiere costruisce a parte i pezzi che esistono solo nei giorni di festa (botteghe chiuse) o solo in quelli feriali (botteghe aperte, banchi del mercato), e la giornata li mostra o li nasconde. I banchi non fermano chi cammina: la griglia è la stessa in ogni giornata.
+- **Le scene.** I testi vengono da `storia/copione.md` attraverso `scripts/copione-estrai.mjs` (`npm run copione`), che scrive `src/dati/copione.js` con le sole schermate usate dalla città (prologo–atto IV). Che cosa la città fa di ogni scena (luogo, giornata, ora, punto di vista) è deciso a mano in `src/dati/scene.js`.
+- **La verifica** (`npm run verifica`) costruisce la pianta del suolo senza disegnarla e controlla che ogni luogo sia raggiungibile a piedi e che ogni scena abbia un luogo, una giornata e un punto di vista percorribile. Va lanciata dopo ogni modifica a strade, luoghi o scene.
 
 ## 7. Calendario fino al 15 dicembre
 
@@ -99,10 +111,10 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 |---|---|---|
 | 1–4 ott | ✅ prototipo v0.1 | giudizio di Domenico sulle figure umane |
 | 5–11 ott | ✅ figure (anticipato al 1° ott.); vesti migliori; caricamento sotto gli 8 s | |
-| 12–25 ott | il 1216 su tutta la cerchia: mura e porte, strade, Mercato Vecchio, case delle famiglie del gioco | serve il catasto pre-Risanamento |
+| 12–25 ott | il 1216 su tutta la cerchia: mura e porte, strade, Mercato Vecchio, case delle famiglie del gioco | ◐ anticipato il 2 ottobre: case delle famiglie, Mercato Vecchio e Santa Reparata come ipotesi, muro solo nel fondale. Per il resto servono il catasto pre-Risanamento e un estratto OSM più grande |
 | 26 ott–1 nov | monumenti del 1216 e primi **interni** (casa Amidei, Santa Maria sopra Porta, Santa Reparata) | |
 | 2–8 nov | mestieri, mercato, suoni per luogo | |
-| 9–15 nov | **collegamento al gioco**: ogni scena del copione diventa un luogo e un punto di vista | prova con un docente |
+| 9–15 nov | **collegamento al gioco**: ogni scena del copione diventa un luogo e un punto di vista | ◐ anticipato il 2 ottobre dalla parte della città (`?scena=`, racconto); resta il pulsante nel gioco e la prova con un docente |
 | 16–22 nov | fase **oggi** | |
 | 23–29 nov | fase **~1300** | |
 | 30 nov–6 dic | fasi **~1480** e **Florentia** | prime candidate al taglio |
@@ -112,7 +124,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 
 1. **Le persone realistiche.** Dal 1° ottobre ci sono 20 figure MakeHuman animate con movimenti catturati dal vero (`strumenti/figure/`). Restano da migliorare le vesti (pieghe, tessuto) e la varietà; i volti sono quelli di MakeHuman, non studiati sul Duecento.
 2. **Le fonti topografiche.** Del 1216 non esiste nessuna pianta. Tutto ciò che si vede è ricostruito a ritroso, ed è per questo che la scheda dei luoghi e i colori della certezza non sono un accessorio.
-3. **Il caricamento**: oggi circa 18 s, di cui 7 per le texture. I rimedi sono la cache nel browser e la costruzione nei worker.
+3. **Il caricamento**: oggi circa 18 s, di cui 7 per le texture. I rimedi sono la cache nel browser e la costruzione nei worker. L'estensione del 2 ottobre (2.750 case invece di 2.050, botteghe aperte e banchi come varianti) aggiunge circa 2 s su una macchina lenta: misurati 21,4 s contro 19,6 s, senza scheda grafica.
 4. **Il tempo.** Città e gioco insieme in dieci settimane: la regola dei tagli è già decisa.
 
 ## 9. Domande aperte per Domenico
@@ -121,6 +133,8 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 2. ~~Le texture~~: decise il 1° ottobre le fotografiche CC0.
 3. **Il catasto CASTORE.** Prima di usarlo va controllata la licenza. Domenico ha un contatto, o si chiede direttamente alla Regione?
 4. **L’hardware per le prove.** Per giudicare la fluidità serve una macchina di fascia alta, almeno per una prova ogni tanto.
+5. **I testi del copione nella città pubblica.** Il racconto mostra i testi del copione (prologo–atto IV), che è ancora una bozza non rivista. Con il prossimo `scripts/pubblica.sh` diventano pubblici insieme alla città. Si pubblicano subito, o si aspetta il medievista?
+6. **Un estratto OpenStreetMap più grande.** Per la cerchia intera serve un estratto oltre i 560 m dal ponte. Da questo ambiente di lavoro l'Overpass API non è raggiungibile: si scarica da un computer con la query di `scripts/osm-estrai.mjs` allargata, o si apre l'accesso alla rete.
 
 ## 10. Lacune (da aggiungere a quelle del dossier)
 
@@ -132,9 +146,24 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 23. **Le case**: in che proporzione erano di pietra e di legno; quanto erano diffusi gli sporti.
 24. **Le vesti**: colori e fogge per ceto nel 1216, a Firenze.
 
+Emerse il 2 ottobre 2026, estendendo la città e collegandola al gioco:
+
+25. **Il giorno della settimana del 10 febbraio 1216.** Il dossier e il copione dicono giovedì; il calcolo sul calendario giuliano dà mercoledì (registro, n. 6). Che cosa dice esattamente la cronaca, e che cosa ne ricava Faini (p. 16)?
+26. **Le case delle famiglie.** Dove abitavano nel 1216 i Donati (la torre presso il Corso?), gli Uberti (l'area della futura piazza della Signoria), i Lamberti (via dei Lamberti o via Lambertesca?), i Fifanti (la torre d'Oltrarno che porta il loro nome?), gli Amidei e i Buondelmonti (popolo di San Felice in Piazza).
+27. **Il Mercato Vecchio**: forma, misure, chiese intorno e disposizione dei banchi prima dello sventramento del 1885–1895.
+28. **Santa Reparata e la piazza di San Giovanni**: pianta e misure della cattedrale dai rilievi degli scavi; estensione della piazza e del cimitero nel 1216.
+29. **La cerchia del 1172–75**: tracciato, porte (sei e quattro postierle?), data d'inizio (1172 o 1173), altezza del muro; dove stava la porta d'Oltrarno verso San Felice e se si chiamava già di San Pier Gattolino.
+30. **Le botteghe aperte**: forma del banco e degli sportelli nel Duecento fiorentino.
+31. **La strada da via de' Guicciardini a San Felice**: tracciato prima di piazza Pitti; e il nome nel 1216 della strada che oggi è via dei Calzaiuoli.
+32. **Il corteo funebre**: per quali strade passò (le fonti dicono solo «per tutta Firenze»).
+
 ## 11. Registro delle verifiche
 
 1. **01/10/2026 — Data astronomica.** Pasqua 1216 = 10 aprile giuliano (Faini p. 16) = 17 aprile gregoriano prolettico, scarto di 7 giorni nel XIII secolo. Il sole è calcolato su questa data.
 2. **01/10/2026 — Ponti.** Nel modello del 1216 non ci sono il ponte alla Carraia (iniziato nel 1218), Rubaconte (1237) e Santa Trinita (1252). Date **[da verificare]** su Villani.
 3. **01/10/2026 — Strade.** Esclusi i lungarni, gli Uffizi, l'area del Mercato Vecchio sventrata nell'Ottocento e piazza Pitti; l'elenco con i motivi è in `src/dati/strade-1216.js`.
 4. **01/10/2026 — Fondo stradale.** Terra battuta: la lastricatura generale è attribuita al podestà Rubaconte nel 1237 **[da verificare: Villani VI]**.
+5. **02/10/2026 — Strade entrate con l'estratto allargato.** Portando l'estrazione da 420 a 560 m sono entrati il ponte alla Carraia (1218), il ponte alle Grazie (Rubaconte, 1237), il lungarno Vespucci, una pista ciclabile, piazza Goldoni e piazza Santo Spirito: esclusi dal 1216, con il motivo, in `strade-1216.js`.
+6. **02/10/2026 — Il 10 febbraio 1216 era un mercoledì.** Calcolo con il numero del giorno giuliano e, in modo indipendente, con il calendario gregoriano prolettico (scarto di 7 giorni nel Duecento); per controllo, il 10 aprile 1216 risulta domenica, cioè Pasqua. Il dossier e il copione dicono giovedì: **[da verificare]** sulla cronaca e su Faini p. 16 (lacuna n. 25). La città scrive solo «10 febbraio».
+7. **02/10/2026 — La citazione di Mosca.** Nella scheda di Santa Maria sopra Porta: «cosa fatta cappa à», come nello pseudo-Brunetto, e non la forma del proverbio.
+8. **02/10/2026 — Nessuna piazza della Signoria nel 1216.** Controllato che l'area della futura piazza sia costruita: l'estratto non la contiene come strada, e lì il modello mette le case degli Uberti.

@@ -53,7 +53,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 #ora { color: var(--tenue); font-style: italic; }
 #vicino {
-  position: fixed; left: 16px; bottom: 76px; max-width: min(460px, calc(100vw - 32px));
+  position: fixed; left: 16px; bottom: var(--sopra-barra, 76px); max-width: min(460px, calc(100vw - 32px));
   padding: 10px 14px; border-radius: 4px; background: var(--vetro); backdrop-filter: blur(6px); font-size: 14px;
 }
 #vicino b { font-family: var(--serif); font-size: 17px; font-weight: 600; }
@@ -81,9 +81,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #legenda small { color: var(--tenue); display: block; }
 
 #scheda, #elenco {
-  position: fixed; right: 16px; top: 14px; bottom: 76px; width: min(400px, calc(100vw - 32px)); overflow: auto;
+  position: fixed; right: 16px; top: 14px; bottom: var(--sopra-barra, 76px); width: min(400px, calc(100vw - 32px)); overflow: auto;
   padding: 22px 22px 18px; border-radius: 6px; background: var(--carta); color: var(--inchiostro);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  z-index: 3;          /* la scheda aperta dal racconto gli sta sopra, anche sugli schermi stretti */
 }
 .chiudi { position: absolute; top: 6px; right: 10px; border: 0; background: transparent; font-size: 26px; color: #6b5a42; }
 #scheda h2, #elenco h2 { font-family: var(--serif); font-size: 24px; margin: 0 26px 10px 0; line-height: 1.15; }
@@ -95,13 +96,46 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .fonti { font-size: 13px; color: #4b3e2e; padding-left: 18px; }
 .fonti li { margin: 4px 0; }
 .verifica { background: #f1d9a6; padding: 0 3px; border-radius: 2px; }
+#avvio-scena { margin: 0 0 6px; padding: 8px 12px; border-left: 3px solid #b0802a; background: #ece2cf; font-size: 15px; }
+
+/* ---------------------------------------------------------- racconto */
+#racconto {
+  position: fixed; left: 16px; top: 70px; bottom: var(--sopra-barra, 76px); width: min(430px, calc(100vw - 32px)); overflow: auto;
+  padding: 18px 22px 16px; border-radius: 6px; background: var(--carta); color: var(--inchiostro);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45); font-size: 15px; line-height: 1.5; z-index: 2;
+}
+#racconto .sopra { margin: 0 26px 4px 0; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b6a52; }
+#racconto h2 { font-family: var(--serif); font-size: 23px; line-height: 1.15; margin: 0 26px 8px 0; }
+#racconto h3 { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #6b5a42; margin: 16px 0 4px; }
+#racconto .dove { font-family: var(--serif); font-style: italic; color: #5d4d39; margin: 0 0 10px; }
+#racconto p { margin: 0 0 10px; }
+#racconto .rami { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 10px; }
+#racconto .rami button { border: 1px solid #cbbba0; background: transparent; border-radius: 3px; padding: 4px 9px; font-size: 13px; }
+#racconto .rami button[aria-selected="true"] { background: #3d2f1f; color: #f6efe2; border-color: #3d2f1f; }
+#racconto .nella-citta { background: #ece2cf; padding: 8px 10px; border-radius: 3px; font-size: 14px; }
+#racconto ul { margin: 0; padding-left: 18px; }
+#racconto .note { list-style: none; padding: 0; }
+#racconto .note li { margin: 6px 0; font-size: 14px; }
+#racconto .note .chi { color: #6b5a42; }
+#racconto details { margin: 10px 0 0; font-size: 14px; }
+#racconto summary { cursor: pointer; font-weight: 600; }
+#racconto details p { margin: 6px 0 0; }
+#racconto .passi { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 0; padding-top: 12px; border-top: 1px solid #ddd0bb; }
+#racconto .passi button { border: 1px solid #cbbba0; background: #f8f2e6; border-radius: 4px; padding: 6px 11px; font-size: 14px; }
+#racconto .passi button:last-child { margin-left: auto; background: #3d2f1f; color: #f6efe2; border-color: #3d2f1f; }
+#racconto .passi button:disabled { opacity: 0.4; cursor: default; }
+#racconto .fine { font-style: italic; color: #5d4d39; margin-top: 12px; }
+
 #elenco ul { list-style: none; padding: 0; margin: 0; }
 #elenco li button { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid #ddd0bb; padding: 10px 2px; font-size: 15px; display: flex; gap: 8px; align-items: center; }
 #elenco li button:hover { background: #ebe1cf; }
 #elenco i { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 10px; }
 
+@media (max-width: 900px) {
+  #barra button, #barra label { padding: 7px 9px; }
+  #barra input[type=range] { width: 100px; }
+}
 @media (max-width: 640px) {
   #testata { font-size: 13px; flex-direction: column; gap: 0; }
-  #vicino { bottom: 120px; }
-  #scheda, #elenco { left: 16px; right: 16px; width: auto; top: 70px; bottom: 120px; }
+  #scheda, #elenco, #racconto { left: 16px; right: 16px; width: auto; top: 70px; }
 }

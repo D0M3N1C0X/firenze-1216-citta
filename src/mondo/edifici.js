@@ -20,7 +20,12 @@ import { rng } from './rumore.js';
      legno, una caratteristica che gli statuti più tardi cercheranno di
      limitare [da verificare];
    - la gronda larga a travicelli.
-   È Pasqua: le botteghe sono chiuse.
+   Le botteghe hanno due stati (dati/giornate.js): chiuse dalle imposte
+   nei giorni di festa; aperte nei giorni feriali, con il banco sulla
+   strada e lo sportello alzato a tettoia. La forma del banco e della
+   tettoia viene dalle botteghe di Due e Trecento che si vedono nella
+   pittura e negli edifici superstiti [da verificare: un riferimento
+   preciso, per esempio gli studi sulle botteghe di Calimala].
 
    La proporzione tra case in pietra e case in legno non la conosciamo
    [da verificare con il medievista]: qui prevale la pietra.
@@ -37,8 +42,11 @@ function riempi(cant, M, a, t, R, tipo) {
   const fondo = t * 0.55;
   if (tipo === 'bottega' || tipo === 'porta') {
     // le assi vanno girate solo nel legno generato: nella foto sono già verticali
-    const g = tamponamento(a, 0.08, 7, Boolean(MAT.legno?.map?.isDataTexture)); g.translate(0, 0, fondo);
-    cant.aggiungi(g, 'legnoScuro', LIV, M, [R.tra(0.8, 1.1), R.tra(0.8, 1.0), R.tra(0.75, 0.95)]);
+    const tinta = [R.tra(0.8, 1.1), R.tra(0.8, 1.0), R.tra(0.75, 0.95)];
+    const chiudi = () => { const g = tamponamento(a, 0.08, 7, Boolean(MAT.legno?.map?.isDataTexture)); g.translate(0, 0, fondo); cant.aggiungi(g, 'legnoScuro', LIV, M, tinta); };
+    if (tipo === 'porta') { chiudi(); return; }
+    cant.inVariante('festa', chiudi);
+    cant.inVariante('feriale', () => bottegaAperta(cant, M, a, t, R, tinta));
     return;
   }
   const r = R();
@@ -48,6 +56,40 @@ function riempi(cant, M, a, t, R, tipo) {
   } else if (r < 0.62) {
     const g = tamponamento(a, 0.03); g.translate(0, 0, fondo);
     cant.aggiungi(g, 'intonaco', LIV, M, [0.92, 0.84, 0.66], false);
+  }
+}
+
+/* Pezze di stoffa, ceste, orci sul banco: colori di lana e di tinte comuni. */
+const MERCI = [[0.62, 0.52, 0.4], [0.42, 0.3, 0.22], [0.3, 0.36, 0.55], [0.6, 0.3, 0.22], [0.36, 0.44, 0.3], [0.78, 0.72, 0.6]];
+
+/** Bottega aperta: banco sulla strada, sportello alzato a tettoia, merce. */
+function bottegaAperta(cant, M, a, t, R, tinta) {
+  const x0 = a.x - a.w / 2 + 0.06, x1 = a.x + a.w / 2 - 0.06;
+  const hB = 0.86, sporge = 0.5;
+  // il banco: piano di legno che sporge sulla strada, su un muricciolo
+  cant.aggiungi(scatola(x0, 0, -0.05, x1, hB - 0.08, t * 0.55), 'pietrame', LIV, M, [0.9, 0.88, 0.84]);
+  cant.aggiungi(scatola(x0 - 0.04, hB - 0.08, -sporge, x1 + 0.04, hB, t * 0.6), 'legno', LIV, M, tinta);
+  // lo sportello di sopra, alzato e puntellato in fuori: fa da tettoia
+  // (cerniera all'imposta dell'arco; il bordo libero scende un poco verso la strada)
+  const yI = a.arco ? a.y + a.h - a.w / 2 : a.y + a.h;
+  const lungo = Math.min(1.1, a.w * 0.42), incl = 0.42;
+  const g = scatola(x0, -0.04, -lungo, x1, 0, 0);
+  g.applyMatrix4(new Matrix4().makeRotationX(-incl));
+  g.translate(0, yI, -0.02);
+  cant.aggiungi(g, 'legnoScuro', LIV, M, tinta);
+  // due puntelli dal bordo del banco al bordo libero dello sportello
+  const dy = yI - Math.sin(incl) * lungo - hB, dz = -Math.cos(incl) * lungo + sporge;
+  for (const xs of [x0 + 0.1, x1 - 0.1]) {
+    const p = scatola(xs - 0.03, 0, -0.03, xs + 0.03, Math.hypot(dy, dz), 0.03);
+    p.applyMatrix4(new Matrix4().makeRotationX(Math.atan2(dz, dy))); p.translate(0, hB, -sporge + 0.04);
+    cant.aggiungi(p, 'legnoScuro', LIV, M, [0.9, 0.9, 0.9], false);
+  }
+  // la merce sul banco
+  let x = x0 + R.tra(0.05, 0.25);
+  while (x < x1 - 0.35) {
+    const w = R.tra(0.25, 0.5), h = R.tra(0.12, 0.3), d = R.tra(0.25, 0.4);
+    if (R.vero(0.75)) cant.aggiungi(scatola(x, hB, -sporge + 0.06, x + w, hB + h, -sporge + 0.06 + d), 'intonaco', LIV, M, R.scegli(MERCI), false);
+    x += w + R.tra(0.05, 0.3);
   }
 }
 
@@ -284,17 +326,44 @@ export function torre(cant, L, livello = LIV) {
    3. riempimento degli isolati, per i tetti visti dall'alto e da lontano.
    ===================================================================== */
 
+/** Distanza di un punto da una spezzata. */
+function distanzaSpezzata(x, z, pts) {
+  let best = Infinity;
+  for (let k = 0; k + 1 < pts.length; k++) {
+    const [ax, az] = pts[k], [bx, bz] = pts[k + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    best = Math.min(best, Math.hypot(ax + t * dx - x, az + t * dz - z));
+  }
+  return best;
+}
+
+/**
+ * L'area dove la città è costruita casa per casa: un cerchio intorno al capo
+ * del ponte più i corridoi (dati/strade-1216.js, CORRIDOI).
+ */
+export function areaCostruita(raggio, corridoi = []) {
+  return (x, z) => Math.hypot(x, z) <= raggio || corridoi.some(c => distanzaSpezzata(x, z, c.punti) <= c.larghezza);
+}
+
 export function lottizza(griglia, strade, opz = {}) {
   const R = rng(1216);
   const lotti = [];
   const raggio = opz.raggio || 400;
+  const corridoi = opz.corridoi || [];
+  const dentro = areaCostruita(raggio, corridoi);
+  // il riquadro da campionare comprende anche i corridoi
+  let xMin = -raggio, xMax = raggio, zMin = -raggio, zMax = raggio;
+  for (const c of corridoi) for (const [x, z] of c.punti) {
+    xMin = Math.min(xMin, x - c.larghezza); xMax = Math.max(xMax, x + c.larghezza);
+    zMin = Math.min(zMin, z - c.larghezza); zMax = Math.max(zMax, z + c.larghezza);
+  }
   let seme = 1;
 
   const prova = (px, pz, nx, nz, W, D, extra) => {
     // (px,pz) = centro del fronte; il lotto va verso (nx,nz)
     const cx = px + nx * D / 2, cz = pz + nz * D / 2;
     const ux = nz, uz = -nx;
-    if (Math.hypot(cx, cz) > raggio) return null;
+    if (!dentro(cx, cz)) return null;
     if (quota(cx, cz) > 7) return null;
     if (!griglia.liberoRett(cx, cz, ux, uz, W / 2 - 0.05, D / 2 - 0.05)) return null;
     griglia.segnaRett(cx, cz, ux, uz, W / 2, D / 2, EDIFICIO);
@@ -353,8 +422,8 @@ export function lottizza(griglia, strade, opz = {}) {
   const segmenti = [];
   for (const s of strade) if (!s.area) for (let k = 0; k + 1 < s.punti.length; k++) segmenti.push([s.punti[k], s.punti[k + 1]]);
   for (let tent = 0; tent < (opz.riempimento || 9000); tent++) {
-    const x = R.tra(-raggio, raggio), z = R.tra(-raggio, raggio);
-    if (Math.hypot(x, z) > raggio || griglia.get(x, z) !== LIBERO) continue;
+    const x = R.tra(xMin, xMax), z = R.tra(zMin, zMax);
+    if (!dentro(x, z) || griglia.get(x, z) !== LIBERO) continue;
     // orienta come la strada più vicina
     let best = 1e9, tx = 1, tz = 0;
     for (const [a, b] of segmenti) {

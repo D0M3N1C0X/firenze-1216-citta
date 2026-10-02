@@ -13,13 +13,25 @@ import { MAT, MAT_CERTEZZA } from './materiali.js';
    oggetti invece di centomila, e l'interruttore «Certezza» può ricolorare
    tutto in un colpo cambiando solo il materiale.
 
+   Alcuni pezzi esistono solo in certe giornate (dati/giornate.js): le
+   botteghe chiuse per la festa, i banchi aperti nei giorni feriali. Si
+   costruiscono dentro inVariante('festa' | 'feriale', ...) e restano in
+   oggetti separati, che giornata() mostra o nasconde.
+
    Coordinate di texture: SEMPRE in metri.
    ===================================================================== */
 
 const RIQUADRO = 80;   // metri
 
 export class Cantiere {
-  constructor() { this.pezzi = new Map(); this.mesh = []; }
+  constructor() { this.pezzi = new Map(); this.mesh = []; this.var = ''; }
+
+  /** I pezzi aggiunti dentro fn valgono solo per la variante indicata. */
+  inVariante(v, fn) {
+    const prima = this.var;
+    this.var = v;
+    try { fn(); } finally { this.var = prima; }
+  }
 
   /**
    * Aggiunge una geometria costruita in coordinate locali.
@@ -48,7 +60,7 @@ export class Cantiere {
     g.setAttribute('color', new Float32BufferAttribute(c, 3));
     const p = g.attributes.position;
     const rx = Math.floor(p.getX(0) / RIQUADRO), rz = Math.floor(p.getZ(0) / RIQUADRO);
-    const chiave = `${mat}|${livello}|${ombra ? 1 : 0}|${rx}|${rz}`;
+    const chiave = `${mat}|${livello}|${ombra ? 1 : 0}|${rx}|${rz}|${this.var}`;
     if (!this.pezzi.has(chiave)) this.pezzi.set(chiave, []);
     this.pezzi.get(chiave).push(g);
   }
@@ -56,7 +68,7 @@ export class Cantiere {
   /** Fonde tutto e aggiunge alla scena. */
   costruisci(scene) {
     for (const [chiave, lista] of this.pezzi) {
-      const [mat, livello, ombra] = chiave.split('|');
+      const [mat, livello, ombra, , , variante] = chiave.split('|');
       const g = mergeGeometries(lista, false);
       for (const x of lista) x.dispose();
       if (!g) { console.warn('fusione fallita', chiave); continue; }
@@ -64,12 +76,18 @@ export class Cantiere {
       const mesh = new Mesh(g, MAT[mat]);
       mesh.castShadow = ombra === '1';
       mesh.receiveShadow = true;
-      mesh.userData = { mat, livello };
+      mesh.userData = { mat, livello, variante };
       scene.add(mesh);
       this.mesh.push(mesh);
     }
     this.pezzi.clear();
     return this.mesh;
+  }
+
+  /** Mostra i pezzi della giornata: festa (botteghe chiuse) o feriale. */
+  giornata(g) {
+    const v = g.festa ? 'festa' : 'feriale';
+    for (const m of this.mesh) if (m.userData.variante) m.visible = m.userData.variante === v;
   }
 
   /** Interruttore «Certezza»: colora per livello, o torna ai materiali veri. */

@@ -3,6 +3,7 @@ import {
   Matrix4, Shape, Vector3
 } from 'three';
 import { IMPRONTE } from '../dati/osm.js';
+import { PORTE as PORTE_CERCHIA, TRACCIATO } from '../dati/cerchia.js';
 import { falda, matriceLotto, muro, piramide, scatola, tamponamento, timpano, uvMetri } from './cantiere.js';
 import { torre } from './edifici.js';
 import { MONUMENTO, PONTE, STRADA } from './griglia.js';
@@ -262,7 +263,12 @@ function chiesa(cant, griglia, imp, opz) {
   // tetto della navata
   cant.aggiungi(falda(-0.3, lungo + 0.3, Hn - 0.6 * pend, -0.6, Hn + hT, wN / 2).applyMatrix4(new Matrix4().makeRotationY(Math.PI / 2)).translate(xa, 0, lungo), 'coppi', LIV, M);
   cant.aggiungi(falda(-0.3, lungo + 0.3, Hn - 0.6 * pend, wN + 0.6, Hn + hT, wN / 2).applyMatrix4(new Matrix4().makeRotationY(Math.PI / 2)).translate(xa, 0, lungo), 'coppi', LIV, M);
-  cant.aggiungi(scatola(t, -0.5, t + 0.3, largo - t, Hn - 0.3, lungo - t - 0.3), 'scuro', LIV, M, [1, 1, 1], false);
+  // il buio dell'interno, visto dalle aperture: con tre navate, sopra i tetti
+  // delle navatelle resta dentro il cleristorio, o spunterebbe nero dai tetti
+  if (tre) {
+    cant.aggiungi(scatola(t, -0.5, t + 0.3, largo - t, Ha - 0.3, lungo - t - 0.3), 'scuro', LIV, M, [1, 1, 1], false);
+    cant.aggiungi(scatola(xa + t, Ha - 0.3, t + 0.3, largo - xa - t, Hn - 0.3, lungo - t - 0.3), 'scuro', LIV, M, [1, 1, 1], false);
+  } else cant.aggiungi(scatola(t, -0.5, t + 0.3, largo - t, Hn - 0.3, lungo - t - 0.3), 'scuro', LIV, M, [1, 1, 1], false);
   // campanile a vela sulla facciata, a volte
   if (opz.vela) {
     const v = muro(3.2, Hn + hT - 0.6, Hn + hT + 3.4, 0.6, [{ x: 1.6, y: Hn + hT + 0.3, w: 1.1, h: 2.2, arco: true, tipo: 'finestra' }]);
@@ -301,9 +307,38 @@ function porta(cant, griglia, [x, z], dir) {
   griglia.rettangolo(x, z, tx, tz, 2.0, D / 2 + 0.5, (i, j) => { griglia.c[j * griglia.n + i] = STRADA; });
 }
 
+/* ================================================ PORTE DELLA CERCHIA */
+// Una porta del 1172–75 con un tratto di muro per parte, lungo il perimetro
+// provvisorio (dati/cerchia.js). Tutto di livello «ipotesi».
+function portaDellaCerchia(cant, griglia, p) {
+  porta(cant, griglia, p.pos, p.dir);
+  // il lato del perimetro più vicino dà la direzione del muro
+  let best = null;
+  for (let i = 0; i < TRACCIATO.length; i++) {
+    const a = TRACCIATO[i], b = TRACCIATO[(i + 1) % TRACCIATO.length];
+    const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz;
+    const t = Math.max(0, Math.min(1, ((p.pos[0] - a[0]) * dx + (p.pos[1] - a[1]) * dz) / l2));
+    const d = Math.hypot(a[0] + t * dx - p.pos[0], a[1] + t * dz - p.pos[1]);
+    if (!best || d < best.d) best = { d, ux: dx / Math.sqrt(l2), uz: dz / Math.sqrt(l2) };
+  }
+  const { ux, uz } = best, H = 10, SP = 2.2, LIV = 'ipotesi', tinta = [0.9, 0.88, 0.83];
+  for (const lato of [-1, 1]) {
+    // da 5 m a 20 m dal centro della porta
+    const cx = p.pos[0] + ux * lato * 12.5, cz = p.pos[1] + uz * lato * 12.5;
+    const M = new Matrix4().makeRotationY(Math.atan2(-uz, ux)).setPosition(cx, quota(cx, cz), cz);
+    cant.aggiungi(scatola(-7.5, -1.5, -SP / 2, 7.5, H, SP / 2), 'pietrame', LIV, M, tinta);
+    for (let m = -7.2; m < 7; m += 1.6) cant.aggiungi(scatola(m, H, -SP / 2, m + 0.9, H + 1.1, -SP / 2 + 0.6), 'conci', LIV, M, tinta);
+    griglia.rettangolo(cx, cz, ux, uz, 7.5, SP / 2 + 0.2, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
+  }
+}
+
 /* ============================================================ BATTISTERO */
-function battistero(cant, [x, z]) {
+function battistero(cant, griglia, [x, z]) {
   const LIV = 'dedotto', y = quota(x, z);
+  griglia.rettangolo(x, z, 1, 0, 14.6, 14.6, (i, j) => {
+    const cx = griglia.min + (i + 0.5) * griglia.cella - x, cz = griglia.min + (j + 0.5) * griglia.cella - z;
+    if (Math.hypot(cx, cz) < 14.6) griglia.c[j * griglia.n + i] = MONUMENTO;
+  });
   const M = new Matrix4().makeRotationY(Math.PI / 8).setPosition(x, y, z);
   const R = 13.8;
   const corpo = uvMetri(new CylinderGeometry(R, R, 27, 8, 1).toNonIndexed());
@@ -334,9 +369,45 @@ function battistero(cant, [x, z]) {
 }
 
 /* ====================================================== SANTA REPARATA */
-function santaReparata(cant) {
+// La cattedrale del 1216, i cui resti sono sotto il Duomo. Pianta e misure
+// del modello sono ipotesi [da verificare: rilievi degli scavi del 1965–1974].
+// Dal 2 ottobre la piazza davanti si percorre: la chiesa occupa la griglia.
+function santaReparata(cant, griglia) {
   const imp = [[160, -575], [222, -575], [222, -548], [160, -548]];
-  chiesa(cant, { poligono() {}, rettangolo() {}, c: [], n: 0 }, imp, { verso: [128, -560], livello: 'ipotesi', altezza: 19, navate: 3, seme: 31 });
+  chiesa(cant, griglia, imp, { verso: [128, -560], livello: 'ipotesi', altezza: 19, navate: 3, seme: 31 });
+}
+
+/* ======================================================= MERCATO VECCHIO */
+// Banchi con le tende, solo nei giorni feriali (dati/giornate.js). Quanti
+// fossero e come fossero disposti non lo sappiamo: è un'ipotesi d'insieme.
+// I banchi non fermano chi cammina: la griglia è la stessa in ogni giornata.
+const TELE = [[0.86, 0.82, 0.72], [0.74, 0.5, 0.36], [0.5, 0.56, 0.68], [0.82, 0.74, 0.56], [0.62, 0.66, 0.5]];
+function mercatoVecchio(cant) {
+  const R = rng(1885), LIV = 'ipotesi';
+  cant.inVariante('feriale', () => {
+    for (let x = 38; x <= 90; x += 6.5) for (let z = -388; z <= -342; z += 7) {
+      const px = x + R.tra(-0.8, 0.8), pz = z + R.tra(-0.8, 0.8);
+      // lasciano libero il passaggio lungo Calimala e il decumano
+      if (Math.abs(px - 86) < 3.5 || Math.abs(pz + 366) < 3.5 || R.vero(0.15)) continue;
+      const M = new Matrix4().makeRotationY(R.vero(0.5) ? 0 : Math.PI / 2).setPosition(px, quota(px, pz), pz);
+      const W = R.tra(1.8, 2.6), D = R.tra(0.8, 1.0), h = 0.85;
+      cant.aggiungi(scatola(-W / 2, h - 0.06, -D / 2, W / 2, h, D / 2), 'legno', LIV, M, [0.9, 0.86, 0.8]);
+      for (const sx of [-1, 1]) cant.aggiungi(scatola(sx * (W / 2 - 0.25) - 0.04, 0, -D / 2 + 0.05, sx * (W / 2 - 0.25) + 0.04, h - 0.06, D / 2 - 0.05), 'legnoScuro', LIV, M, [1, 1, 1], false);
+      // la tenda su quattro pali
+      const hT = R.tra(2.1, 2.4), tinta = R.scegli(TELE);
+      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]])
+        cant.aggiungi(scatola(sx * W / 2 - 0.03, 0, sz * (D / 2 + 0.3) - 0.03, sx * W / 2 + 0.03, hT, sz * (D / 2 + 0.3) + 0.03), 'legnoScuro', LIV, M, [1, 1, 1], false);
+      const tenda = scatola(-W / 2 - 0.15, 0, -D / 2 - 0.45, W / 2 + 0.15, 0.03, D / 2 + 0.45);
+      tenda.applyMatrix4(new Matrix4().makeRotationX(R.tra(-0.12, 0.12)));
+      tenda.translate(0, hT, 0);
+      cant.aggiungi(tenda, 'intonaco', LIV, M, tinta);
+      // la merce
+      for (let k = 0, n = R.intero(2, 5); k < n; k++) {
+        const w = R.tra(0.25, 0.5), xx = -W / 2 + 0.15 + k * (W - 0.3) / n;
+        cant.aggiungi(scatola(xx, h, -D / 2 + 0.1, xx + w, h + R.tra(0.1, 0.3), -D / 2 + 0.1 + R.tra(0.25, 0.5)), 'intonaco', LIV, M, R.scegli([[0.55, 0.42, 0.28], [0.7, 0.62, 0.4], [0.45, 0.5, 0.3], [0.62, 0.3, 0.2]]), false);
+      }
+    }
+  });
 }
 
 /* =============================================================== TUTTO */
@@ -358,14 +429,16 @@ export function costruisciMonumenti(cant, griglia) {
   chiesa(cant, griglia, [[-4, -186], [7, -186], [7, -168], [-4, -168]], { verso: [16, -177], livello: 'ipotesi', altezza: 10, vela: true, seme: 17 });
 
   porta(cant, griglia, [84.4, -197], [0, 1]);
-  battistero(cant, [128, -542]);
-  santaReparata(cant);
+  for (const p of PORTE_CERCHIA) portaDellaCerchia(cant, griglia, p);
+  battistero(cant, griglia, [128, -542]);
+  santaReparata(cant, griglia);
+  mercatoVecchio(cant);
 
   // le torri con un nome: impronta reale, alzato ipotetico
   const torriNote = [];
   for (const t of IMPRONTE.filter(i => i.tipo === 'torre')) {
     const O = rettangoloMinimo(t.punti);
-    if (Math.hypot(O.cx, O.cz) > 430) continue;
+    if (Math.hypot(O.cx, O.cz) > 500) continue;
     const R = rng(t.id % 100000);
     const amidei = t.nome === 'Torre degli Amidei';
     const nx = -O.uz, nz = O.ux;               // fronte su un lato lungo

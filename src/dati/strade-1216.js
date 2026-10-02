@@ -51,7 +51,14 @@ export const ESCLUSE = {
   'Rampa dei Canigiani': 'rampe moderne',
   'Rampa delle Coste': 'rampe moderne',
   'Rampa di Sotto': 'rampe moderne',
-  'Ponte Vecchio': 'il ponte del 1216 è costruito a parte (monumenti.js)'
+  'Ponte Vecchio': 'il ponte del 1216 è costruito a parte (monumenti.js)',
+  // entrate con l'estratto allargato a 560 m (2 ottobre 2026)
+  'Ponte alla Carraia': 'ponte cominciato nel 1218 (Villani) [da verificare]',
+  'Ponte alle Grazie': 'è il ponte Rubaconte, del 1237 (Villani) [da verificare]',
+  'Lungarno Amerigo Vespucci': 'i lungarni sono successivi',
+  'Pista Ciclabile Arno Sx': 'pista ciclabile di oggi',
+  'Piazza Carlo Goldoni': 'slargo al capo del ponte alla Carraia, successivo al 1218',
+  'Piazza di Santo Spirito': 'la piazza si forma con il convento agostiniano, dalla metà del Duecento [da verificare]'
 };
 
 /** Larghezze ipotetiche in metri, per nome. Le altre seguono il tipo di strada. */
@@ -82,3 +89,61 @@ export function larghezza(nome) {
 }
 
 export const valeNel1216 = nome => !(nome in ESCLUSE);
+
+/* ---------------------------------------------------------------------
+   AGGIUNTE: strade e piazze del 1216 che oggi non esistono più, o che
+   l'estratto OpenStreetMap non contiene. Sono disegnate a mano, in metri
+   locali, e sono tutte di livello «ipotesi» per forma e misure; il
+   motivo è dichiarato accanto a ciascuna.
+   --------------------------------------------------------------------- */
+export const AGGIUNTE = [
+  {
+    nome: 'Mercato Vecchio',
+    area: true,
+    // sul foro romano, dove oggi è piazza della Repubblica: incrocio di Calimala
+    // (cardine) con via degli Strozzi e via degli Speziali (decumano)
+    punti: [[30, -395], [96, -395], [96, -335], [30, -335]],
+    motivo: 'il mercato del Duecento, distrutto con lo sventramento del 1885–1895; forma e misure ipotetiche [da verificare: catasto ottocentesco, Sznura 1975]'
+  },
+  {
+    nome: 'Piazza di San Giovanni',
+    area: true,
+    // tra il Battistero e la facciata di Santa Reparata
+    punti: [[98, -512], [178, -512], [178, -546], [159, -546], [159, -582], [98, -582]],
+    motivo: 'lo spazio davanti alla cattedrale; nel 1216 era più piccolo della piazza di oggi e in parte cimitero [da verificare]'
+  },
+  {
+    nome: 'Corso degli Adimari',
+    larghezza: 5.5,
+    // prosegue via dei Calzaiuoli oltre il margine dell'estratto, fino a San Giovanni
+    punti: [[157, -444], [155, -480], [151, -514]],
+    motivo: 'oggi via dei Calzaiuoli; l\'estratto si ferma a 440 m dal ponte e il tratto finale è tracciato a mano [da verificare: il nome della strada nel 1216]'
+  },
+  {
+    nome: 'Strada per San Felice',
+    larghezza: 5.5,
+    // dal fondo di via de' Guicciardini verso San Felice in Piazza e la porta
+    // di San Pier Gattolino [da verificare: posizione della porta nel 1216], sotto quella
+    // che nel Quattrocento diventerà piazza Pitti
+    // l'ultimo tratto passa dritto per la porta della cerchia (dati/cerchia.js)
+    punti: [[-199, 187], [-258, 232], [-316, 276], [-334, 288], [-338, 300], [-341, 312]],
+    motivo: 'la via per Roma attraverso l\'Oltrarno; piazza Pitti è successiva e qui il tracciato è ipotetico [da verificare]'
+  }
+];
+
+/**
+ * Corridoi dove si costruisce anche oltre il raggio della città percorribile:
+ * il percorso del corteo funebre verso Santa Reparata (copione, IV4).
+ */
+export const CORRIDOI = [
+  { punti: [[150, -400], [155, -470], [150, -515], [135, -560]], larghezza: 55 }
+];
+
+/** Metri dal capo del ponte in cui la città è costruita casa per casa (400 fino al 1° ottobre). */
+export const RAGGIO_CITTA = 480;
+
+/** Le strade del 1216: quelle di oggi che valgono, con la loro larghezza, più le aggiunte. */
+export function strade1216(tutte) {
+  return tutte.filter(s => valeNel1216(s.nome)).map(s => ({ ...s, larghezza: larghezza(s.nome) }))
+    .concat(AGGIUNTE.map(a => ({ ...a, larghezza: a.larghezza || 4.2 })));
+}
