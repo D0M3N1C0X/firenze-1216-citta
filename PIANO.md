@@ -1,6 +1,6 @@
 # La città — piano di lavoro
 
-**Stato:** prototipo v0.1 del 1° ottobre 2026: il capo del Ponte Vecchio, la mattina di Pasqua del 1216.
+**Stato:** prototipo v0.2 del 1° ottobre 2026 (la v0.1, dello stesso giorno, non aveva ancora figure e texture fotografiche): il capo del Ponte Vecchio, la mattina di Pasqua del 1216.
 **Metodo:** lo stesso di *Dopo il 79* e del dossier del gioco. La fonte accanto a ogni affermazione, **[da verificare]** dove manca il controllo sulla fonte, **le fonti divergono** dove le fonti non concordano. In più, una sezione **Lacune** e un **Registro delle verifiche** (in fondo).
 
 ---
@@ -20,6 +20,7 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 | **Abitanti** | animati, in movimento |
 | **Calendario** | tutto a dicembre 2026, insieme al gioco. **Se il tempo non basta, si tagliano prima le fasi extra**: il 1216 esce comunque, perché serve al gioco |
 | **Pubblicazione** | il repo diventa pubblico a dicembre (GitHub Pages); il PDF di Faini e la corrispondenza restano esclusi |
+| **Pubblicazione anticipata** (1° ottobre) | la città esce subito, da sola, nel repository pubblico D0M3N1C0X/firenze-1216-citta con GitHub Pages, prima del parere del medievista; l'avviso «non è validato» resta in apertura. Il resto del progetto resta privato |
 | **Figure** (1° ottobre, dopo il prototipo) | catena di produzione in Blender: corpi MakeHuman (MPFB, CC0), vesti costruite da script, movimenti del CMU Motion Capture Database |
 | **Texture** (1° ottobre) | fotografiche CC0 da Poly Haven, tinte verso i materiali fiorentini |
 
@@ -105,7 +106,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 | 16–22 nov | fase **oggi** | |
 | 23–29 nov | fase **~1300** | |
 | 30 nov–6 dic | fasi **~1480** e **Florentia** | prime candidate al taglio |
-| 7–15 dic | app iOS, prestazioni, accessibilità, repo pubblico | **prima serve il parere del medievista** |
+| 7–15 dic | app iOS, prestazioni, accessibilità | il repo della città è pubblico dal 1° ottobre, prima del parere del medievista |
 
 ## 8. Rischi
 

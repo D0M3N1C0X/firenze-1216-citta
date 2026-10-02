@@ -28,7 +28,7 @@ import { Controlli } from './controlli.js';
 import { Interfaccia } from './ui/interfaccia.js';
 
 /* =====================================================================
-   FIRENZE 1216 — LA CITTÀ  ·  prototipo v0.1: il capo del Ponte Vecchio
+   FIRENZE 1216 — LA CITTÀ  ·  prototipo v0.2: il capo del Ponte Vecchio
    1 unità = 1 metro. Origine al capo nord del ponte; x est, z sud.
    ===================================================================== */
 

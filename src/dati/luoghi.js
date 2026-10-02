@@ -100,8 +100,8 @@ export const LUOGHI = [
     pos: [15, -178], raggio: 12,
     luogo: { livello: 'dedotto', nota: 'identificata con l\'attuale San Biagio, in piazza di Parte Guelfa [da verificare]' },
     forma: { livello: 'ipotesi', nota: 'edificio ricostruito' },
-    testo: 'Qui, dopo il 10 febbraio, gli amici e i parenti di Oddo Arrighi si riunirono per decidere che cosa fare di Buondelmonte. Le proposte furono bastonarlo, sfregiarlo o ucciderlo. Mosca dei Lamberti chiuse il consiglio con «cosa fatta capo ha». Nel Trecento, nello stesso luogo, ebbe sede la Parte Guelfa.',
-    fonti: ['Pseudo-Brunetto, ed. Schiaffini p. 118; Faini p. 15', 'Sede della Parte Guelfa: Faini p. 17']
+    testo: 'Qui, dopo il 10 febbraio, gli amici e i parenti di Oddo Arrighi si riunirono per decidere che cosa fare di Buondelmonte. Le proposte furono bastonarlo, sfregiarlo o ucciderlo. Mosca dei Lamberti chiuse il consiglio con «cosa fatta cappa à»: una cosa fatta fino in fondo non si può più disfare. All\'Inferno, nei versi di Dante, è Mosca stesso a ricordare di averlo detto: «Capo ha cosa fatta». Nel Trecento, nello stesso luogo, ebbe sede la Parte Guelfa.',
+    fonti: ['Pseudo-Brunetto, ed. Schiaffini p. 118; Faini p. 15', 'Dante, Inferno XXVIII 103–111', 'Sede della Parte Guelfa: Faini p. 17']
   },
   {
     id: 'mannelli',
