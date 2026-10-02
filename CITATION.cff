@@ -12,8 +12,8 @@ type: software
 authors:
   - family-names: Perroni
     given-names: Domenico
-version: 0.2.0
-date-released: "2026-10-01"
+version: 0.3.0
+date-released: "2026-10-02"
 license: MIT
 keywords:
   - Firenze

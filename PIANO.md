@@ -1,6 +1,6 @@
 # La città — piano di lavoro
 
-**Stato:** prototipo v0.2 del 1° ottobre 2026 (la v0.1, dello stesso giorno, non aveva ancora figure e texture fotografiche): il capo del Ponte Vecchio, la mattina di Pasqua del 1216. Dal 2 ottobre: due giornate (10 febbraio e Pasqua), le scene del copione con il racconto guidato, la città estesa fino alle case delle famiglie e a Santa Reparata.
+**Stato:** prototipo v0.3 del 2 ottobre 2026: due giornate (10 febbraio e Pasqua), le scene del copione con il racconto guidato, la città estesa fino alle case delle famiglie e a Santa Reparata. La v0.2 (1° ottobre) aveva il solo capo del Ponte Vecchio la mattina di Pasqua, con figure e texture fotografiche; la v0.1, dello stesso giorno, non le aveva ancora.
 **Metodo:** lo stesso di *Dopo il 79* e del dossier del gioco. La fonte accanto a ogni affermazione, **[da verificare]** dove manca il controllo sulla fonte, **le fonti divergono** dove le fonti non concordano. In più, una sezione **Lacune** e un **Registro delle verifiche** (in fondo).
 
 ---
@@ -109,7 +109,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 
 | Settimana | Città | Note |
 |---|---|---|
-| 1–4 ott | ✅ prototipo v0.1 | giudizio di Domenico sulle figure umane |
+| 1–4 ott | ✅ prototipo v0.1 e v0.2; ✅ v0.3 il 2 ottobre | giudizio di Domenico sulle figure umane |
 | 5–11 ott | ✅ figure (anticipato al 1° ott.); vesti migliori; caricamento sotto gli 8 s | |
 | 12–25 ott | il 1216 su tutta la cerchia: mura e porte, strade, Mercato Vecchio, case delle famiglie del gioco | ◐ anticipato il 2 ottobre: case delle famiglie, Mercato Vecchio e Santa Reparata come ipotesi, muro solo nel fondale. Per il resto servono il catasto pre-Risanamento e un estratto OSM più grande |
 | 26 ott–1 nov | monumenti del 1216 e primi **interni** (casa Amidei, Santa Maria sopra Porta, Santa Reparata) | |
