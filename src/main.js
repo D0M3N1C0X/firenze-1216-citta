@@ -32,7 +32,7 @@ import { Interfaccia } from './ui/interfaccia.js';
 import { Racconto } from './ui/racconto.js';
 
 /* =====================================================================
-   FIRENZE 1216 — LA CITTÀ  ·  prototipo v0.2: il capo del Ponte Vecchio
+   FIRENZE 1216 — LA CITTÀ  ·  prototipo v0.3: dal capo del Ponte Vecchio a Santa Reparata
    1 unità = 1 metro. Origine al capo nord del ponte; x est, z sud.
    ===================================================================== */
 
