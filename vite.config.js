@@ -24,8 +24,8 @@ const cattura = {
   }
 };
 
-// La città è servita da una sottocartella del sito del progetto
-// (…/firenze-1216/citta/): i percorsi devono essere relativi.
+// Percorsi relativi: il sito è servito da una sottocartella
+// (…/firenze-1216-citta/ su GitHub Pages).
 export default defineConfig({
   base: './',
   plugins: [cattura],
