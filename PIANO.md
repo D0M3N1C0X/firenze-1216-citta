@@ -86,7 +86,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 ## 6. Come è fatto
 
 - **Vite e three.js 0.169**, le stesse versioni di *Dopo il 79*. Sono anche le uniche dipendenze.
-- **Tutto è generato nel codice**: texture (in parallelo nei worker), case, persone e suoni. Non si scarica niente durante l'uso e non ci sono licenze di terzi sui contenuti, a parte i dati OpenStreetMap.
+- **Che cosa è generato e che cosa no.** Case, suoni, erba e marmo sono generati nel codice (le texture in parallelo nei worker). Dal 1° ottobre le texture dei materiali da costruzione sono fotografiche (Poly Haven, CC0) e le persone vengono da Blender (MakeHuman, CC0, con i movimenti del CMU Motion Capture Database): si scaricano all'apertura, circa 90 MB in tutto, e dopo non si scarica più niente. Le licenze di terzi sono elencate nel README e nella schermata d'avvio.
 - **Coordinate:** 1 unità = 1 metro, con origine al capo nord del Ponte Vecchio (x verso est, z verso sud).
 - **Il cantiere** (`src/mondo/cantiere.js`) fonde migliaia di pezzi in pochi oggetti, divisi per materiale, livello di certezza e riquadro di 80 m. Per questo l'interruttore «Certezza» costa un cambio di materiale.
 - **La griglia** (`src/mondo/griglia.js`) è una mappa del suolo a celle di 50 cm: strade, fiume, ponte, edifici. Decide dove si costruisce, dove si cammina e dove camminano gli abitanti.
