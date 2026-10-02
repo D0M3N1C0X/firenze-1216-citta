@@ -7,6 +7,8 @@
    - il fiume, più forte vicino all'acqua;
    - il brusio della gente, che cresce quando ci sono persone intorno;
    - le rondini, tornate da poco: a metà aprile è plausibile.
+   Il 10 febbraio (dati/giornate.js) niente festa e niente rondini: solo
+   qualche rintocco lento, come per le ore canoniche.
    I suoni sono un'ipotesi d'atmosfera, non una ricostruzione.
    ===================================================================== */
 
@@ -20,7 +22,13 @@ const CAMPANILI = [
 const FIUME = [[-20, 15], [-140, -55], [110, 50]];
 
 export class Suoni {
-  constructor() { this.ctx = null; this.attivo = false; this.muto = false; }
+  constructor() { this.ctx = null; this.attivo = false; this.muto = false; this.g = { campane: 'festa', rondini: true }; }
+
+  /** Campane e rondini della giornata (giornate.js). */
+  giornata(g) {
+    this.g = g;
+    if (this.ctx) { this.prossimaCampana = this.ctx.currentTime + 2; this.prossimaRondine = this.ctx.currentTime + 4; }
+  }
 
   avvia() {
     if (this.ctx) return;
@@ -113,6 +121,15 @@ export class Suoni {
     return t;
   }
 
+  /** Rintocchi lenti di una campana sola, come per segnare un'ora. */
+  rintocchi(campanile, t0) {
+    if (!campanile.pann) { campanile.pann = this.pannello(campanile.x, 30, campanile.z, 35, 1.1); campanile.pann.connect(this.master); campanile.pann.connect(this.ingressoRiverbero); }
+    let t = t0;
+    const colpi = 3 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < colpi; i++) { this.colpo(t, campanile.nota, campanile.pann, 0.9); t += 2.4 + Math.random() * 0.4; }
+    return t;
+  }
+
   rondine(t, x, y, z) {
     const c = this.ctx, p = this.pannello(x, y, z, 12, 1.3);
     p.connect(this.master);
@@ -138,10 +155,15 @@ export class Suoni {
     const t = c.currentTime;
     if (t > this.prossimaCampana) {
       const camp = CAMPANILI[Math.floor(Math.random() * CAMPANILI.length)];
-      const fine = this.suonata(camp, t + 0.1);
-      this.prossimaCampana = Math.min(fine, t + 9) + 4 + Math.random() * 10;
+      if (this.g.campane === 'festa') {
+        const fine = this.suonata(camp, t + 0.1);
+        this.prossimaCampana = Math.min(fine, t + 9) + 4 + Math.random() * 10;
+      } else {
+        const fine = this.rintocchi(camp, t + 0.1);
+        this.prossimaCampana = fine + 35 + Math.random() * 50;
+      }
     }
-    if (t > this.prossimaRondine) {
+    if (this.g.rondini && t > this.prossimaRondine) {
       this.rondine(t + 0.05, p.x + (Math.random() - 0.5) * 60, p.y + 12 + Math.random() * 20, p.z + (Math.random() - 0.5) * 60);
       this.prossimaRondine = t + 1.5 + Math.random() * 6;
     }

@@ -22,8 +22,9 @@ import { rng, smooth } from './rumore.js';
    Riferimento da controllare: M. G. Muzzarelli, Guardaroba medievale,
    Bologna, Il Mulino, 1999 [da verificare: capitoli sul Duecento].
 
-   Il numero di persone in strada è un'ipotesi: è Pasqua, la gente va e
-   viene dalle chiese.
+   Il numero di persone in strada è un'ipotesi, e cambia con la giornata
+   (dati/giornate.js): a Pasqua la gente va e viene dalle chiese, il
+   10 febbraio lavora, compra e vende.
    ===================================================================== */
 
 // posizioni di riposo per una persona alta 1,70 m; S = lato sinistro (+x)
@@ -352,6 +353,12 @@ export class Abitanti {
   }
 
   visibili(on) { for (const f of this.figure) f.mesh.visible = on; this.nascosti = !on; }
+
+  /** Toglie tutte le figure dalla scena, per esempio quando cambia la giornata. */
+  distruggi() {
+    for (const f of this.figure) { this.scene.remove(f.mesh); f.mixer?.stopAllAction(); }
+    this.figure = [];
+  }
 
   aggiorna(dt, cam) {
     if (this.nascosti) return;

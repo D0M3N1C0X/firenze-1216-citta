@@ -10,7 +10,7 @@
 export const LIBERO = 0, STRADA = 1, PIAZZA = 2, FIUME = 3, EDIFICIO = 4, MONUMENTO = 5, PONTE = 6, ORTO = 7;
 
 export class Griglia {
-  constructor(min = -560, max = 560, cella = 0.5) {
+  constructor(min = -640, max = 640, cella = 0.5) {   // fino a Santa Reparata (circa 600 m)
     this.min = min; this.max = max; this.cella = cella;
     this.n = Math.ceil((max - min) / cella);
     this.c = new Uint8Array(this.n * this.n);

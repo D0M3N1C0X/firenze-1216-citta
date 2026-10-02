@@ -39,7 +39,7 @@ const KX = 111320 * Math.cos(LAT0 * Math.PI / 180);
 const KZ = 110574;
 const xz = p => [ +((p.lon - LON0) * KX).toFixed(1), +(-(p.lat - LAT0) * KZ).toFixed(1) ];
 
-const RAGGIO = 420;               // metri dal capo del ponte
+const RAGGIO = 560;               // metri dal capo del ponte (420 fino al 1° ottobre)
 const dentro = ([x, z]) => Math.hypot(x, z) < RAGGIO;
 
 const d = JSON.parse(readFileSync(GREZZO, 'utf8'));

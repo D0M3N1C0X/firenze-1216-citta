@@ -12,13 +12,15 @@ const badge = l => `<span class="badge" style="background:${LIVELLI[l].colore}">
 
 export class Interfaccia {
   constructor(az) {
-    this.az = az;           // azioni: { certezza(on), volo(on), ora(h), vai(luogo), qualita() }
+    this.az = az;           // azioni: { certezza(on), volo(on), ora(h), vai(luogo), qualita(), giorno() }
     this.vicino = null;
     $('#entra').addEventListener('click', () => az.entra());
     $('#b-certezza').addEventListener('click', () => this.certezza());
     $('#b-volo').addEventListener('click', () => this.volo());
     $('#b-luoghi').addEventListener('click', () => this.elenco());
     $('#b-qualita').addEventListener('click', () => { $('#b-qualita').textContent = 'Qualità: ' + az.qualita(); });
+    $('#b-giorno').addEventListener('click', () => az.giorno());
+    $('#b-racconto').addEventListener('click', () => az.racconto());
     $('#cursore-ora').addEventListener('input', e => az.ora(+e.target.value));
     for (const b of document.querySelectorAll('.chiudi')) b.addEventListener('click', () => { b.parentElement.hidden = true; });
     addEventListener('keydown', e => {
@@ -26,6 +28,7 @@ export class Interfaccia {
       if (e.code === 'KeyC' && !az.inVolo()) this.certezza();
       if (e.code === 'KeyF') this.volo();
       if (e.code === 'KeyI') this.vicino ? this.apri(this.vicino) : null;
+      if (e.code === 'KeyR') az.racconto();
       if (e.code === 'Escape') { $('#scheda').hidden = true; $('#elenco').hidden = true; }
     });
     $('#legenda').innerHTML = '<b>Certezza della forma</b>' + Object.values(LIVELLI)
@@ -44,6 +47,11 @@ export class Interfaccia {
   mostra() {
     $('#avvio').hidden = true;
     for (const s of ['#testata', '#barra']) $(s).hidden = false;
+    // i riquadri in basso stanno sempre sopra la barra, anche quando va a capo
+    const barra = $('#barra');
+    const misura = () => document.documentElement.style.setProperty('--sopra-barra', (barra.offsetHeight + 28) + 'px');
+    misura();
+    if (window.ResizeObserver) new ResizeObserver(misura).observe(barra);
   }
 
   certezza() {
@@ -59,7 +67,27 @@ export class Interfaccia {
   }
   elenco() { $('#scheda').hidden = true; $('#elenco').hidden = !$('#elenco').hidden; }
 
+  /** Lo stato dei pulsanti quando a cambiarlo è il racconto, non un clic. */
+  statoVolo(on) { $('#b-volo').setAttribute('aria-pressed', on); }
+  statoRacconto(on) { $('#b-racconto').setAttribute('aria-pressed', on); }
+
+  /** Sulla schermata d'avvio: la scena da cui arriva chi viene dal gioco. */
+  scenaIniziale(testo) { const p = $('#avvio-scena'); p.textContent = testo; p.hidden = !testo; }
+
   ora(testo, canonica) { $('#ora').textContent = `${testo} · ${canonica}`; }
+
+  /** La giornata mostrata: testata, avvio, pulsante e limiti del cursore dell'ora (dall'alba). */
+  giornata(g, alba, ora) {
+    $('#quando').textContent = g.titolo;
+    $('#quando').title = g.nota;
+    $('#avvio .data').textContent = `${g.titolo} · ${g.nota}`;
+    const b = $('#b-giorno');
+    b.textContent = 'Giorno: ' + g.nome;
+    b.title = 'Passa a ' + (g.id === 'pasqua' ? '10 febbraio' : 'Pasqua');
+    const r = $('#cursore-ora');
+    r.min = (Math.floor((alba - 0.4) * 20) / 20).toFixed(2);
+    r.value = ora;
+  }
 
   /** Aggiorna il riquadro del luogo più vicino. */
   luogoVicino(l) {

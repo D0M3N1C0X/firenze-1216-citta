@@ -14,6 +14,9 @@
 
    L'ora è l'ora solare vera del luogo, cioè quella delle meridiane: è
    anche l'unica che avesse senso nel 1216. Mezzogiorno = sole a sud.
+
+   Le altre giornate del racconto (dati/giornate.js) passano il loro
+   giorno dell'anno gregoriano (doy); senza, vale Pasqua.
    ===================================================================== */
 
 export const FIRENZE = { lat: 43.7696, lon: 11.2558 };
@@ -36,8 +39,8 @@ export function posizioneSole(ora, doy = PASQUA_1216.doy, lat = FIRENZE.lat) {
 }
 
 /** Direzione verso il sole nelle coordinate del modello (x est, y su, z sud). */
-export function direzioneSole(ora, out) {
-  const { el, az } = posizioneSole(ora);
+export function direzioneSole(ora, out, doy = PASQUA_1216.doy) {
+  const { el, az } = posizioneSole(ora, doy);
   out.set(Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el));
   return out;
 }
@@ -54,8 +57,8 @@ export function alba(doy = PASQUA_1216.doy) {
  * in modo approssimato sulle ore solari: Prima al sorgere, Terza a metà
  * mattina, Sesta a mezzogiorno. Sono convenzioni monastiche, non orari.
  */
-export function oraCanonica(ora) {
-  const a = alba();
+export function oraCanonica(ora, doy = PASQUA_1216.doy) {
+  const a = alba(doy);
   const terza = (a + 12) / 2;
   if (ora < a - 0.9) return 'Mattutino';
   if (ora < a) return 'Lodi, all\'alba';

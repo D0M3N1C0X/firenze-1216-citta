@@ -147,5 +147,109 @@ export const LUOGHI = [
     forma: { livello: 'dedotto', nota: 'volume e rivestimento in marmo bianco e verde; la lanterna è del 1150 [da verificare]' },
     testo: 'Da qui si vede soltanto sopra i tetti. È il cuore religioso e civico della città: i fiorentini vi sono battezzati tutti.',
     fonti: ['[da verificare] su una guida scientifica']
+  },
+  /* --- dal 2 ottobre 2026: le case delle famiglie, il mercato, la cattedrale --- */
+  {
+    id: 'case-donati',
+    nome: 'Le case dei Donati',
+    pos: [276, -338], raggio: 18,
+    luogo: { livello: 'dedotto', nota: 'la torre che oggi porta il nome dei Donati, presso piazza dei Donati e il Corso [da verificare: se qui abitavano Forese e Gualdrada nel 1216]' },
+    forma: { livello: 'ipotesi', nota: 'l\'impronta della torre è reale; alzato e case intorno sono ricostruiti' },
+    testo: 'Madonna Gualdrada, moglie di messer Forese Donati, chiamò in segreto Buondelmonte e gli mostrò la propria figlia: «Cavaliere vituperato, hai preso moglie per paura degli Uberti e dei Fifanti». Dove avvenne la chiamata le fonti non lo dicono. Il 10 febbraio Buondelmonte giurò la figlia dei Donati invece della promessa degli Amidei. Le fonti divergono sul nome della donna: Gualdrada moglie di Forese nello pseudo-Brunetto, Aldruda moglie di Forteguerra in Compagni.',
+    fonti: [
+      'Pseudo-Brunetto, ed. Schiaffini p. 118; Faini p. 14',
+      'D. Compagni, Cronica I, 2; Faini p. 12',
+      'Impronta della torre: © OpenStreetMap contributors (ODbL)'
+    ]
+  },
+  {
+    id: 'case-buondelmonti',
+    nome: 'Le case dei Buondelmonti',
+    pos: [-318, 276], raggio: 30,
+    luogo: { livello: 'dedotto', nota: 'nel popolo di San Felice in Piazza, in Oltrarno (Stefani; Faini p. 23); il punto preciso non lo conosciamo' },
+    forma: { livello: 'ipotesi', nota: 'case generate; la strada verso San Felice è tracciata a mano' },
+    testo: 'Buondelmonte del fu Tegliaio aveva casa in Oltrarno, nel popolo di San Felice in Piazza; la famiglia teneva ancora il castello di Montebuoni, fuori città. Nel 1216 non era un ragazzo: era vedovo di una certa Ghisola. La mattina di Pasqua veniva da qui e passò il ponte. Al di qua dell\'Arno c\'è anche una torre che oggi porta il nome dei Buondelmonti [da verificare: datazione e rapporto con il ramo di Buondelmonte].',
+    fonti: [
+      'M. di Coppo Stefani, Cronaca fiorentina, rubr. 64; Faini p. 23',
+      'G. Villani, Nuova Cronica VI, 38; Faini p. 11',
+      'Documenti d\'archivio del 1212–1214 citati da Faini pp. 21, 23'
+    ]
+  },
+  {
+    id: 'case-uberti',
+    nome: 'Le case degli Uberti',
+    pos: [165, -150], raggio: 35,
+    luogo: { livello: 'dedotto', nota: 'dove alla fine del Duecento si apriranno la piazza e il palazzo dei Priori, sulle case abbattute degli Uberti [da verificare: Villani, date]' },
+    forma: { livello: 'ipotesi', nota: 'case e torri generate' },
+    testo: 'Gli Uberti sono una delle grandi casate aristocratiche della città, parenti e alleati di Oddo Arrighi. Messer Schiatta degli Uberti è quello che, la mattina di Pasqua, abbatte Buondelmonte da cavallo con una mazza. Dopo il 1258 il Comune farà abbattere le loro case, e al loro posto nascerà a poco a poco la piazza della Signoria [da verificare: date]. Nel 1216 qui non c\'è nessuna piazza.',
+    fonti: [
+      'Pseudo-Brunetto: Schiatta degli Uberti e la mazza; Faini p. 15',
+      'Le case abbattute e la piazza dei Priori: G. Villani [da verificare: libro e capitolo]'
+    ]
+  },
+  {
+    id: 'case-lamberti',
+    nome: 'Le case dei Lamberti',
+    pos: [60, -264], raggio: 22,
+    luogo: { livello: 'dedotto', nota: 'due strade portano ancora il nome della famiglia: via dei Lamberti, presso Orsanmichele, e via Lambertesca [da verificare: dove erano le case nel 1216]' },
+    forma: { livello: 'ipotesi', nota: 'case generate' },
+    testo: 'Mosca dei Lamberti era l\'uomo più autorevole del gruppo: nel consiglio di Santa Maria sopra Porta fu lui a chiudere la discussione con «cosa fatta cappa à». Negli anni seguenti fu podestà di Viterbo, di Todi e di Reggio, dove morì nel 1243. Dante lo mette all\'Inferno tra i seminatori di discordia.',
+    fonti: [
+      'La carriera di Mosca: Faini p. 21',
+      'Pseudo-Brunetto, ed. Schiaffini p. 118; Faini pp. 15–16',
+      'Dante, Inferno XXVIII 103–111',
+      'Toponimi: © OpenStreetMap contributors (ODbL)'
+    ]
+  },
+  {
+    id: 'torre-fifanti',
+    nome: 'La torre dei Fifanti',
+    pos: [-42, 170], raggio: 12,
+    luogo: { livello: 'dedotto', nota: 'la torre che oggi porta il nome dei Fifanti, in Oltrarno [da verificare: datazione e rapporto con Oddo Arrighi]' },
+    forma: { livello: 'ipotesi', nota: 'impronta reale; altezza e coronamento ipotetici' },
+    testo: 'Messer Oddo Arrighi dei Fifanti è la parte offesa. Ferito da Buondelmonte al convito di Campi, riunisce i suoi per decidere la pace con il matrimonio e, dopo la promessa rotta, la vendetta. La mattina di Pasqua è lui a dare il colpo finale. Morirà nei primi anni Quaranta del Duecento, ucciso dai Buondelmonti in uno scontro a Campi.',
+    fonti: [
+      'Faini pp. 14–16, 19–20',
+      'Impronta della torre: © OpenStreetMap contributors (ODbL)'
+    ]
+  },
+  {
+    id: 'mercato-vecchio',
+    nome: 'Il Mercato Vecchio',
+    pos: [63, -365], raggio: 32,
+    luogo: { livello: 'dedotto', nota: 'il mercato sul luogo del foro romano, dove oggi è piazza della Repubblica [da verificare: prima attestazione del nome]' },
+    forma: { livello: 'ipotesi', nota: 'forma, misure e banchi ricostruiti: il quartiere fu demolito nel 1885–1895' },
+    testo: 'Il cuore commerciale della città, nel punto dove si incrociavano le strade della Firenze romana. Nei giorni feriali i banchi si riempiono di merce; a Pasqua la piazza è vuota. Alla fine dell\'Ottocento il quartiere fu demolito per aprire l\'attuale piazza della Repubblica: per ricostruirlo servono il catasto e le fotografie di prima dello sventramento.',
+    fonti: [
+      'Sventramento del Mercato Vecchio, 1885–1895 [da verificare: date]',
+      'Catasto generale toscano, progetto CASTORE della Regione Toscana [da verificare: licenza]',
+      'F. Sznura, L\'espansione urbana di Firenze nel Dugento, 1975 [da verificare]'
+    ]
+  },
+  {
+    id: 'cerchia',
+    nome: 'La cerchia del 1172–1175',
+    pos: [-334, 286], raggio: 14,
+    luogo: { livello: 'dedotto', nota: 'la cerchia è certa, il tracciato no: nel modello è disegnato a mano (dati/cerchia.js)' },
+    forma: { livello: 'ipotesi', nota: 'porta, muro, altezze e merli sono ricostruiti' },
+    testo: 'Tra il 1172 e il 1175 il Comune costruì una cerchia molto più ampia di quella del 1078: per la prima volta comprendeva l\'Oltrarno, e con lei la città si divise in sei sestieri. Nel 1216 è il muro che chiude Firenze. Il tracciato si legge ancora nella forma delle strade, ma i resti sono rarissimi. Nel modello il muro si vede soltanto da lontano: dove la città si percorre a piedi non è disegnato, per non costruirci sopra un\'ipotesi. C\'è solo questa porta, sulla strada per San Felice e per Roma.',
+    fonti: [
+      'Date e sestieri: sintesi consultate in rete il 2 ottobre 2026 [da verificare: Sznura 1975; Fanelli 1973; Davidsohn]',
+      'Date di inizio: 1172 o 1173, le fonti divergono [da verificare]',
+      'Sei porte e quattro postierle [da verificare]',
+      'Porta di San Pier Gattolino: attestata per la cerchia duecentesca d\'Oltrarno [da verificare: se esisteva nel 1216 e dove stava]'
+    ]
+  },
+  {
+    id: 'santa-reparata',
+    nome: 'Santa Reparata',
+    pos: [150, -560], raggio: 22,
+    luogo: { livello: 'documentato', nota: 'la cattedrale di Firenze nel 1216; i resti sono sotto il Duomo, nell\'area archeologica' },
+    forma: { livello: 'ipotesi', nota: 'basilica a tre navate con misure e facciata ricostruite [da verificare: rilievi degli scavi]' },
+    testo: 'La mattina di Pasqua il notaio del gioco può essere qui, alla messa, quando arriva la notizia dal ponte. Il giorno dopo, l\'11 aprile, l\'obituario della cattedrale registra soltanto: «Obiit Dominus Bondelmonte», è morto messer Buondelmonte. Né come, né per mano di chi. Il Duomo che vediamo oggi sarà cominciato sopra questa chiesa alla fine del Duecento [da verificare: 1296].',
+    fonti: [
+      'Obituario di Santa Reparata: R. Davidsohn, Forschungen IV, p. 53; Faini n. 38',
+      'Area archeologica di Santa Reparata: Opera di Santa Maria del Fiore'
+    ]
   }
 ];

@@ -6,17 +6,19 @@ import { rng } from './rumore.js';
 /* =====================================================================
    IL FONDALE
 
-   Oltre i 400 metri dal ponte la città non si percorre ancora: si vede
+   Oltre l'area costruita casa per casa (circa 480 metri dal ponte, più il
+   corridoio verso Santa Reparata) la città non si percorre ancora: si vede
    soltanto, sopra i tetti e in fondo alle strade. Qui la generazione è
    del tutto schematica: blocchi di case e torri dentro un perimetro che
-   approssima la cerchia del 1172–1175.
+   approssima la cerchia del 1172–1175, e il muro della cerchia lungo lo
+   stesso perimetro, solo dove la città non è costruita casa per casa.
 
-   IL PERIMETRO È UN'IPOTESI GROSSOLANA, disegnato a mano per il fondale:
-   il tracciato della cerchia va ricostruito sulle fonti (PIANO.md).
+   IL PERIMETRO È UN'IPOTESI GROSSOLANA (dati/cerchia.js): il tracciato
+   della cerchia va ricostruito sulle fonti (PIANO.md).
    ===================================================================== */
 
-export const CERCHIA = [[-430, -20], [-440, -380], [-330, -640], [-120, -860], [150, -900], [420, -760], [600, -520],
-  [640, -200], [640, 120], [420, 270], [150, 310], [-150, 330], [-420, 280], [-540, 100]];
+import { TRACCIATO as CERCHIA } from '../dati/cerchia.js';
+export { CERCHIA };
 
 const LIBERI = [[128, -542, 34], [191, -562, 42]];     // Battistero e Santa Reparata
 
@@ -29,14 +31,15 @@ function dentro(x, z, p) {
   return ok;
 }
 
-export function costruisciFondale(cant, raggioInterno = 405) {
+/** costruito(x, z): vero dove la città è già costruita casa per casa (edifici.js, areaCostruita). */
+export function costruisciFondale(cant, costruito = (x, z) => Math.hypot(x, z) < 405) {
   const R = rng(1175);
   const LIV = 'ipotesi';
   const passo = 13;
   let n = 0;
   for (let gx = -560; gx <= 660; gx += passo) for (let gz = -920; gz <= 340; gz += passo) {
     const x = gx + R.tra(-3, 3), z = gz + R.tra(-3, 3);
-    if (Math.hypot(x, z) < raggioInterno || !dentro(x, z, CERCHIA)) continue;
+    if (costruito(x, z) || !dentro(x, z, CERCHIA)) continue;
     if (LIBERI.some(([lx, lz, r]) => Math.hypot(x - lx, z - lz) < r)) continue;
     if (distanzaFiume(x, z) < 4 || R.vero(0.16)) continue;     // le strade e qualche orto
     const y = quota(x, z);
@@ -60,5 +63,27 @@ export function costruisciFondale(cant, raggioInterno = 405) {
     }
     n++;
   }
+  murodelFondale(cant, costruito);
   return n;
+}
+
+/**
+ * Il muro della cerchia lungo il perimetro, a tratti di 8 m, saltando
+ * l'area costruita casa per casa. Altezza, spessore e merli: ipotesi.
+ */
+function murodelFondale(cant, costruito) {
+  const LIV = 'ipotesi', H = 10, SP = 2.2, PASSO = 8;
+  const tinta = [0.9, 0.88, 0.83];
+  for (let i = 0; i < CERCHIA.length; i++) {
+    const [ax, az] = CERCHIA[i], [bx, bz] = CERCHIA[(i + 1) % CERCHIA.length];
+    const L = Math.hypot(bx - ax, bz - az), ang = Math.atan2(-(bz - az), bx - ax);
+    for (let s = 0; s < L; s += PASSO) {
+      const l = Math.min(PASSO, L - s), x = ax + (bx - ax) * (s + l / 2) / L, z = az + (bz - az) * (s + l / 2) / L;
+      if (costruito(x, z) || distanzaFiume(x, z) < 3) continue;
+      const M = new Matrix4().makeRotationY(ang).setPosition(x, quota(x, z), z);
+      cant.aggiungi(scatola(-l / 2 - 0.05, -1.5, -SP / 2, l / 2 + 0.05, H, SP / 2), 'pietrame', LIV, M, tinta, false);
+      for (let m = -l / 2 + 0.3; m < l / 2 - 0.5; m += 1.6)
+        cant.aggiungi(scatola(m, H, -SP / 2, m + 0.9, H + 1.1, -SP / 2 + 0.6), 'conci', LIV, M, tinta, false);
+    }
+  }
 }
