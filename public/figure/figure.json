@@ -1,282 +1,1012 @@
 [
  {
   "n": 0,
+  "ruolo": "artigiano",
   "sesso": "m",
-  "eta": 0.686,
+  "eta": 0.659,
   "ceto": "popolo",
   "seme": 1216,
   "capo": "cappuccio",
   "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.9,
+   0.76,
+   0.66
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
   "orlo": 0.48,
   "altezza": 1.613,
-  "anche": 0.8533,
+  "anche": 0.8521,
   "file": "figura-00.glb",
-  "vertici": 2406
+  "vertici": 3078
  },
  {
   "n": 1,
+  "ruolo": "artigiano",
   "sesso": "m",
-  "eta": 0.771,
+  "eta": 0.732,
   "ceto": "popolo",
   "seme": 1247,
-  "capo": "cappuccio",
+  "capo": "cuffia",
   "mantello": false,
-  "orlo": 0.48,
-  "altezza": 1.688,
-  "anche": 0.9052,
+  "accessori": [
+   "grembiule"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.86,
+   0.7,
+   0.58
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.45,
+  "altezza": 1.686,
+  "anche": 0.9026,
   "file": "figura-01.glb",
-  "vertici": 2406
+  "vertici": 3118
  },
  {
   "n": 2,
+  "ruolo": "artigiano",
   "sesso": "m",
-  "eta": 0.521,
-  "ceto": "nobile",
+  "eta": 0.518,
+  "ceto": "popolo",
   "seme": 1278,
   "capo": "cappuccio",
-  "mantello": true,
-  "orlo": 0.09,
-  "altezza": 1.694,
-  "anche": 0.8994,
+  "mantello": false,
+  "accessori": [
+   "grembiule"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.51,
+  "altezza": 1.689,
+  "anche": 0.8992,
   "file": "figura-02.glb",
-  "vertici": 2567
+  "vertici": 3231
  },
  {
   "n": 3,
+  "ruolo": "artigiano",
   "sesso": "m",
-  "eta": 0.675,
-  "ceto": "mercante",
+  "eta": 0.65,
+  "ceto": "popolo",
   "seme": 1309,
   "capo": "nudo",
   "mantello": false,
-  "orlo": 0.27,
-  "altezza": 1.698,
-  "anche": 0.9064,
+  "accessori": [],
+  "capelli": "bob01",
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.45,
+  "altezza": 1.699,
+  "anche": 0.9061,
   "file": "figura-03.glb",
-  "vertici": 3902
+  "vertici": 8022
  },
  {
   "n": 4,
+  "ruolo": "popolano",
   "sesso": "m",
-  "eta": 0.623,
-  "ceto": "mercante",
+  "eta": 0.627,
+  "ceto": "popolo",
   "seme": 1340,
-  "capo": "nudo",
-  "mantello": true,
-  "orlo": 0.23,
-  "altezza": 1.63,
-  "anche": 0.8586,
+  "capo": "cappuccio",
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.44,
+  "altezza": 1.635,
+  "anche": 0.8587,
   "file": "figura-04.glb",
-  "vertici": 5292
+  "vertici": 3078
  },
  {
   "n": 5,
+  "ruolo": "popolano",
   "sesso": "m",
-  "eta": 0.734,
+  "eta": 0.741,
   "ceto": "popolo",
   "seme": 1371,
   "capo": "cappuccio",
   "mantello": false,
-  "orlo": 0.43,
-  "altezza": 1.681,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.41,
+  "altezza": 1.68,
   "anche": 0.8966,
   "file": "figura-05.glb",
-  "vertici": 2406
+  "vertici": 3078
  },
  {
   "n": 6,
+  "ruolo": "popolano",
   "sesso": "m",
-  "eta": 0.716,
+  "eta": 0.722,
   "ceto": "popolo",
   "seme": 1402,
-  "capo": "cappuccio",
-  "mantello": false,
-  "orlo": 0.52,
+  "capo": "nudo",
+  "mantello": true,
+  "accessori": [],
+  "capelli": "short02",
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.45,
   "altezza": 1.733,
   "anche": 0.9319,
   "file": "figura-06.glb",
-  "vertici": 2406
+  "vertici": 4819
  },
  {
   "n": 7,
+  "ruolo": "popolano",
   "sesso": "m",
-  "eta": 0.755,
-  "ceto": "nobile",
+  "eta": 0.762,
+  "ceto": "popolo",
   "seme": 1433,
   "capo": "cappuccio",
-  "mantello": true,
-  "orlo": 0.1,
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.86,
+   0.7,
+   0.58
+  ],
+  "colore_capelli": [
+   0.28,
+   0.18,
+   0.1
+  ],
+  "orlo": 0.49,
   "altezza": 1.666,
-  "anche": 0.8898,
+  "anche": 0.8899,
   "file": "figura-07.glb",
-  "vertici": 2567
+  "vertici": 3078
  },
  {
   "n": 8,
-  "sesso": "f",
-  "eta": 0.602,
-  "ceto": "nobile",
+  "ruolo": "mercante",
+  "sesso": "m",
+  "eta": 0.636,
+  "ceto": "mercante",
   "seme": 1464,
-  "capo": "nudo",
+  "capo": "cappuccio",
   "mantello": true,
-  "orlo": 0.04,
-  "altezza": 1.608,
-  "anche": 0.838,
+  "accessori": [
+   "scarsella"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.28,
+   0.18,
+   0.1
+  ],
+  "orlo": 0.25,
+  "altezza": 1.733,
+  "anche": 0.9308,
   "file": "figura-08.glb",
-  "vertici": 6759
+  "vertici": 3331
  },
  {
   "n": 9,
-  "sesso": "f",
-  "eta": 0.636,
+  "ruolo": "mercante",
+  "sesso": "m",
+  "eta": 0.665,
   "ceto": "mercante",
   "seme": 1495,
-  "capo": "velo",
+  "capo": "nudo",
   "mantello": false,
-  "orlo": 0.04,
-  "altezza": 1.484,
-  "anche": 0.7571,
+  "accessori": [
+   "scarsella"
+  ],
+  "capelli": "bob01",
+  "pelle": [
+   0.9,
+   0.76,
+   0.66
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.23,
+  "altezza": 1.61,
+  "anche": 0.8503,
   "file": "figura-09.glb",
-  "vertici": 2364
+  "vertici": 8030
  },
  {
   "n": 10,
-  "sesso": "f",
-  "eta": 0.699,
-  "ceto": "popolo",
+  "ruolo": "mercante",
+  "sesso": "m",
+  "eta": 0.718,
+  "ceto": "mercante",
   "seme": 1526,
-  "capo": "velo",
+  "capo": "nudo",
   "mantello": false,
-  "orlo": 0.04,
-  "altezza": 1.546,
-  "anche": 0.8007,
+  "accessori": [
+   "scarsella"
+  ],
+  "capelli": "bob01",
+  "pelle": [
+   0.9,
+   0.76,
+   0.66
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.28,
+  "altezza": 1.67,
+  "anche": 0.8934,
   "file": "figura-10.glb",
-  "vertici": 2364
+  "vertici": 8030
  },
  {
   "n": 11,
-  "sesso": "f",
-  "eta": 0.523,
-  "ceto": "popolo",
+  "ruolo": "mercante",
+  "sesso": "m",
+  "eta": 0.569,
+  "ceto": "mercante",
   "seme": 1557,
-  "capo": "nudo",
-  "mantello": false,
-  "orlo": 0.04,
-  "altezza": 1.476,
-  "anche": 0.7492,
+  "capo": "cappuccio",
+  "mantello": true,
+  "accessori": [
+   "scarsella"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.27,
+  "altezza": 1.608,
+  "anche": 0.8442,
   "file": "figura-11.glb",
-  "vertici": 5823
+  "vertici": 3331
  },
  {
   "n": 12,
-  "sesso": "f",
-  "eta": 0.692,
-  "ceto": "popolo",
+  "ruolo": "cavaliere",
+  "sesso": "m",
+  "eta": 0.65,
+  "ceto": "nobile",
   "seme": 1588,
-  "capo": "velo",
+  "capo": "nudo",
   "mantello": false,
-  "orlo": 0.04,
-  "altezza": 1.51,
-  "anche": 0.7745,
+  "accessori": [
+   "spada"
+  ],
+  "capelli": "short02",
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.08,
+  "altezza": 1.638,
+  "anche": 0.8662,
   "file": "figura-12.glb",
-  "vertici": 2364
+  "vertici": 4582
  },
  {
   "n": 13,
-  "sesso": "f",
-  "eta": 0.516,
-  "ceto": "popolo",
+  "ruolo": "cavaliere",
+  "sesso": "m",
+  "eta": 0.513,
+  "ceto": "nobile",
   "seme": 1619,
-  "capo": "nudo",
+  "capo": "cappuccio",
   "mantello": false,
-  "orlo": 0.04,
-  "altezza": 1.49,
-  "anche": 0.7579,
+  "accessori": [
+   "spada"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.8,
+   0.64,
+   0.52
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.1,
+  "altezza": 1.623,
+  "anche": 0.8523,
   "file": "figura-13.glb",
-  "vertici": 5823
+  "vertici": 3086
  },
  {
   "n": 14,
-  "sesso": "f",
-  "eta": 0.654,
-  "ceto": "popolo",
+  "ruolo": "cavaliere",
+  "sesso": "m",
+  "eta": 0.62,
+  "ceto": "nobile",
   "seme": 1650,
-  "capo": "velo",
-  "mantello": false,
-  "orlo": 0.04,
-  "altezza": 1.644,
-  "anche": 0.8618,
+  "capo": "nudo",
+  "mantello": true,
+  "accessori": [],
+  "capelli": "bob02",
+  "pelle": [
+   0.9,
+   0.76,
+   0.66
+  ],
+  "colore_capelli": [
+   0.28,
+   0.18,
+   0.1
+  ],
+  "orlo": 0.07,
+  "altezza": 1.772,
+  "anche": 0.9544,
   "file": "figura-14.glb",
-  "vertici": 2364
+  "vertici": 4717
  },
  {
   "n": 15,
-  "sesso": "f",
-  "eta": 0.586,
-  "ceto": "mercante",
+  "ruolo": "chierico",
+  "sesso": "m",
+  "eta": 0.631,
+  "ceto": "clero",
   "seme": 1681,
-  "capo": "velo",
-  "mantello": false,
-  "orlo": 0.04,
-  "altezza": 1.607,
-  "anche": 0.8358,
+  "capo": "nudo",
+  "mantello": true,
+  "accessori": [
+   "tonsura"
+  ],
+  "capelli": "short02",
+  "pelle": [
+   0.8,
+   0.64,
+   0.52
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.07,
+  "altezza": 1.736,
+  "anche": 0.9294,
   "file": "figura-15.glb",
-  "vertici": 2364
+  "vertici": 4900
  },
  {
   "n": 16,
-  "sesso": "f",
-  "eta": 0.182,
-  "ceto": "nobile",
+  "ruolo": "chierico",
+  "sesso": "m",
+  "eta": 0.77,
+  "ceto": "clero",
   "seme": 1712,
   "capo": "nudo",
-  "mantello": false,
-  "orlo": 0.06,
-  "altezza": 1.119,
-  "anche": 0.595,
+  "mantello": true,
+  "accessori": [
+   "tonsura"
+  ],
+  "capelli": "short02",
+  "pelle": [
+   0.8,
+   0.64,
+   0.52
+  ],
+  "colore_capelli": [
+   0.12,
+   0.09,
+   0.07
+  ],
+  "orlo": 0.04,
+  "altezza": 1.607,
+  "anche": 0.8523,
   "file": "figura-16.glb",
-  "vertici": 5755
+  "vertici": 4900
  },
  {
   "n": 17,
+  "ruolo": "monaco",
   "sesso": "m",
-  "eta": 0.239,
-  "ceto": "popolo",
+  "eta": 0.748,
+  "ceto": "clero",
   "seme": 1743,
   "capo": "cappuccio",
   "mantello": false,
-  "orlo": 0.48,
-  "altezza": 1.385,
-  "anche": 0.7189,
+  "accessori": [
+   "scapolare",
+   "cordone"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.8,
+   0.64,
+   0.52
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.05,
+  "altezza": 1.717,
+  "anche": 0.916,
   "file": "figura-17.glb",
-  "vertici": 2282
+  "vertici": 3440
  },
  {
   "n": 18,
-  "sesso": "f",
-  "eta": 0.209,
-  "ceto": "popolo",
+  "ruolo": "monaco",
+  "sesso": "m",
+  "eta": 0.65,
+  "ceto": "clero",
   "seme": 1774,
-  "capo": "nudo",
+  "capo": "cappuccio",
   "mantello": false,
-  "orlo": 0.06,
-  "altezza": 1.187,
-  "anche": 0.6352,
+  "accessori": [
+   "scapolare",
+   "cordone"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.8,
+   0.64,
+   0.52
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.05,
+  "altezza": 1.643,
+  "anche": 0.8711,
   "file": "figura-18.glb",
-  "vertici": 5699
+  "vertici": 3440
  },
  {
   "n": 19,
+  "ruolo": "popolana",
   "sesso": "f",
-  "eta": 0.21,
-  "ceto": "mercante",
+  "eta": 0.786,
+  "ceto": "popolo",
   "seme": 1805,
-  "capo": "nudo",
-  "mantello": true,
-  "orlo": 0.06,
-  "altezza": 1.238,
-  "anche": 0.667,
+  "capo": "velo",
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.86,
+   0.7,
+   0.58
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.03,
+  "altezza": 1.556,
+  "anche": 0.809,
   "file": "figura-19.glb",
-  "vertici": 6691
+  "vertici": 3036
+ },
+ {
+  "n": 20,
+  "ruolo": "popolana",
+  "sesso": "f",
+  "eta": 0.574,
+  "ceto": "popolo",
+  "seme": 1836,
+  "capo": "cuffia",
+  "mantello": false,
+  "accessori": [
+   "grembiule"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.8,
+   0.64,
+   0.52
+  ],
+  "colore_capelli": [
+   0.28,
+   0.18,
+   0.1
+  ],
+  "orlo": 0.05,
+  "altezza": 1.592,
+  "anche": 0.8251,
+  "file": "figura-20.glb",
+  "vertici": 3076
+ },
+ {
+  "n": 21,
+  "ruolo": "popolana",
+  "sesso": "f",
+  "eta": 0.707,
+  "ceto": "popolo",
+  "seme": 1867,
+  "capo": "velo",
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.03,
+  "altezza": 1.481,
+  "anche": 0.7562,
+  "file": "figura-21.glb",
+  "vertici": 2980
+ },
+ {
+  "n": 22,
+  "ruolo": "popolana",
+  "sesso": "f",
+  "eta": 0.608,
+  "ceto": "popolo",
+  "seme": 1898,
+  "capo": "velo",
+  "mantello": false,
+  "accessori": [
+   "grembiule"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.12,
+   0.09,
+   0.07
+  ],
+  "orlo": 0.05,
+  "altezza": 1.605,
+  "anche": 0.8346,
+  "file": "figura-22.glb",
+  "vertici": 3133
+ },
+ {
+  "n": 23,
+  "ruolo": "fantesca",
+  "sesso": "f",
+  "eta": 0.635,
+  "ceto": "popolo",
+  "seme": 1929,
+  "capo": "cuffia",
+  "mantello": false,
+  "accessori": [
+   "grembiule"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.9,
+   0.76,
+   0.66
+  ],
+  "colore_capelli": [
+   0.12,
+   0.09,
+   0.07
+  ],
+  "orlo": 0.05,
+  "altezza": 1.574,
+  "anche": 0.8209,
+  "file": "figura-23.glb",
+  "vertici": 3076
+ },
+ {
+  "n": 24,
+  "ruolo": "fantesca",
+  "sesso": "f",
+  "eta": 0.496,
+  "ceto": "popolo",
+  "seme": 1960,
+  "capo": "velo",
+  "mantello": false,
+  "accessori": [
+   "grembiule"
+  ],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.04,
+  "altezza": 1.546,
+  "anche": 0.7977,
+  "file": "figura-24.glb",
+  "vertici": 3189
+ },
+ {
+  "n": 25,
+  "ruolo": "mercantessa",
+  "sesso": "f",
+  "eta": 0.671,
+  "ceto": "mercante",
+  "seme": 1991,
+  "capo": "velo",
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.9,
+   0.76,
+   0.66
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.04,
+  "altezza": 1.657,
+  "anche": 0.871,
+  "file": "figura-25.glb",
+  "vertici": 2980
+ },
+ {
+  "n": 26,
+  "ruolo": "mercantessa",
+  "sesso": "f",
+  "eta": 0.659,
+  "ceto": "mercante",
+  "seme": 2022,
+  "capo": "velo",
+  "mantello": true,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.02,
+  "altezza": 1.606,
+  "anche": 0.8367,
+  "file": "figura-26.glb",
+  "vertici": 3281
+ },
+ {
+  "n": 27,
+  "ruolo": "mercantessa",
+  "sesso": "f",
+  "eta": 0.588,
+  "ceto": "mercante",
+  "seme": 2053,
+  "capo": "velo",
+  "mantello": true,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.03,
+  "altezza": 1.601,
+  "anche": 0.835,
+  "file": "figura-27.glb",
+  "vertici": 3225
+ },
+ {
+  "n": 28,
+  "ruolo": "nobildonna",
+  "sesso": "f",
+  "eta": 0.609,
+  "ceto": "nobile",
+  "seme": 2084,
+  "capo": "velo",
+  "mantello": true,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.86,
+   0.7,
+   0.58
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.02,
+  "altezza": 1.515,
+  "anche": 0.7779,
+  "file": "figura-28.glb",
+  "vertici": 3225
+ },
+ {
+  "n": 29,
+  "ruolo": "nobildonna",
+  "sesso": "f",
+  "eta": 0.588,
+  "ceto": "nobile",
+  "seme": 2115,
+  "capo": "velo",
+  "mantello": true,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.02,
+  "altezza": 1.621,
+  "anche": 0.8453,
+  "file": "figura-29.glb",
+  "vertici": 3225
+ },
+ {
+  "n": 30,
+  "ruolo": "fanciulla",
+  "sesso": "f",
+  "eta": 0.353,
+  "ceto": "mercante",
+  "seme": 2146,
+  "capo": "trecce",
+  "mantello": false,
+  "accessori": [
+   "ghirlanda"
+  ],
+  "capelli": "braid01",
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.12,
+   0.09,
+   0.07
+  ],
+  "orlo": 0.04,
+  "altezza": 1.448,
+  "anche": 0.7658,
+  "file": "figura-30.glb",
+  "vertici": 7438
+ },
+ {
+  "n": 31,
+  "ruolo": "fanciulla",
+  "sesso": "f",
+  "eta": 0.344,
+  "ceto": "mercante",
+  "seme": 2177,
+  "capo": "trecce",
+  "mantello": false,
+  "accessori": [
+   "ghirlanda"
+  ],
+  "capelli": "braid01",
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.28,
+   0.18,
+   0.1
+  ],
+  "orlo": 0.02,
+  "altezza": 1.314,
+  "anche": 0.6829,
+  "file": "figura-31.glb",
+  "vertici": 7494
+ },
+ {
+  "n": 32,
+  "ruolo": "ragazzo",
+  "sesso": "m",
+  "eta": 0.178,
+  "ceto": "popolo",
+  "seme": 2208,
+  "capo": "cappuccio",
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.92,
+   0.8,
+   0.7
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.36,
+  "altezza": 1.341,
+  "anche": 0.7009,
+  "file": "figura-32.glb",
+  "vertici": 2954
+ },
+ {
+  "n": 33,
+  "ruolo": "ragazzo",
+  "sesso": "m",
+  "eta": 0.188,
+  "ceto": "popolo",
+  "seme": 2239,
+  "capo": "cappuccio",
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.08,
+   0.07,
+   0.06
+  ],
+  "orlo": 0.35,
+  "altezza": 1.346,
+  "anche": 0.7022,
+  "file": "figura-33.glb",
+  "vertici": 2954
+ },
+ {
+  "n": 34,
+  "ruolo": "ragazza",
+  "sesso": "f",
+  "eta": 0.19,
+  "ceto": "popolo",
+  "seme": 2270,
+  "capo": "cuffia",
+  "mantello": false,
+  "accessori": [],
+  "capelli": null,
+  "pelle": [
+   0.76,
+   0.6,
+   0.48
+  ],
+  "colore_capelli": [
+   0.18,
+   0.12,
+   0.08
+  ],
+  "orlo": 0.06,
+  "altezza": 1.192,
+  "anche": 0.6493,
+  "file": "figura-34.glb",
+  "vertici": 2799
+ },
+ {
+  "n": 35,
+  "ruolo": "ragazza",
+  "sesso": "f",
+  "eta": 0.235,
+  "ceto": "popolo",
+  "seme": 2301,
+  "capo": "trecce",
+  "mantello": false,
+  "accessori": [],
+  "capelli": "braid01",
+  "pelle": [
+   0.8,
+   0.64,
+   0.52
+  ],
+  "colore_capelli": [
+   0.36,
+   0.26,
+   0.16
+  ],
+  "orlo": 0.07,
+  "altezza": 1.27,
+  "anche": 0.685,
+  "file": "figura-35.glb",
+  "vertici": 7146
  }
 ]

@@ -28,9 +28,11 @@ export async function caricaFigure(avanzamento = () => {}) {
       // capelli e sopracciglia: ritaglio netto invece della trasparenza,
       // che con centinaia di figure darebbe errori di ordinamento
       if (m.transparent) { m.transparent = false; m.depthWrite = true; m.alphaTest = /low-poly/.test(m.name) ? 0 : 0.5; }
-      // la pelle MakeHuman «chiara» sotto il sole di aprile risulta pallida:
-      // la si scalda e la si scurisce un poco (scelta di resa, non un dato)
-      if (m.name === 'pelle') m.color.setRGB(0.9, 0.76, 0.66);
+      // pelle e capelli: la tinta la decide lo script delle figure, una per
+      // variante (la pelle MakeHuman «chiara» da sola risulterebbe pallida)
+      if (m.name === 'pelle') m.color.setRGB(...(info.pelle || [0.9, 0.76, 0.66]));
+      if (/bob|short|braid|ponytail|long|eyebrow/i.test(m.name) && info.colore_capelli)
+        m.color.setRGB(...info.colore_capelli.map(c => Math.min(1, c * 2.4)));
     });
     const k = altezzaAnche(gltf.scene) / anche0;
     const clip = {};
