@@ -27,6 +27,10 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 | **Le altre giornate** (2 ottobre) | il 10 febbraio con la luce e la stagione giuste, giorno feriale e botteghe aperte; Pasqua resta com'è |
 | **Estensione** (2 ottobre) | case delle famiglie, verso Santa Reparata, mura e porte, Mercato Vecchio |
 | **Fonti per le posizioni nuove** (2 ottobre) | fonti aperte e dichiarate: Faini, OpenStreetMap, toponimi. Ogni posizione è dedotta o ipotesi, e le domande vanno al medievista (§ 10) |
+| **Computer** (7 ottobre) | a novembre arriva un MacBook Pro Apple Silicon: fino ad allora si lavora con Blender 4.5 da script, sulla ricerca e sui modelli; le prove di fluidità e i render di qualità aspettano il computer nuovo |
+| **Interni** (7 ottobre) | Santa Maria sopra Porta, casa degli Amidei, Santa Reparata, la sala del convito a Campi |
+| **Figure** (7 ottobre) | vesti con pieghe vere, mestieri e ceti, cavalli, muli e asini, volti e capelli: in quest'ordine si comincia |
+| **Fonti** (7 ottobre) | solo fonti aperte online; ogni lacuna diventa una domanda per il medievista (DOSSIER-TOPOGRAFICO.md) |
 
 ## 2. Che cosa c'è nel prototipo
 
@@ -110,9 +114,9 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 | Settimana | Città | Note |
 |---|---|---|
 | 1–4 ott | ✅ prototipo v0.1 e v0.2; ✅ v0.3 il 2 ottobre | giudizio di Domenico sulle figure umane |
-| 5–11 ott | ✅ figure (anticipato al 1° ott.); vesti migliori; caricamento sotto gli 8 s | |
-| 12–25 ott | il 1216 su tutta la cerchia: mura e porte, strade, Mercato Vecchio, case delle famiglie del gioco | ◐ anticipato il 2 ottobre: case delle famiglie, Mercato Vecchio e Santa Reparata come ipotesi, muro solo nel fondale. Per il resto servono il catasto pre-Risanamento e un estratto OSM più grande |
-| 26 ott–1 nov | monumenti del 1216 e primi **interni** (casa Amidei, Santa Maria sopra Porta, Santa Reparata) | |
+| 5–11 ott | ✅ figure: 36 varianti in 13 ruoli, pieghe simulate, volti variati; ✅ dossier topografico avviato; ponte a cinque arcate | animali: serve il modello del cavallo |
+| 12–25 ott | il 1216 su tutta la cerchia: mura e porte, strade, Mercato Vecchio, case delle famiglie del gioco; **kit edilizio** in Blender | ◐ anticipato il 2 ottobre: case delle famiglie, Mercato Vecchio e Santa Reparata come ipotesi, muro solo nel fondale. Per il resto servono il catasto pre-Risanamento e un estratto OSM più grande |
+| 26 ott–1 nov | **monumenti** modellati in Blender e primi **interni** (Santa Reparata, Santa Maria sopra Porta, casa Amidei, sala di Campi) | |
 | 2–8 nov | mestieri, mercato, suoni per luogo | |
 | 9–15 nov | **collegamento al gioco**: ogni scena del copione diventa un luogo e un punto di vista | ◐ anticipato il 2 ottobre dalla parte della città (`?scena=`, racconto); resta il pulsante nel gioco e la prova con un docente |
 | 16–22 nov | fase **oggi** | |
@@ -122,10 +126,10 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 
 ## 8. Rischi
 
-1. **Le persone realistiche.** Dal 1° ottobre ci sono 20 figure MakeHuman animate con movimenti catturati dal vero (`strumenti/figure/`). Restano da migliorare le vesti (pieghe, tessuto) e la varietà; i volti sono quelli di MakeHuman, non studiati sul Duecento.
+1. **Le persone realistiche.** Dal 7 ottobre ci sono 36 figure MakeHuman in 13 ruoli, con vesti piegate dalla simulazione del tessuto e movimenti catturati dal vero (`strumenti/figure/`). Mancano gli animali, la trama della lana e le barbe; i volti sono variati, ma non studiati sul Duecento.
 2. **Le fonti topografiche.** Del 1216 non esiste nessuna pianta. Tutto ciò che si vede è ricostruito a ritroso, ed è per questo che la scheda dei luoghi e i colori della certezza non sono un accessorio.
 3. **Il caricamento**: oggi circa 18 s, di cui 7 per le texture. I rimedi sono la cache nel browser e la costruzione nei worker. L'estensione del 2 ottobre (2.750 case invece di 2.050, botteghe aperte e banchi come varianti) aggiunge circa 2 s su una macchina lenta: misurati 21,4 s contro 19,6 s, senza scheda grafica.
-4. **Il tempo.** Città e gioco insieme in dieci settimane: la regola dei tagli è già decisa.
+4. **Il tempo.** Il 7 ottobre Domenico ha confermato tutto a dicembre, fasi comprese, con il computer nuovo solo a novembre: la regola dei tagli resta la rete di sicurezza.
 
 ## 9. Domande aperte per Domenico
 
@@ -144,8 +148,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 21. **Le rive**: com'erano nel 1216 i tratti oggi occupati dai lungarni; c'erano mulini o pescaie vicino al ponte?
 22. **Le torri**: quante erano nel 1216, quanto erano alte prima della mozzatura, come finivano in cima (tetto o merli).
 23. **Le case**: in che proporzione erano di pietra e di legno; quanto erano diffusi gli sporti.
-24. **Le vesti**: colori e fogge per ceto nel 1216, a Firenze.
-
+24. **Le vesti**: colori e fogge per ceto nel 1216, a Firenze; il colore dell'abito vallombrosano; chi portava il mantello.
 Emerse il 2 ottobre 2026, estendendo la città e collegandola al gioco:
 
 25. **Il giorno della settimana del 10 febbraio 1216.** Il dossier e il copione dicono giovedì; il calcolo sul calendario giuliano dà mercoledì (registro, n. 6). Che cosa dice esattamente la cronaca, e che cosa ne ricava Faini (p. 16)?
@@ -157,6 +160,8 @@ Emerse il 2 ottobre 2026, estendendo la città e collegandola al gioco:
 31. **La strada da via de' Guicciardini a San Felice**: tracciato prima di piazza Pitti; e il nome nel 1216 della strada che oggi è via dei Calzaiuoli.
 32. **Il corteo funebre**: per quali strade passò (le fonti dicono solo «per tutta Firenze»).
 
+Emerse il 7 ottobre 2026 dalla ricerca topografica: 33–36, in DOSSIER-TOPOGRAFICO.md, § 10.
+
 ## 11. Registro delle verifiche
 
 1. **01/10/2026 — Data astronomica.** Pasqua 1216 = 10 aprile giuliano (Faini p. 16) = 17 aprile gregoriano prolettico, scarto di 7 giorni nel XIII secolo. Il sole è calcolato su questa data.
@@ -167,3 +172,5 @@ Emerse il 2 ottobre 2026, estendendo la città e collegandola al gioco:
 6. **02/10/2026 — Il 10 febbraio 1216 era un mercoledì.** Calcolo con il numero del giorno giuliano e, in modo indipendente, con il calendario gregoriano prolettico (scarto di 7 giorni nel Duecento); per controllo, il 10 aprile 1216 risulta domenica, cioè Pasqua. Il dossier e il copione dicono giovedì: **[da verificare]** sulla cronaca e su Faini p. 16 (lacuna n. 25). La città scrive solo «10 febbraio».
 7. **02/10/2026 — La citazione di Mosca.** Nella scheda di Santa Maria sopra Porta: «cosa fatta cappa à», come nello pseudo-Brunetto, e non la forma del proverbio.
 8. **02/10/2026 — Nessuna piazza della Signoria nel 1216.** Controllato che l'area della futura piazza sia costruita: l'estratto non la contiene come strada, e lì il modello mette le case degli Uberti.
+9. **07/10/2026 — Ponte.** Da quattro a cinque arcate: il ponte ricostruito dopo il crollo del 1177 ne aveva cinque secondo Wikipedia **[da verificare su fonte scientifica]** (DOSSIER-TOPOGRAFICO.md, § 3).
+10. **07/10/2026 — Porta Santa Maria.** Le fonti divergono sulla posizione (via Vacchereccia o incrocio con Lambertesca e Borgo Santi Apostoli): la scheda lo dice, il modello mostra per ora la prima.

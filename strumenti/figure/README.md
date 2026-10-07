@@ -29,6 +29,18 @@ Il primo fotogramma di ogni BVH della conversione cgspeed è una posa a T. Lo sc
 
 La parte aderente della gonnella (busto e maniche), le calze e le scarpe sono **colori dipinti sul corpo**: così non ci sono compenetrazioni e le figure restano leggere: fra 2.400 e 5.300 vertici, a seconda dei capelli. Sono invece **geometria** la gonna della gonnella o della veste, il mantello, il cappuccio con la mantellina, il velo, la cuffia e la cintura. Le lunghezze cambiano con il ceto: gonnella al ginocchio per chi lavora, a metà polpaccio per i mercanti, lunga per i nobili; veste lunga e capo coperto per le donne sposate. Riferimento da controllare: M. G. Muzzarelli, *Guardaroba medievale*, Bologna 1999 **[da verificare]**.
 
+## I ruoli e le pieghe (7 ottobre)
+
+Le varianti sono 36, in 13 ruoli: artigiani, popolani, mercanti, cavalieri, chierici, monaci, popolane, fantesche, mercantesse, nobildonne, fanciulle, ragazzi e ragazze (`RUOLI` in `figure.py`). Ogni ruolo decide:
+- la lunghezza della veste e i colori;
+- il copricapo (cappuccio, cuffia, velo, trecce);
+- il mantello;
+- gli accessori: grembiule, scarsella, spada, tonsura, scapolare, cordone, ghirlanda.
+
+Il volto di ogni variante riceve pochi modificatori MakeHuman casuali, simmetrici, su naso, mento, zigomi, occhi, bocca, fronte e orecchie. Gli uomini a capo scoperto hanno la zazzera, i capelli lunghi fino al mento.
+
+**Le pieghe sono simulate.** La gonna nasce come un cono più largo del necessario, con pieghe impostate in vita. Blender la lascia cadere per due secondi sul corpo, che fa da ostacolo, e ne salva la forma: il tessuto in eccesso diventa pieghe vere. Lo stesso vale per mantelli, grembiuli e scapolari. Le vesti lunghe seguono le gambe solo in parte, altrimenti camminando si dividerebbero come un paio di brache.
+
 ## Licenze
 
 - **MakeHuman, corpi e asset di sistema:** CC0 (pacchetto `makehuman_system_assets_cc0`). L'estensione MPFB è GPL, ma serve solo a produrre: nel progetto non entra.

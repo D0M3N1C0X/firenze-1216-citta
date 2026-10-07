@@ -69,7 +69,8 @@ function ponte(cant, griglia) {
   let s1 = 0, s2 = P.L;
   for (let s = 0; s < P.L; s += 0.25) if (distanzaFiume(P.A[0] + P.dx * s, P.A[1] + P.dz * s) < 0) { s1 = s; break; }
   for (let s = P.L; s > 0; s -= 0.25) if (distanzaFiume(P.A[0] + P.dx * s, P.A[1] + P.dz * s) < 0) { s2 = s; break; }
-  const n = 4, pila = 3.8;
+  // cinque arcate: il ponte ricostruito dopo il crollo del 1177 (DOSSIER-TOPOGRAFICO.md, § 3)
+  const n = 5, pila = 3.4;
   const luce = (s2 - s1 - (n - 1) * pila) / n;
   const imposta = LIVELLO_ACQUA + 0.6;
 

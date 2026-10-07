@@ -47,10 +47,11 @@ export const LUOGHI = [
     nome: 'Il Ponte Vecchio del 1216',
     pos: [-17, 20], raggio: 30,
     luogo: { livello: 'documentato', nota: 'nel 1216 è l\'unico ponte di Firenze' },
-    forma: { livello: 'ipotesi', nota: 'numero delle arcate, larghezza e assenza di botteghe sono ipotesi' },
-    testo: 'Nel 1216 l\'Arno si passa solo qui. Il ponte alla Carraia si comincia nel 1218, quello di Rubaconte nel 1237, Santa Trinita nel 1252. Il ponte che vedi oggi è un altro: fu ricostruito nel 1345, dopo che la piena del 1333 aveva travolto il precedente. Di quel ponte precedente, il nostro, non abbiamo una descrizione: le arcate e la carreggiata sono ricostruite per analogia.',
+    forma: { livello: 'ipotesi', nota: 'cinque arcate secondo una fonte da verificare; larghezza e assenza di botteghe sono ipotesi' },
+    testo: 'Nel 1216 l\'Arno si passa solo qui. Il ponte alla Carraia si comincia nel 1218, quello di Rubaconte nel 1237, Santa Trinita nel 1252. Questo ponte era stato ricostruito dopo il crollo per la piena del 1177, con cinque arcate [da verificare]. Il ponte che vedi oggi è un altro: fu rifatto nel 1345, dopo che la piena del 1333 aveva travolto anche questo. Di come fosse davvero non abbiamo una descrizione: arcate e carreggiata sono ricostruite per analogia.',
     fonti: [
       'Date dei ponti: G. Villani, Nuova Cronica [da verificare: capitoli]',
+      'Crollo del 1177 e cinque arcate: Wikipedia, «Ponte Vecchio» [da verificare su fonte scientifica]',
       'Ricostruzione del 1345 [da verificare: fonte scientifica]'
     ]
   },
@@ -89,16 +90,16 @@ export const LUOGHI = [
     id: 'porta-santa-maria',
     nome: 'Porta Santa Maria',
     pos: [84, -194], raggio: 12,
-    luogo: { livello: 'ipotesi', nota: 'la porta è nominata dalle cronache, la sua posizione esatta non la conosciamo (dossier, Lacune n. 5)' },
+    luogo: { livello: 'ipotesi', nota: 'le fonti divergono: all\'altezza di via Vacchereccia, oppure all\'incrocio con borgo Santi Apostoli e via Lambertesca (DOSSIER-TOPOGRAFICO.md, § 2)' },
     forma: { livello: 'ipotesi', nota: 'arco e torre sono inventati' },
-    testo: 'Il 10 febbraio 1216 Buondelmonte entra in città da Porta Santa Maria per andare a giurare la donna dei Donati, invece dell\'Amidei. Era una porta della cerchia più antica. Nel 1216 la cerchia nuova (1172–1175) arriva ormai fino al fiume, e la vecchia porta resta dentro la città. Qui è messa dove la strada che porta il suo nome incontra il vecchio tracciato delle mura romane: è una scelta da verificare.',
-    fonti: ['Pseudo-Brunetto, ed. Schiaffini p. 118; Faini pp. 14–16', 'Posizione: da chiedere al medievista (dossier, Lacune n. 5 e 14)']
+    testo: 'Il 10 febbraio 1216 Buondelmonte entra in città da Porta Santa Maria per andare a giurare la donna dei Donati, invece dell\'Amidei. Ma quale porta? Le fonti la collocano in due punti diversi di via Por Santa Maria: all\'altezza di via Vacchereccia, dove correva la cinta più antica, oppure più vicino al ponte, all\'incrocio con borgo Santi Apostoli e via Lambertesca, sulla cerchia del 1172–1175. Forse erano due porte con lo stesso nome. Qui è mostrata la prima: è una delle domande per il medievista.',
+    fonti: ['Pseudo-Brunetto, ed. Schiaffini p. 118; Faini pp. 14–16', 'Posizione: Wikipedia, «Via Por Santa Maria» e «Mura di Firenze», da Bargellini-Guarnieri [da verificare]', 'Domanda per il medievista: DOSSIER-TOPOGRAFICO.md, n. 34']
   },
   {
     id: 'santa-maria-sopra-porta',
     nome: 'Santa Maria sopra Porta',
     pos: [15, -178], raggio: 12,
-    luogo: { livello: 'dedotto', nota: 'identificata con l\'attuale San Biagio, in piazza di Parte Guelfa [da verificare]' },
+    luogo: { livello: 'dedotto', nota: 'oggi San Biagio, in piazza di Parte Guelfa; documentata dal 1038, rifatta nella seconda metà del Duecento [da verificare]' },
     forma: { livello: 'ipotesi', nota: 'edificio ricostruito' },
     testo: 'Qui, dopo il 10 febbraio, gli amici e i parenti di Oddo Arrighi si riunirono per decidere che cosa fare di Buondelmonte. Le proposte furono bastonarlo, sfregiarlo o ucciderlo. Mosca dei Lamberti chiuse il consiglio con «cosa fatta cappa à»: una cosa fatta fino in fondo non si può più disfare. All\'Inferno, nei versi di Dante, è Mosca stesso a ricordare di averlo detto: «Capo ha cosa fatta». Nel Trecento, nello stesso luogo, ebbe sede la Parte Guelfa.',
     fonti: ['Pseudo-Brunetto, ed. Schiaffini p. 118; Faini p. 15', 'Dante, Inferno XXVIII 103–111', 'Sede della Parte Guelfa: Faini p. 17']
