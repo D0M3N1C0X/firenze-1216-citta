@@ -137,7 +137,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 2. ~~Le texture~~: decise il 1° ottobre le fotografiche CC0.
 3. **Il catasto CASTORE.** Prima di usarlo va controllata la licenza. Domenico ha un contatto, o si chiede direttamente alla Regione?
 4. **L’hardware per le prove.** Per giudicare la fluidità serve una macchina di fascia alta, almeno per una prova ogni tanto.
-5. **I testi del copione nella città pubblica.** Il racconto mostra i testi del copione (prologo–atto IV), che è ancora una bozza non rivista. Con il prossimo `scripts/pubblica.sh` diventano pubblici insieme alla città. Si pubblicano subito, o si aspetta il medievista?
+5. ~~I testi del copione nella città pubblica~~: l'8 ottobre Domenico ha deciso di pubblicarli subito, insieme alla città, con l'avviso «non è validato» in apertura.
 6. **Un estratto OpenStreetMap più grande.** Per la cerchia intera serve un estratto oltre i 560 m dal ponte. Da questo ambiente di lavoro l'Overpass API non è raggiungibile: si scarica da un computer con la query di `scripts/osm-estrai.mjs` allargata, o si apre l'accesso alla rete.
 
 ## 10. Lacune (da aggiungere a quelle del dossier)
