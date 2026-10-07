@@ -31,6 +31,7 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 | **Interni** (7 ottobre) | Santa Maria sopra Porta, casa degli Amidei, Santa Reparata, la sala del convito a Campi |
 | **Figure** (7 ottobre) | vesti con pieghe vere, mestieri e ceti, cavalli, muli e asini, volti e capelli: in quest'ordine si comincia |
 | **Fonti** (7 ottobre) | solo fonti aperte online; ogni lacuna diventa una domanda per il medievista (DOSSIER-TOPOGRAFICO.md) |
+| **Kit edilizio** (8 ottobre) | si comincia da aperture (finestre, porte, botteghe, chiusure) e arredo di strada; modelli da Firenze e dalla Toscana coeva, dichiarati «dedotto per analogia»; dettaglio pieno; «pietra in basso, legno in alto» come ipotesi. Fonti, livelli e anacronismi in `strumenti/kit/FONTI.md` |
 
 ## 2. Che cosa c'è nel prototipo
 
@@ -103,6 +104,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 - **Che cosa è generato e che cosa no.** Case, suoni, erba e marmo sono generati nel codice (le texture in parallelo nei worker). Dal 1° ottobre le texture dei materiali da costruzione sono fotografiche (Poly Haven, CC0) e le persone vengono da Blender (MakeHuman, CC0, con i movimenti del CMU Motion Capture Database): si scaricano all'apertura, circa 90 MB in tutto, e dopo non si scarica più niente. Le licenze di terzi sono elencate nel README e nella schermata d'avvio.
 - **Coordinate:** 1 unità = 1 metro, con origine al capo nord del Ponte Vecchio (x verso est, z verso sud).
 - **Il cantiere** (`src/mondo/cantiere.js`) fonde migliaia di pezzi in pochi oggetti, divisi per materiale, livello di certezza e riquadro di 80 m. Per questo l'interruttore «Certezza» costa un cambio di materiale.
+- **Il kit edilizio** (`strumenti/kit/kit.py` in Blender, `src/mondo/kit.js`): finestre, porte, botteghe e pozzi modellati una volta, con i conci uno per uno, e posati migliaia di volte come BatchedMesh, uno per materiale. Ogni pezzo ha una versione semplificata, che si usa oltre i 40 m. Le misure dei fori nei muri sono quelle dei pezzi.
 - **La griglia** (`src/mondo/griglia.js`) è una mappa del suolo a celle di 50 cm: strade, fiume, ponte, edifici. Decide dove si costruisce, dove si cammina e dove camminano gli abitanti.
 - **Il seme è fisso**: la città è uguale a ogni apertura, così il registro delle verifiche può riferirsi a qualcosa. Attenzione: aggiungere o togliere una strada cambia la sequenza e quindi le case.
 - **Le varianti di giornata.** Il cantiere costruisce a parte i pezzi che esistono solo nei giorni di festa (botteghe chiuse) o solo in quelli feriali (botteghe aperte, banchi del mercato), e la giornata li mostra o li nasconde. I banchi non fermano chi cammina: la griglia è la stessa in ogni giornata.
@@ -161,6 +163,7 @@ Emerse il 2 ottobre 2026, estendendo la città e collegandola al gioco:
 32. **Il corteo funebre**: per quali strade passò (le fonti dicono solo «per tutta Firenze»).
 
 Emerse il 7 ottobre 2026 dalla ricerca topografica: 33–36, in DOSSIER-TOPOGRAFICO.md, § 10.
+Emerse l'8 ottobre 2026 dal kit edilizio: 37–41 (l'arco nel 1216, le chiusure delle finestre, i pozzi, gli anelli di ferro, le scale esterne), in `strumenti/kit/FONTI.md`, § 5.
 
 ## 11. Registro delle verifiche
 
@@ -174,3 +177,4 @@ Emerse il 7 ottobre 2026 dalla ricerca topografica: 33–36, in DOSSIER-TOPOGRAF
 8. **02/10/2026 — Nessuna piazza della Signoria nel 1216.** Controllato che l'area della futura piazza sia costruita: l'estratto non la contiene come strada, e lì il modello mette le case degli Uberti.
 9. **07/10/2026 — Ponte.** Da quattro a cinque arcate: il ponte ricostruito dopo il crollo del 1177 ne aveva cinque secondo Wikipedia **[da verificare su fonte scientifica]** (DOSSIER-TOPOGRAFICO.md, § 3).
 10. **07/10/2026 — Porta Santa Maria.** Le fonti divergono sulla posizione (via Vacchereccia o incrocio con Lambertesca e Borgo Santi Apostoli): la scheda lo dice, il modello mostra per ora la prima.
+11–13. **08/10/2026 — Kit edilizio.** Anacronismi dell'arredo di strada (portafiaccole e panche di via esclusi dal 1216, scale esterne escluse ovunque, anelli ammessi come ipotesi), pozzi solo nei cortili, portale a doppio arco esteso dalla torre della Castagna: in `strumenti/kit/FONTI.md`, § 6.

@@ -46,6 +46,31 @@ function materiale(tex, opz = {}) {
 
 export const MAT = {};
 
+/*
+ * I pezzi del kit (kit.js) sono copie dello stesso modello: senza
+ * correzione ogni finestra avrebbe le stesse pietre nella stessa foto.
+ * Qui le coordinate di texture di ogni copia si spostano di qualche metro,
+ * secondo la sua posizione (la stessa regola del cantiere per le case).
+ */
+const SFASA = `#include <batching_vertex>
+#ifdef USE_BATCHING
+  vec2 sfasaB = fract(vec2(dot(batchingMatrix[3].xz, vec2(0.1371, 0.0713)), dot(batchingMatrix[3].xz, vec2(0.0517, 0.1931)))) * 7.0;
+  #ifdef USE_MAP
+  vMapUv += (mapTransform * vec3(sfasaB, 0.0)).xy;
+  #endif
+  #ifdef USE_NORMALMAP
+  vNormalMapUv += (normalMapTransform * vec3(sfasaB, 0.0)).xy;
+  #endif
+  #ifdef USE_ROUGHNESSMAP
+  vRoughnessMapUv += (roughnessMapTransform * vec3(sfasaB, 0.0)).xy;
+  #endif
+#endif`;
+
+function sfasaCopie(m) {
+  m.onBeforeCompile = sh => { sh.vertexShader = sh.vertexShader.replace('#include <batching_vertex>', SFASA); };
+  m.customProgramCacheKey = () => 'sfasa';
+}
+
 /**
  * Una variazione di tono su larga scala (qualche metro), calcolata dalla
  * posizione nel mondo: sporco, dilavamento, pietre di cave diverse. Rompe
@@ -55,7 +80,13 @@ function variaTono(m) {
   m.onBeforeCompile = sh => {
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec3 vPosMondo;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPosMondo = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      .replace('#include <batching_vertex>', SFASA)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+vec4 pMondo = vec4(transformed, 1.0);
+#ifdef USE_BATCHING
+pMondo = batchingMatrix * pMondo;
+#endif
+vPosMondo = (modelMatrix * pMondo).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 varying vec3 vPosMondo;
@@ -154,11 +185,15 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
   Object.assign(tex, await generaProcedurali(mancanti, S, passo));
 
   for (const nome of Object.keys(GENERATORI)) {
-    if (nome === 'legnoScuro' && tex.legno && !tex.legnoScuro) { MAT.legnoScuro = materiale(tex.legno, { color: new Color(0.5, 0.4, 0.33) }); continue; }
+    if (nome === 'legnoScuro' && tex.legno && !tex.legnoScuro) { MAT.legnoScuro = materiale(tex.legno, { color: new Color(0.5, 0.4, 0.33) }); sfasaCopie(MAT.legnoScuro); continue; }
     const t = FOTO[nome]?.tinta;
     MAT[nome] = materiale(tex[nome], t ? { color: new Color(...t) } : {});
     if (['conci', 'pietrame', 'intonaco', 'coppi', 'lastre'].includes(nome)) variaTono(MAT[nome]);
+    else sfasaCopie(MAT[nome]);
   }
+  // ferro battuto (bandelle, chiodi, anelli) e tela oliata delle impannate
+  MAT.ferro = new MeshStandardMaterial({ color: 0x2b2826, roughness: 0.55, metalness: 0.7, vertexColors: true });
+  MAT.tela = new MeshStandardMaterial({ color: 0xc9b98f, roughness: 0.85, metalness: 0, vertexColors: true });
   MAT.scuro = new MeshStandardMaterial({ color: 0x0d0b09, roughness: 1, metalness: 0, vertexColors: true });
   MAT.marmoVerde = new MeshStandardMaterial({ color: 0x2f4a3c, roughness: 0.4, metalness: 0, vertexColors: true });
   return MAT;

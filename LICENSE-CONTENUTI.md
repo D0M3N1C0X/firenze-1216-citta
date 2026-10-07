@@ -1,6 +1,6 @@
 # Licenza dei contenuti
 
-I **testi** della città sono distribuiti con licenza **Creative Commons Attribuzione 4.0 Internazionale (CC BY 4.0)**. Sono inclusi le schede dei luoghi (`src/dati/luoghi.js`), le note sulle strade del 1216 (`src/dati/strade-1216.js`), le giornate (`src/dati/giornate.js`), la cerchia (`src/dati/cerchia.js`), le scene (`src/dati/scene.js`), i testi del copione del gioco *Cosa fatta capo ha* riportati in `src/dati/copione.js`, il piano di lavoro (`PIANO.md`) e i README.
+I **testi** della città sono distribuiti con licenza **Creative Commons Attribuzione 4.0 Internazionale (CC BY 4.0)**. Sono inclusi le schede dei luoghi (`src/dati/luoghi.js`), le note sulle strade del 1216 (`src/dati/strade-1216.js`), le giornate (`src/dati/giornate.js`), la cerchia (`src/dati/cerchia.js`), le scene (`src/dati/scene.js`), i testi del copione del gioco *Cosa fatta capo ha* riportati in `src/dati/copione.js`, il piano di lavoro (`PIANO.md`), le fonti del kit edilizio (`strumenti/kit/FONTI.md`) e i README.
 
 Testo completo: https://creativecommons.org/licenses/by/4.0/deed.it
 
