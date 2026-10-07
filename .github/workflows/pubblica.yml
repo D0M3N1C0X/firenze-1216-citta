@@ -40,6 +40,8 @@ jobs:
           test -f dist/texture/FONTI.json
           test -f dist/figure/figure.json
           test -f dist/figure/movimenti.glb
+          test -f dist/kit/kit.glb
+          test -f dist/kit/kit.json
           echo "dimensione del sito: $(du -sh dist | cut -f1)"
 
       - uses: actions/upload-pages-artifact@v3

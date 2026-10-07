@@ -3,6 +3,7 @@ import {
 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MAT, MAT_CERTEZZA } from './materiali.js';
+import { aggiornaLod, costruisciPosature } from './kit.js';
 
 /* =====================================================================
    IL CANTIERE
@@ -18,13 +19,16 @@ import { MAT, MAT_CERTEZZA } from './materiali.js';
    costruiscono dentro inVariante('festa' | 'feriale', ...) e restano in
    oggetti separati, che giornata() mostra o nasconde.
 
+   I pezzi del kit edilizio (kit.js) non si fondono: si «posano» con
+   pezzo(), che ricorda solo dove vanno, e diventano BatchedMesh.
+
    Coordinate di texture: SEMPRE in metri.
    ===================================================================== */
 
 const RIQUADRO = 80;   // metri
 
 export class Cantiere {
-  constructor() { this.pezzi = new Map(); this.mesh = []; this.var = ''; }
+  constructor() { this.pezzi = new Map(); this.posature = []; this.mesh = []; this.var = ''; this.triangoliKit = 0; }
 
   /** I pezzi aggiunti dentro fn valgono solo per la variante indicata. */
   inVariante(v, fn) {
@@ -65,6 +69,14 @@ export class Cantiere {
     this.pezzi.get(chiave).push(g);
   }
 
+  /**
+   * Posa un pezzo del kit: nome del pezzo (kit.json), matrice da pezzo a
+   * mondo, livello, tinta (moltiplica tutte le parti) e ombra portata.
+   */
+  pezzo(nome, m, livello, tinta = [1, 1, 1], ombra = false) {
+    this.posature.push({ nome, m: m.clone(), livello, tinta, ombra, variante: this.var });
+  }
+
   /** Fonde tutto e aggiunge alla scena. */
   costruisci(scene) {
     for (const [chiave, lista] of this.pezzi) {
@@ -81,7 +93,20 @@ export class Cantiere {
       this.mesh.push(mesh);
     }
     this.pezzi.clear();
+    if (this.posature.length) {
+      const { mesh, triangoli } = costruisciPosature(this.posature);
+      for (const m of mesh) { scene.add(m); this.mesh.push(m); }
+      this.triangoliKit = triangoli;
+      this.posature = [];
+    }
     return this.mesh;
+  }
+
+  /** Dettaglio dei pezzi del kit secondo la posizione di chi guarda. */
+  aggiornaLod(pos) {
+    if (this.ultimaLod && this.ultimaLod.distanceToSquared(pos) < 4) return;
+    (this.ultimaLod ||= pos.clone()).copy(pos);
+    aggiornaLod(this.mesh, pos.x, pos.y, pos.z);
   }
 
   /** Mostra i pezzi della giornata: festa (botteghe chiuse) o feriale. */

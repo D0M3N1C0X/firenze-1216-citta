@@ -19,7 +19,8 @@ import { creaAcqua, creaTerreno, quota } from './mondo/terreno.js';
 import { preparaCampo } from './mondo/fiume.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from './mondo/griglia.js';
 import { Cantiere } from './mondo/cantiere.js';
-import { areaCostruita, costruisciLotti, lottizza } from './mondo/edifici.js';
+import { areaCostruita, costruisciLotti, lottizza, pozziNeiCortili } from './mondo/edifici.js';
+import { KIT, caricaKit } from './mondo/kit.js';
 import { PONTE_ASSE, costruisciMonumenti, sulPonte } from './mondo/monumenti.js';
 import { costruisciFondale } from './mondo/fondale.js';
 import { creaVegetazione } from './mondo/vegetazione.js';
@@ -93,7 +94,10 @@ async function costruisci() {
   await passo('Impasto la calce e cuocio i coppi…');
   // le figure si caricano mentre si fa il resto; se mancano si usano quelle generate
   const figure = caricaFigure().catch(e => { console.warn('figure di Blender non caricate:', e); return null; });
+  // il kit edilizio (finestre, porte, botteghe, pozzi): senza, le case usano forme semplici
+  const kit = params.has('senzakit') ? null : caricaKit().catch(e => { console.warn('kit edilizio non caricato:', e); return null; });
   await Promise.all([
+    kit,
     creaMateriali('alta', (k, n) => ui.progresso(`Impasto la calce e cuocio i coppi… ${k}/${n}`)),
     preparaCampo()
   ]);
@@ -125,6 +129,7 @@ async function costruisci() {
   // la città casa per casa: 480 m dal capo del ponte, più il corridoio verso Santa Reparata
   const lotti = lottizza(griglia, strade, { raggio: RAGGIO_CITTA, corridoi: CORRIDOI, riempimento: 15000 });
   costruisciLotti(cantiere, lotti);
+  const pozzi = KIT.pezzi ? pozziNeiCortili(cantiere, griglia, areaCostruita(RAGGIO_CITTA, CORRIDOI)) : [];
   costruisciFondale(cantiere, areaCostruita(RAGGIO_CITTA + 5, CORRIDOI.map(c => ({ ...c, larghezza: c.larghezza + 5 }))));
 
   await passo('Muro su muro…');
@@ -145,7 +150,8 @@ async function costruisci() {
   impostaComposizione();
   await passo('');
   console.info(tempi.join(' · '));
-  console.info(`città pronta in ${((performance.now() - t0) / 1000).toFixed(1)} s · lotti ${lotti.length} · oggetti ${cantiere.mesh.length}`);
+  console.info(`città pronta in ${((performance.now() - t0) / 1000).toFixed(1)} s · lotti ${lotti.length} · oggetti ${cantiere.mesh.length}` +
+    (KIT.pezzi ? ` · kit ${(cantiere.triangoliKit / 1e6).toFixed(1)} M triangoli · pozzi ${pozzi.length}` : ' · senza kit'));
   ui.pronto();
   if (params.has('subito')) entra();
 }
@@ -277,6 +283,7 @@ function ciclo() {
     mondo.cielo.segui(camera.position);
     mondo.acqua.material.uniforms.time.value += dt * 0.55;
     mondo.abitanti.aggiorna(dt, camera.position);
+    mondo.cantiere.aggiornaLod(camera.position);
     mondo.suoni.aggiorna(dt, camera, mondo.abitanti);
     if ((tHud += dt) > 0.25) {
       tHud = 0;

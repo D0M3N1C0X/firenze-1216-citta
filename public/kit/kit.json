@@ -1,0 +1,329 @@
+[
+ {
+  "nome": "finestra_arco_80x150",
+  "triangoli": 1168,
+  "tipo": "telaio",
+  "foro": {
+   "w": 0.8,
+   "h": 1.5,
+   "arco": true
+  },
+  "chiusure": [
+   "scuri_arco_80x150",
+   "tela_arco_80x150"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 84
+ },
+ {
+  "nome": "scuri_arco_80x150",
+  "triangoli": 168,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "tela_arco_80x150",
+  "triangoli": 84,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 84
+ },
+ {
+  "nome": "finestra_arco_70x125",
+  "triangoli": 1100,
+  "tipo": "telaio",
+  "foro": {
+   "w": 0.7,
+   "h": 1.25,
+   "arco": true
+  },
+  "chiusure": [
+   "scuri_arco_70x125",
+   "tela_arco_70x125"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 84
+ },
+ {
+  "nome": "scuri_arco_70x125",
+  "triangoli": 168,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "tela_arco_70x125",
+  "triangoli": 84,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 84
+ },
+ {
+  "nome": "finestra_architrave_80x130",
+  "triangoli": 1684,
+  "tipo": "telaio",
+  "foro": {
+   "w": 0.8,
+   "h": 1.3,
+   "arco": false
+  },
+  "chiusure": [
+   "scuri_rett_80x130"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 256
+ },
+ {
+  "nome": "scuri_rett_80x130",
+  "triangoli": 168,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 24
+ },
+ {
+  "nome": "feritoia_22x110",
+  "triangoli": 816,
+  "tipo": "telaio",
+  "foro": {
+   "w": 0.22,
+   "h": 1.1,
+   "arco": true
+  },
+  "chiusure": [],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "portale_senese_120x260",
+  "triangoli": 1952,
+  "tipo": "telaio",
+  "foro": {
+   "w": 1.2,
+   "h": 2.95,
+   "arco": true
+  },
+  "chiusure": [
+   "porta_120x205"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 144
+ },
+ {
+  "nome": "porta_120x205",
+  "triangoli": 456,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 12
+ },
+ {
+  "nome": "portale_arco_120x250",
+  "triangoli": 1564,
+  "tipo": "telaio",
+  "foro": {
+   "w": 1.2,
+   "h": 2.5,
+   "arco": true
+  },
+  "chiusure": [
+   "porta_arco_120x250"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "porta_arco_120x250",
+  "triangoli": 456,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 36
+ },
+ {
+  "nome": "bottega_240",
+  "triangoli": 2176,
+  "tipo": "telaio",
+  "foro": {
+   "w": 2.4,
+   "h": 3.5,
+   "arco": true
+  },
+  "chiusure": [
+   "bottega_chiusa_240",
+   "bottega_aperta_240"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 96
+ },
+ {
+  "nome": "bottega_chiusa_240",
+  "triangoli": 504,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "bottega_aperta_240",
+  "triangoli": 296,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "bottega_300",
+  "triangoli": 2244,
+  "tipo": "telaio",
+  "foro": {
+   "w": 3.0,
+   "h": 3.8,
+   "arco": true
+  },
+  "chiusure": [
+   "bottega_chiusa_300",
+   "bottega_aperta_300"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 96
+ },
+ {
+  "nome": "bottega_chiusa_300",
+  "triangoli": 624,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "bottega_aperta_300",
+  "triangoli": 344,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "bottega_340",
+  "triangoli": 2244,
+  "tipo": "telaio",
+  "foro": {
+   "w": 3.4,
+   "h": 4.0,
+   "arco": true
+  },
+  "chiusure": [
+   "bottega_chiusa_340",
+   "bottega_aperta_340"
+  ],
+  "livello": "dedotto",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 96
+ },
+ {
+  "nome": "bottega_chiusa_340",
+  "triangoli": 696,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "bottega_aperta_340",
+  "triangoli": 368,
+  "tipo": "chiusura",
+  "livello": "ipotesi",
+  "triangoli_lod1": 72
+ },
+ {
+  "nome": "pozzo",
+  "triangoli": 1404,
+  "tipo": "arredo",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 144
+ },
+ {
+  "nome": "anello",
+  "triangoli": 236,
+  "tipo": "arredo",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216",
+   "1300",
+   "1480"
+  ],
+  "triangoli_lod1": 180
+ },
+ {
+  "nome": "portafiaccola",
+  "triangoli": 116,
+  "tipo": "arredo",
+  "livello": "ipotesi",
+  "fasi": [
+   "1480"
+  ],
+  "triangoli_lod1": 116
+ },
+ {
+  "nome": "scala_esterna",
+  "triangoli": 1904,
+  "tipo": "arredo",
+  "salita": 3.6,
+  "livello": "ipotesi",
+  "fasi": [],
+  "triangoli_lod1": 336
+ },
+ {
+  "nome": "panca",
+  "triangoli": 272,
+  "tipo": "arredo",
+  "livello": "ipotesi",
+  "fasi": [
+   "1480"
+  ],
+  "triangoli_lod1": 48
+ }
+]

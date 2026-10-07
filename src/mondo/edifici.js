@@ -3,6 +3,7 @@ import {
   falda, ghiera, matriceLotto, muro, piramide, scatola, tamponamento, timpano
 } from './cantiere.js';
 import { EDIFICIO, LIBERO } from './griglia.js';
+import { KIT, haKit } from './kit.js';
 import { MAT } from './materiali.js';
 import { quota, distanzaFiume } from './terreno.js';
 import { rng } from './rumore.js';
@@ -28,12 +29,32 @@ import { rng } from './rumore.js';
    preciso, per esempio gli studi sulle botteghe di Calimala].
 
    La proporzione tra case in pietra e case in legno non la conosciamo
-   [da verificare con il medievista]: qui prevale la pietra.
+   [da verificare con il medievista]. Qui il piano terra è sempre di
+   pietra e in circa un terzo delle case i piani alti sono di legno,
+   tavolato su un'intelaiatura di travi: «pietra in basso, legno in alto»
+   (PIANO.md, lacuna 23). È un'ipotesi.
+
+   Finestre, porte e botteghe vengono dal kit edilizio (kit.js): pezzi
+   modellati in Blender sugli edifici superstiti di Firenze e della
+   Toscana coeva, con le misure qui sotto. Se il kit non si carica si
+   torna alle forme semplici.
    ===================================================================== */
 
 const LIV = 'ipotesi';
 const TINTE_INTONACO = [[1, 1, 1], [1, 0.95, 0.86], [1, 0.92, 0.8], [0.96, 0.94, 0.9], [1, 0.9, 0.82], [0.94, 0.9, 0.86]];
 const tintaPietra = R => { const k = R.tra(0.88, 1.06); return [k, k * R.tra(0.97, 1.01), k * R.tra(0.94, 1.0)]; };
+// le tavole della foto sono grigie, di legno vecchio: le scaldiamo verso il castagno
+const tintaLegno = R => { const k = R.tra(0.8, 1.05); return [k * 1.12, k * R.tra(0.9, 0.97), k * R.tra(0.72, 0.8)]; };
+
+// misure delle aperture: le stesse dei pezzi del kit (strumenti/kit/kit.py)
+const FIN = { w: 0.8, h: 1.5 }, FIN_P = { w: 0.7, h: 1.25 }, FIN_R = { w: 0.8, h: 1.3 };
+const BOTTEGHE = [2.4, 3.0, 3.4], IMPOSTA = 2.3;
+const PORTA_ARCO = { w: 1.2, h: 2.5 }, PORTA_SENESE = { w: 1.2, h: 2.95 };
+const FERITOIA = { w: 0.22, h: 1.1 };
+const TW = 0.25;                     // spessore delle pareti di tavole
+// con il kit gli archi dei fori hanno più lati: le pietre li coprono tutti
+const segArco = () => KIT.pezzi ? 16 : 7;
+const larghezzaBottega = max => BOTTEGHE.filter(w => w <= max + 1e-6).pop() || BOTTEGHE[0];
 
 /* ---------------------------------------------------------- aperture */
 function riempi(cant, M, a, t, R, tipo) {
@@ -84,7 +105,12 @@ function bottegaAperta(cant, M, a, t, R, tinta) {
     p.applyMatrix4(new Matrix4().makeRotationX(Math.atan2(dz, dy))); p.translate(0, hB, -sporge + 0.04);
     cant.aggiungi(p, 'legnoScuro', LIV, M, [0.9, 0.9, 0.9], false);
   }
-  // la merce sul banco
+  merci(cant, M, a, R, hB, sporge);
+}
+
+/** La merce sul banco: pezze, ceste, orci. */
+function merci(cant, M, a, R, hB = 0.82, sporge = 0.55) {
+  const x0 = a.x - a.w / 2 + 0.06, x1 = a.x + a.w / 2 - 0.06;
   let x = x0 + R.tra(0.05, 0.25);
   while (x < x1 - 0.35) {
     const w = R.tra(0.25, 0.5), h = R.tra(0.12, 0.3), d = R.tra(0.25, 0.4);
@@ -93,26 +119,90 @@ function bottegaAperta(cant, M, a, t, R, tinta) {
   }
 }
 
-function aperture(cant, M, lista, t, R, materialeMuro, ghiere) {
+/**
+ * I pezzi del kit per un'apertura: telaio di pietra (se il muro è di
+ * pietra), chiusure e, per le botteghe, i due stati della giornata.
+ * Restituisce false se il kit non ha il pezzo: allora si usano le forme
+ * semplici. «rientro» sposta le chiusure verso la strada nei muri sottili.
+ */
+function posaKit(cant, M, a, R, pietra, liv, tintaP, rientro = 0) {
+  const Ma = new Matrix4().multiplyMatrices(M, new Matrix4().makeTranslation(a.x, a.y, 0));
+  const Mc = rientro ? new Matrix4().multiplyMatrices(Ma, new Matrix4().makeTranslation(0, 0, rientro)) : Ma;
+  const tL = [R.tra(0.8, 1.1), R.tra(0.8, 1.0), R.tra(0.75, 0.95)];
+  if (a.tipo === 'bottega') {
+    const w = Math.round(a.w * 100);
+    if (!haKit(`bottega_${w}`)) return false;
+    cant.pezzo(`bottega_${w}`, Ma, liv, tintaP);
+    cant.inVariante('festa', () => cant.pezzo(`bottega_chiusa_${w}`, Ma, liv, tL));
+    cant.inVariante('feriale', () => { cant.pezzo(`bottega_aperta_${w}`, Ma, liv, tL, true); merci(cant, M, a, R); });
+    return true;
+  }
+  let telaio;
+  if (a.tipo === 'porta') telaio = a.forma === 'senese' ? 'portale_senese_120x260' : 'portale_arco_120x250';
+  else if (a.forma === 'feritoia') telaio = 'feritoia_22x110';
+  else telaio = (a.arco ? 'finestra_arco_' : 'finestra_architrave_') + `${Math.round(a.w * 100)}x${Math.round(a.h * 100)}`;
+  if (!haKit(telaio)) return false;
+  if (pietra) cant.pezzo(telaio, Ma, liv, tintaP);
+  const [scuri, tela] = KIT.info[telaio].chiusure;
+  if (a.tipo === 'porta') cant.pezzo(scuri, Ma, liv, tL);
+  else if (scuri) {
+    const r = R();
+    if (r < 0.38) cant.pezzo(scuri, Mc, liv, [0.9, 0.85, 0.8]);
+    else if (r < 0.62 && tela) cant.pezzo(tela, Mc, liv);
+  }
+  return true;
+}
+
+/** Cornice di travetti attorno a una finestra in una parete di tavole. */
+function corniceLegno(cant, M, a, liv, tinta) {
+  const c = 0.015, x0 = a.x - a.w / 2, x1 = a.x + a.w / 2, y0 = a.y, y1 = a.y + a.h;
+  cant.aggiungi(scatola(x0 - 0.11, y0 - 0.06, -0.06, x0 + c, y1 + 0.06, TW), 'legnoScuro', liv, M, tinta, false);
+  cant.aggiungi(scatola(x1 - c, y0 - 0.06, -0.06, x1 + 0.11, y1 + 0.06, TW), 'legnoScuro', liv, M, tinta, false);
+  cant.aggiungi(scatola(x0 - 0.16, y1 - c, -0.07, x1 + 0.16, y1 + 0.14, TW), 'legnoScuro', liv, M, tinta, false);
+  cant.aggiungi(scatola(x0 - 0.14, y0 - 0.1, -0.12, x1 + 0.14, y0 + c, TW), 'legnoScuro', liv, M, tinta, false);
+}
+
+function aperture(cant, M, lista, t, R, materialeMuro, ghiere, liv = LIV, tintaP = [0.97, 0.97, 0.97]) {
+  const legno = materialeMuro === 'legno';
   for (const a of lista) {
+    if (KIT.pezzi && posaKit(cant, M, a, R, ghiere && !legno, liv, tintaP, legno ? -0.2 : 0)) {
+      if (a.tipo === 'finestra' && legno) corniceLegno(cant, M, a, liv, tintaP);
+      else if (a.tipo === 'finestra' && !ghiere) {
+        const g = scatola(a.x - a.w / 2 - 0.08, a.y - 0.1, -0.08, a.x + a.w / 2 + 0.08, a.y + 0.015, 0.12);
+        cant.aggiungi(g, 'conci', liv, M, [0.97, 0.97, 0.97]);
+      }
+      continue;
+    }
     riempi(cant, M, a, t, R, a.tipo);
     if (a.arco && ghiere) {
       const g = ghiera(a, a.tipo === 'bottega' ? 0.42 : 0.2, 0.1); g.translate(0, 0, -0.05);
-      cant.aggiungi(g, 'conci', LIV, M, [0.95, 0.95, 0.95]);
+      cant.aggiungi(g, 'conci', liv, M, [0.95, 0.95, 0.95]);
     }
     if (a.tipo === 'finestra') {
       const g = scatola(a.x - a.w / 2 - 0.08, a.y - 0.1, -0.08, a.x + a.w / 2 + 0.08, a.y, 0.12);
-      cant.aggiungi(g, materialeMuro === 'intonaco' ? 'conci' : materialeMuro, LIV, M, [0.97, 0.97, 0.97]);
+      cant.aggiungi(g, materialeMuro === 'intonaco' || legno ? 'conci' : materialeMuro, liv, M, [0.97, 0.97, 0.97]);
     }
   }
 }
 
-/** Finestre di un piano distribuite sulla larghezza. */
-function finestrePiano(W, y, R, arco, larga = 0.82, alta = 1.5) {
+/** Finestre di un piano distribuite sulla larghezza, con le misure del kit. */
+function finestrePiano(W, y, R, arco, piccole = false) {
+  const m = arco ? (piccole ? FIN_P : FIN) : FIN_R;
   const n = Math.max(1, Math.floor((W - 0.8) / 2.3));
   const passo = W / n, out = [];
-  for (let i = 0; i < n; i++) out.push({ x: passo * (i + 0.5), y, w: larga, h: alta, arco, tipo: 'finestra' });
+  for (let i = 0; i < n; i++) out.push({ x: passo * (i + 0.5), y, w: m.w, h: m.h, arco, tipo: 'finestra' });
   return out;
+}
+
+/** Anello di ferro accanto a una porta o a una bottega (ipotesi: FONTI.md). */
+function anelli(cant, M, lista, W, R, liv, p) {
+  for (const a of lista) {
+    if ((a.tipo !== 'porta' && a.tipo !== 'bottega') || !R.vero(p)) continue;
+    const lato = R.vero(0.5) ? 1 : -1;
+    const x = a.x + lato * (a.w / 2 + 0.6);
+    if (x < 0.4 || x > W - 0.4 || lista.some(b => b !== a && Math.abs(b.x - x) < b.w / 2 + 0.5)) continue;
+    cant.pezzo('anello', new Matrix4().multiplyMatrices(M, new Matrix4().makeTranslation(x, 1.5, 0)), liv, [1, 1, 1], false);
+  }
 }
 
 /* -------------------------------------------------------------- casa */
@@ -126,46 +216,58 @@ export function casa(cant, L) {
   const M = matriceLotto(L.px, y, L.pz, L.nx, L.nz);
   const W = L.W, D = L.D;
 
-  const H0 = R.tra(4.0, 4.6), Hp = R.tra(3.2, 3.6);
+  let H0 = R.tra(4.0, 4.6);
+  const Hp = R.tra(3.2, 3.6);
   const piede = L.retro ? -7.5 : -1.2;       // sul fiume le fondazioni scendono in acqua
   const piani = R.vero(0.25) ? 3 : 2 + (R.vero(0.35) ? 1 : 0);
-  const Hm = H0 + piani * Hp;
   const t = 0.55;
 
   const tipo = R();                       // pietra, misto, pietrame
   const matTerra = tipo < 0.35 ? 'conci' : tipo < 0.75 ? 'conci' : 'pietrame';
-  const matSopra = tipo < 0.35 ? 'conci' : tipo < 0.75 ? 'intonaco' : R.vero(0.5) ? 'pietrame' : 'intonaco';
-  const tinta = matSopra === 'intonaco' ? R.scegli(TINTE_INTONACO) : tintaPietra(R);
+  let matSopra = tipo < 0.35 ? 'conci' : tipo < 0.75 ? 'intonaco' : R.vero(0.5) ? 'pietrame' : 'intonaco';
+  // pietra in basso, legno in alto: metà delle case non di conci ha i piani
+  // alti di tavole su un'intelaiatura di travi (ipotesi, lacuna 23)
+  if (matSopra !== 'conci' && R.vero(0.5)) matSopra = 'legno';
+  const legno = matSopra === 'legno';
+  const tS = legno ? TW : t;
+  const tinta = matSopra === 'intonaco' ? R.scegli(TINTE_INTONACO) : legno ? tintaLegno(R) : tintaPietra(R);
   const tintaT = tintaPietra(R);
-  const sporto = matSopra !== 'conci' && W > 4.5 && R.vero(0.42) ? R.tra(0.7, 1.15) : 0;
-  const arco = R.vero(0.7);
+  const tintaTelai = tintaT.map(c => c * 1.04);
+  const sporto = matSopra !== 'conci' && W > 4.5 && R.vero(legno ? 0.6 : 0.42) ? R.tra(0.7, 1.15) : 0;
+  const arco = !legno && R.vero(0.7);       // nelle pareti di tavole le finestre sono rettangolari
 
   // --- piano terra: bottega con arco largo, più una porta se c'è spazio
+  const porta = () => R.vero(0.6) ? { ...PORTA_ARCO, arco: true, tipo: 'porta' } : { ...PORTA_SENESE, arco: true, tipo: 'porta', forma: 'senese' };
   const ap0 = [];
   if (W >= 7.2) {
-    const wb = Math.min(3.4, W * 0.42);
-    ap0.push({ x: W * 0.32, y: 0, w: wb, h: Math.min(H0 - 0.5, wb / 2 + 2.3), arco: true, tipo: 'bottega' });
-    ap0.push({ x: W * 0.8, y: 0, w: 1.15, h: 2.5, arco: R.vero(0.6), tipo: 'porta' });
+    const wb = larghezzaBottega(Math.min(3.4, W * 0.42));
+    ap0.push({ x: W * 0.32, y: 0, w: wb, h: IMPOSTA + wb / 2, arco: true, tipo: 'bottega' });
+    ap0.push({ x: W * 0.8, y: 0, ...porta() });
   } else if (W >= 4.5) {
-    const wb = Math.min(3.0, W - 1.6);
-    ap0.push({ x: W / 2, y: 0, w: wb, h: Math.min(H0 - 0.5, wb / 2 + 2.2), arco: true, tipo: 'bottega' });
+    const wb = larghezzaBottega(Math.min(3.0, W - 1.6));
+    ap0.push({ x: W / 2, y: 0, w: wb, h: IMPOSTA + wb / 2, arco: true, tipo: 'bottega' });
   } else {
-    ap0.push({ x: W / 2, y: 0, w: 1.1, h: 2.4, arco: true, tipo: 'porta' });
+    ap0.push({ x: W / 2, y: 0, ...porta() });
   }
-  const g0 = muro(W, -1.2, H0, t, ap0); cant.aggiungi(g0, matTerra, LIV, M, tintaT);
-  aperture(cant, M, ap0, t, R, matTerra, true);
+  // il piano terra contiene l'arco più alto con la sua ghiera e il marcapiano
+  H0 = Math.max(H0, ...ap0.map(a => a.h + (a.tipo === 'bottega' ? 0.75 : 0.55)));
+  const Hm = H0 + piani * Hp;
+  const g0 = muro(W, -1.2, H0, t, ap0, segArco()); cant.aggiungi(g0, matTerra, LIV, M, tintaT);
+  aperture(cant, M, ap0, t, R, matTerra, true, LIV, tintaTelai);
+  if (KIT.pezzi) anelli(cant, M, ap0, W, R, LIV, 0.3);
 
   // --- piani alti, eventualmente in aggetto sulla strada
   const zF = -sporto;
   const apS = [];
   for (let p = 0; p < piani; p++) apS.push(...finestrePiano(W, H0 + p * Hp + 0.95, R, arco).map(a => ({ ...a, y: a.y - H0 })));
-  const gS = muro(W, 0, Hm - H0, t, apS); gS.translate(0, H0, zF);
+  const gS = muro(W, 0, Hm - H0, tS, apS, segArco()); gS.translate(0, H0, zF);
   cant.aggiungi(gS, matSopra, LIV, M, tinta);
   const MS = new Matrix4().multiplyMatrices(M, new Matrix4().makeTranslation(0, H0, zF));
-  aperture(cant, MS, apS, t, R, matSopra, matSopra === 'intonaco' && R.vero(0.6) ? true : matSopra !== 'intonaco');
+  aperture(cant, MS, apS, tS, R, matSopra, matSopra === 'intonaco' && R.vero(0.6) ? true : matSopra !== 'intonaco', LIV, legno ? tinta : tintaTelai);
+  if (legno) intelaiatura(cant, MS, W, Hm - H0, Hp, piani, apS, tinta);
 
   // marcapiano in pietra
-  if (matSopra !== 'intonaco' || R.vero(0.5)) for (let p = 0; p <= piani - 1; p++) {
+  if (!legno && (matSopra !== 'intonaco' || R.vero(0.5))) for (let p = 0; p <= piani - 1; p++) {
     const yy = H0 + p * Hp;
     cant.aggiungi(scatola(-0.02, yy - 0.16, zF - 0.07, W + 0.02, yy, zF + 0.1), 'conci', LIV, M, [0.98, 0.98, 0.98]);
   }
@@ -185,25 +287,32 @@ export function casa(cant, L) {
         cant.aggiungi(g, 'legnoScuro', LIV, M, [0.95, 0.95, 0.95]);
       }
     }
-    // fianchi dello sporto
-    cant.aggiungi(scatola(0, H0, zF, 0.25, Hm, 0), matSopra, LIV, M, tinta);
-    cant.aggiungi(scatola(W - 0.25, H0, zF, W, Hm, 0), matSopra, LIV, M, tinta);
   }
 
   // --- fianchi e retro (muri ciechi; il retro si apre se dà sul fiume)
   // i fianchi partono dietro la facciata e si fermano prima del retro:
-  // niente facce sovrapposte, che sfarfallerebbero
-  cant.aggiungi(scatola(0, piede, t, t, Hm, D - t), matSopra, LIV, M, tinta);
-  cant.aggiungi(scatola(W - t, piede, t, W, Hm, D - t), matSopra, LIV, M, tinta);
+  // niente facce sovrapposte, che sfarfallerebbero. Sopra il piano terra
+  // partono da dietro la facciata dei piani alti, anche se sporge.
+  const fianco = legno ? TW : t;
+  cant.aggiungi(scatola(0, piede, t, t, H0, D - t), matTerra, LIV, M, tintaT);
+  cant.aggiungi(scatola(W - t, piede, t, W, H0, D - t), matTerra, LIV, M, tintaT);
+  cant.aggiungi(scatola(0, H0, zF + tS, fianco, Hm, D - t), matSopra, LIV, M, tinta);
+  cant.aggiungi(scatola(W - fianco, H0, zF + tS, W, Hm, D - t), matSopra, LIV, M, tinta);
   if (L.retro) {
     const apR = [];
-    for (let p = 0; p < piani; p++) apR.push(...finestrePiano(W, H0 + p * Hp + 0.95, R, arco, 0.75, 1.3));
-    apR.push({ x: W * 0.5, y: 1.2, w: 0.9, h: 1.4, arco: true, tipo: 'finestra' });
-    const gR = muro(W, piede, Hm, t, apR);
-    gR.applyMatrix4(new Matrix4().makeRotationY(Math.PI)); gR.translate(W, 0, D);
+    for (let p = 0; p < piani; p++) apR.push(...finestrePiano(W, H0 + p * Hp + 0.95, R, arco, true));
+    apR.push({ x: W * 0.5, y: 1.2, ...FIN, arco: true, tipo: 'finestra' });
     const MR = new Matrix4().multiplyMatrices(M, new Matrix4().makeRotationY(Math.PI).setPosition(W, 0, D));
-    cant.aggiungi(gR, matSopra, LIV, M, tinta);
-    aperture(cant, MR, apR, t, R, matSopra, true);
+    const parti = legno ? [[piede, H0, matTerra, t, tintaT], [H0, Hm, 'legno', TW, tinta]] : [[piede, Hm, matSopra, t, tinta]];
+    for (const [y0, y1, mat, sp, ti] of parti) {
+      const lista = apR.filter(a => a.y >= y0 && a.y < y1);
+      const gR = muro(W, y0, y1, sp, lista, segArco());
+      gR.applyMatrix4(new Matrix4().makeRotationY(Math.PI)); gR.translate(W, 0, D);
+      cant.aggiungi(gR, mat, LIV, M, ti);
+      aperture(cant, MR, lista, sp, R, mat, true, LIV, mat === 'legno' ? ti : tintaTelai);
+    }
+    if (legno) intelaiatura(cant, new Matrix4().multiplyMatrices(MR, new Matrix4().makeTranslation(0, H0, 0)), W, Hm - H0, Hp, piani,
+      apR.filter(a => a.y >= H0), tinta);
     if (R.vero(0.55)) {
       // ballatoio di legno sull'acqua
       const yb = H0 + Hp * R.intero(0, piani - 1) + 0.1;
@@ -215,19 +324,39 @@ export function casa(cant, L) {
         cant.aggiungi(g, 'legnoScuro', LIV, M);
       }
     }
+  } else if (legno) {
+    cant.aggiungi(scatola(0, -1.2, D - t, W, H0, D), 'pietrame', LIV, M, tintaT);
+    cant.aggiungi(scatola(0, H0, D - TW, W, Hm, D), 'legno', LIV, M, tinta);
   } else {
     cant.aggiungi(scatola(0, -1.2, D - t, W, Hm, D), matSopra === 'conci' ? 'conci' : 'pietrame', LIV, M, tinta);
   }
   // buio dell'interno, visto attraverso le aperture
   cant.aggiungi(scatola(t, -0.5, t + 0.35, W - t, Hm - 0.1, D - t - 0.35), 'scuro', LIV, M, [1, 1, 1], false);
-  if (sporto > 0) cant.aggiungi(scatola(0.25, H0 + 0.05, zF + t + 0.35, W - 0.25, Hm - 0.1, t + 0.4), 'scuro', LIV, M, [1, 1, 1], false);
+  if (sporto > 0) cant.aggiungi(scatola(0.25, H0 + 0.05, zF + tS + 0.35, W - 0.25, Hm - 0.1, t + 0.4), 'scuro', LIV, M, [1, 1, 1], false);
 
   // --- tetto a capanna con il colmo parallelo alla strada
-  tetto(cant, M, R, W, zF, D, Hm);
+  tetto(cant, M, R, W, zF, D, Hm, legno ? 'legno' : 'pietrame');
   return { altezza: Hm };
 }
 
-function tetto(cant, M, R, W, z0, z1, Hm) {
+/**
+ * Intelaiatura di una parete di tavole: travi dei solai a ogni piano e
+ * ritti agli spigoli e tra le finestre. M ha l'origine al piede della
+ * parete (y = 0), alta H.
+ */
+function intelaiatura(cant, M, W, H, Hp, piani, finestre, tinta) {
+  const ti = tinta.map(c => c * 0.85);
+  for (let p = 0; p <= piani; p++) {
+    const y = Math.min(H - 0.225, p * Hp - 0.02);
+    cant.aggiungi(scatola(-0.04, y, -0.07, W + 0.04, y + 0.22, TW), 'legnoScuro', LIV, M, ti);
+  }
+  const xs = [-0.02, W - 0.18];
+  const xf = [...new Set(finestre.map(a => +a.x.toFixed(3)))].sort((a, b) => a - b);
+  for (let i = 0; i + 1 < xf.length; i++) xs.push((xf[i] + xf[i + 1]) / 2 - 0.1);
+  for (const x of xs) cant.aggiungi(scatola(x, 0, -0.05, x + 0.2, H - 0.01, TW), 'legnoScuro', LIV, M, ti);
+}
+
+function tetto(cant, M, R, W, z0, z1, Hm, matTimpano = 'pietrame') {
   const prof = z1 - z0, pend = R.tra(0.36, 0.44);       // ~20–24°
   const ovF = R.tra(1.0, 1.45), ovB = 0.5, ovS = 0.25;
   const colmo = Hm + prof / 2 * pend, zc = (z0 + z1) / 2;
@@ -240,7 +369,7 @@ function tetto(cant, M, R, W, z0, z1, Hm) {
   for (const x of [0, W - 0.5]) {
     const g = timpano(prof, Hm, prof / 2 * pend, 0.5);
     g.applyMatrix4(new Matrix4().makeRotationY(-Math.PI / 2)); g.translate(x + 0.5, 0, z0);
-    cant.aggiungi(g, 'pietrame', LIV, M, [0.95, 0.93, 0.9]);
+    cant.aggiungi(g, matTimpano, LIV, M, [0.95, 0.93, 0.9]);
   }
   // la gronda: tavolato sotto i coppi e travicelli sporgenti
   cant.aggiungi(falda(-ovS, W + ovS, Hm - ovF * pend - 0.14, z0 - ovF, Hm - 0.14, z0, 0.04), 'legno', LIV, M, [0.78, 0.72, 0.66], false);
@@ -273,21 +402,27 @@ export function torre(cant, L, livello = LIV) {
     { L: W, m: new Matrix4().makeRotationY(Math.PI).setPosition(W, 0, D) },
     { L: D, m: new Matrix4().makeRotationY(Math.PI / 2).setPosition(0, 0, D) }
   ];
+  const tintaTelai = tinta.map(c => c * 1.03);
   lati.forEach((lato, i) => {
     const ap = [];
-    if (i === 0) ap.push({ x: lato.L / 2, y: 0, w: 1.3, h: 2.8, arco: true, tipo: 'porta' });
+    // la porta a «doppio arco», come alla torre della Castagna (FONTI.md)
+    if (i === 0) ap.push({ x: lato.L / 2, y: 0, ...PORTA_SENESE, arco: true, tipo: 'porta', forma: 'senese' });
+    // feritoie sui fianchi, sotto le prime finestre
+    else if (R.vero(0.6)) ap.push({ x: lato.L / 2, y: R.tra(3.0, 4.2), ...FERITOIA, arco: true, tipo: 'finestra', forma: 'feritoia' });
     const colonne = lato.L > 6.5 ? [lato.L * 0.3, lato.L * 0.7] : [lato.L / 2];
     for (let yy = 6.5; yy < H - 3; yy += R.tra(3.6, 4.6))
-      for (const x of colonne) if (R.vero(i === 0 ? 0.75 : 0.45)) ap.push({ x, y: yy, w: 0.7, h: 1.25, arco: true, tipo: 'finestra' });
+      for (const x of colonne) if (R.vero(i === 0 ? 0.75 : 0.45)) ap.push({ x, y: yy, ...FIN_P, arco: true, tipo: 'finestra' });
     // fori delle travi dei ballatoi: file di buche quadre
     if (R.vero(0.6)) {
       const yb = R.tra(8, Math.max(9, H * 0.6));
       for (let x = 0.7; x < lato.L - 0.6; x += 1.2) ap.push({ x, y: yb, w: 0.28, h: 0.3, arco: false, tipo: 'buca' });
     }
-    const g = muro(lato.L, -1.2, H, t, ap);
+    const g = muro(lato.L, -1.2, H, t, ap, segArco());
     const Mi = new Matrix4().multiplyMatrices(M, lato.m);
     cant.aggiungi(g, 'conci', livello, Mi, tinta);
-    for (const a of ap) if (a.tipo !== 'buca') riempi(cant, Mi, a, t, R, a.tipo);
+    const vere = ap.filter(a => a.tipo !== 'buca');
+    aperture(cant, Mi, vere, t, R, 'conci', Boolean(KIT.pezzi), livello, tintaTelai);
+    if (i === 0 && KIT.pezzi) anelli(cant, Mi, vere, lato.L, R, livello, 0.5);
   });
   cant.aggiungi(scatola(t, -0.5, t, W - t, H - 0.2, D - t), 'scuro', livello, M, [1, 1, 1], false);
 
@@ -441,6 +576,39 @@ export function lottizza(griglia, strade, opz = {}) {
 
   // gli spazi rimasti dentro gli isolati sono orti e cortili
   return lotti;
+}
+
+/**
+ * Pozzi nei cortili. La città beveva dai pozzi (FONTI.md del kit), ma dove
+ * fossero nel 1216 non lo sappiamo: niente pozzi nelle piazze, dove
+ * sarebbero un'affermazione precisa senza fonte, e qualcuno negli spazi
+ * liberi chiusi tra le case, i cortili e gli orti. Livello «ipotesi».
+ */
+export function pozziNeiCortili(cant, griglia, dentro, quanti = 40) {
+  const R = rng(1179);
+  const libero = (x, z, r) => {
+    for (let dx = -r; dx <= r; dx += 0.5) for (let dz = -r; dz <= r; dz += 0.5) if (griglia.get(x + dx, z + dz) !== LIBERO) return false;
+    return true;
+  };
+  // chiuso da case sui quattro lati entro 14 m
+  const chiuso = (x, z) => [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dz]) => {
+    for (let d = 2; d <= 14; d++) if (griglia.get(x + dx * d, z + dz * d) === EDIFICIO) return true;
+    return false;
+  });
+  const candidati = [];
+  for (let x = griglia.min + 20; x < griglia.max - 20; x += 3) for (let z = griglia.min + 20; z < griglia.max - 20; z += 3)
+    if (dentro(x, z) && libero(x, z, 1.5) && chiuso(x, z)) candidati.push([x, z]);
+  for (let i = candidati.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [candidati[i], candidati[j]] = [candidati[j], candidati[i]]; }
+  const presi = [];
+  for (const [x, z] of candidati) {
+    if (presi.length >= quanti) break;
+    if (presi.some(([px, pz]) => Math.hypot(px - x, pz - z) < 45)) continue;
+    presi.push([x, z]);
+    const m = new Matrix4().makeRotationY(R.tra(0, Math.PI * 2)).setPosition(x, quota(x, z) - 0.05, z);
+    cant.pezzo('pozzo', m, 'ipotesi', tintaPietra(R), true);
+    griglia.segnaRett(x, z, 1, 0, 1.0, 1.0, EDIFICIO);
+  }
+  return presi;
 }
 
 export function costruisciLotti(cant, lotti) {
