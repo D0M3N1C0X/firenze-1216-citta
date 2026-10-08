@@ -33,6 +33,7 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 | **Fonti** (7 ottobre) | solo fonti aperte online; ogni lacuna diventa una domanda per il medievista (DOSSIER-TOPOGRAFICO.md) |
 | **Kit edilizio** (8 ottobre) | si comincia da aperture (finestre, porte, botteghe, chiusure) e arredo di strada; modelli da Firenze e dalla Toscana coeva, dichiarati «dedotto per analogia»; dettaglio pieno; «pietra in basso, legno in alto» come ipotesi. Fonti, livelli e anacronismi in `strumenti/kit/FONTI.md` |
 | **Come si continua** (8 ottobre) | prima i monumenti modellati in Blender; un dossier di domande per un esperto, ordinate per urgenza e con le fonti già trovate (a chi mandarlo lo decide Domenico); fasi extra nell'ordine oggi, ~1300, ~1480, Florentia romana; per il cavallo si cerca un modello scaricabile senza account |
+| **Dossier per l'esperto** (8 ottobre) | le 39 domande aperte del gioco e della città, in ordine di urgenza e con le fonti, in `docs/domande-esperto.html` (repository privato), pubblicate come pagina privata su claude.ai; a chi mandarla lo decide Domenico |
 
 ## 2. Che cosa c'è nel prototipo
 
