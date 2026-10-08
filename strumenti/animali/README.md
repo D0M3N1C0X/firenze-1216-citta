@@ -37,4 +37,12 @@ Scrive `public/animali/<nome>.glb` e `animali.json`, con la velocità di ogni an
 - **Il basto con le some** è un'ipotesi.
 - **La taglia** dei cavalli del Duecento, più piccoli di quelli di oggi, è **[da verificare]**.
 
-In città gli animali vanno al passo, condotti a mano da una persona che cammina alla loro testa: più numerosi nei giorni di lavoro, pochi a Pasqua (ipotesi). I cavalieri arriveranno quando le figure avranno una posa a cavallo.
+- **Cavalli da sella** (dal 9 ottobre): `sellato`, un baio con la gualdrappa rossa di robbia, e `palafreno`, grigio chiaro con la gualdrappa blu di guado. Hanno la sella con gli arcioni, staffili e staffe. Forme e colori sono un'ipotesi. Il palafreno bianco ricorda quello di Buondelmonte nella cronaca di Villani («in su uno palafreno bianco»).
+
+In città gli animali vanno al passo, condotti a mano da una persona che cammina alla loro testa: più numerosi nei giorni di lavoro, pochi a Pasqua (ipotesi).
+
+**I cavalieri** sono le figure dei ruoli cavaliere e mercante, messe in sella (`monta` e `POSA_SELLA` in `src/mondo/abitanti.js`):
+- ossa in posa: cosce aperte sul dorso, piedi nelle staffe, mani all'arcione;
+- agganciati all'osso della schiena del cavallo, così seguono il passo e il sobbalzo.
+
+La posa è regolata a occhio, guardando il cavaliere di fianco e di fronte nella città; non viene da una registrazione. Ce ne sono pochi: circa uno ogni trenta persone, un poco meno a Pasqua. Le donne non sono messe in sella: nel Duecento cavalcavano in un altro modo **[da verificare]**.

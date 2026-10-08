@@ -34,6 +34,7 @@ Le ha prese Domenico il 1° ottobre 2026, in tre giri di domande.
 | **Kit edilizio** (8 ottobre) | si comincia da aperture (finestre, porte, botteghe, chiusure) e arredo di strada; modelli da Firenze e dalla Toscana coeva, dichiarati «dedotto per analogia»; dettaglio pieno; «pietra in basso, legno in alto» come ipotesi. Fonti, livelli e anacronismi in `strumenti/kit/FONTI.md` |
 | **Come si continua** (8 ottobre) | prima i monumenti modellati in Blender; un dossier di domande per un esperto, ordinate per urgenza e con le fonti già trovate (a chi mandarlo lo decide Domenico); fasi extra nell'ordine oggi, ~1300, ~1480, Florentia romana; per il cavallo si cerca un modello scaricabile senza account |
 | **Dossier per l'esperto** (8 ottobre) | le 39 domande aperte del gioco e della città, in ordine di urgenza e con le fonti, in `docs/domande-esperto.html` (repository privato), pubblicate come pagina privata su claude.ai; a chi mandarla lo decide Domenico |
+| **Come si continua** (9 ottobre) | prima i cavalieri a cavallo; poi l'app iOS subito, come per Pompei; il peso del primo caricamento (circa 118 MB) va bene così, perché l'hardware è di fascia alta; le domande più urgenti del dossier si chiariscono con le fonti che abbiamo (Faini, Villani) |
 
 ## 2. Che cosa c'è nel prototipo
 
@@ -148,7 +149,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 ## 10. Lacune (da aggiungere a quelle del dossier)
 
 18. **Il ponte del 1216**: arcate, larghezza, presenza di botteghe; la data della ricostruzione dopo la piena del 1178 (se ci fu).
-19. **Il pilastro di Marte**: da quale lato del capo del ponte stava, e quanto era alto.
+19. **Il pilastro di Marte**: da quale lato del capo del ponte stava, e quanto era alto. *Il 09/10/2026:* Villani dice «dal lato di qua», cioè in città, «a piè del pilastro» (VI, 38; Faini p. 11); resta l'altezza.
 20. **Porta Santa Maria**: dove stava esattamente; se nel 1216 esisteva ancora come struttura.
 21. **Le rive**: com'erano nel 1216 i tratti oggi occupati dai lungarni; c'erano mulini o pescaie vicino al ponte?
 22. **Le torri**: quante erano nel 1216, quanto erano alte prima della mozzatura, come finivano in cima (tetto o merli).
@@ -156,7 +157,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 24. **Le vesti**: colori e fogge per ceto nel 1216, a Firenze; il colore dell'abito vallombrosano; chi portava il mantello.
 Emerse il 2 ottobre 2026, estendendo la città e collegandola al gioco:
 
-25. **Il giorno della settimana del 10 febbraio 1216.** Il dossier e il copione dicono giovedì; il calcolo sul calendario giuliano dà mercoledì (registro, n. 6). Che cosa dice esattamente la cronaca, e che cosa ne ricava Faini (p. 16)?
+25. *(Chiarita il 09/10/2026: era mercoledì; il giovedì della cronaca ignora il bisestile. Vedi dossier storico, lacuna 18.)* **Il giorno della settimana del 10 febbraio 1216.** Il dossier e il copione dicono giovedì; il calcolo sul calendario giuliano dà mercoledì (registro, n. 6). Che cosa dice esattamente la cronaca, e che cosa ne ricava Faini (p. 16)?
 26. **Le case delle famiglie.** Dove abitavano nel 1216 i Donati (la torre presso il Corso?), gli Uberti (l'area della futura piazza della Signoria), i Lamberti (via dei Lamberti o via Lambertesca?), i Fifanti (la torre d'Oltrarno che porta il loro nome?), gli Amidei e i Buondelmonti (popolo di San Felice in Piazza).
 27. **Il Mercato Vecchio**: forma, misure, chiese intorno e disposizione dei banchi prima dello sventramento del 1885–1895.
 28. **Santa Reparata e la piazza di San Giovanni**: pianta e misure della cattedrale dai rilievi degli scavi; estensione della piazza e del cimitero nel 1216.
@@ -184,3 +185,5 @@ Emerse l'8 ottobre 2026 dal kit edilizio: 37–41 (l'arco nel 1216, le chiusure 
 11–13. **08/10/2026 — Kit edilizio.** Anacronismi dell'arredo di strada (portafiaccole e panche di via esclusi dal 1216, scale esterne escluse ovunque, anelli ammessi come ipotesi), pozzi solo nei cortili, portale a doppio arco esteso dalla torre della Castagna: in `strumenti/kit/FONTI.md`, § 6.
 14–16. **08/10/2026 — Monumenti del capo del ponte.** Pietra di Marte come statua equestre tardoromana (Vossilla 1994) con la divergenza sul lato del ponte; torre degli Amidei dai caratteri della torre superstite; ponte a cinque arcate contro le nove di un'altra fonte: in `strumenti/monumenti/FONTI.md`, § 7.
 17. **08/10/2026 — Figure: statura e passo.** Domenico ha segnalato due difetti delle figure. Il primo: un ragazzo risultava alto quanto un adulto, perché le clip dei movimenti portavano posizione e scala di ogni osso dello scheletro di riferimento. Misurato nella città, prima i ragazzi andavano da 1,60 a 1,63 m invece di 1,45–1,55; dopo, vanno da 1,43 a 1,51. Il secondo: nelle svolte strette e nei vicoli ciechi le figure arretravano guardando avanti. Ora prima si girano e poi ripartono; su 124.000 spostamenti di prova, dal caricamento in poi, nessuno va più all'indietro, né le persone né gli animali. Correzioni in `src/mondo/figure.js` e `src/mondo/abitanti.js`.
+18. **09/10/2026 — Due domande chiarite con Faini.** (a) Il 10 febbraio 1216 era mercoledì. Lo pseudo-Brunetto dice giovedì e Faini lo accetta (p. 16, n. 37), ma dal 10 febbraio alla Pasqua del 10 aprile 1216, anno bisestile, ci sono 60 giorni; il giovedì viene contando 59 giorni, come in un anno comune. (b) La pietra di Marte stava dal lato della città: «a piè del ponte Vecchio dal lato di qua, apunto a piè del pilastro ov'era la 'nsegna di Mars» (Villani VI, 38; Faini p. 11).
+19. **09/10/2026 — Cavalieri e app.** In sella vanno le figure dei ruoli cavaliere e mercante, su due cavalli sellati: un baio e un palafreno grigio chiaro. Su 2.800 spostamenti di prova nessuno va all'indietro. L'app iOS è preparata come quella di Pompei (Capacitor 8.5.2, `app/README.md`), ma non è ancora stata compilata: lo farà il primo lancio del flusso *App iOS* su GitHub.

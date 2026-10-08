@@ -33,11 +33,12 @@ export const LUOGHI = [
     id: 'marte',
     nome: 'La pietra di Marte',
     pos: [17, -31], raggio: 8,
-    luogo: { livello: 'documentato', nota: 'a capo del ponte, dal lato della città: le cronache; Dante, Par. XVI 145–147. Le fonti divergono: Vossilla (1994, da Cinelli) la mette dal lato d\'Oltrarno' },
+    luogo: { livello: 'documentato', nota: '«a piè del ponte Vecchio dal lato di qua, apunto a piè del pilastro ov\'era la \'nsegna di Mars» (Villani VI, 38); Dante, Par. XVI 145–147. Le fonti divergono: Vossilla (1994, da Cinelli) la mette dal lato d\'Oltrarno' },
     forma: { livello: 'ipotesi', nota: 'una statua equestre tardoromana secondo Vossilla [da verificare]; il pilastro e le rotture sono inventati' },
     testo: 'I fiorentini la chiamavano Marte e credevano che la città dipendesse da lei. Per Dante è «quella pietra scema / che guarda \'l ponte»: una statua mutila, già allora un frammento. Secondo la tradizione cadde in Arno con la piena del 1178 e fu ripescata verso il 1200. Era forse una statua equestre tardoromana, un cavaliere che i fiorentini chiamavano Marte: qui è mostrata così, spezzata, ma la forma della rottura è inventata.',
     fonti: [
       'Dante, Paradiso XVI 145–147; Inferno XIII 146–150',
+      'G. Villani, Nuova Cronica VI, 38: «a piè del pilastro ov\'era la \'nsegna di Mars» (Faini p. 11)',
       'R. Davidsohn, Storia di Firenze, via Faini p. 11 e n. 12',
       'Scomparsa con l\'alluvione del 1333 [da verificare: Villani XII, 1]',
       'Statua equestre tardoromana; la colloca in Oltrarno: F. Vossilla, «Storia d\'una fontana», Mitteilungen des Kunsthistorischen Institutes in Florenz 38 (1994), da G. Cinelli [da verificare sul testo]'

@@ -8,3 +8,6 @@ strumenti/figure/mocap/
 
 # modelli scaricati: si riscaricano (strumenti/animali/README.md)
 strumenti/animali/sorgenti/
+
+# i file dell'app: si rigenerano con npm run app (app/README.md)
+app/www/
