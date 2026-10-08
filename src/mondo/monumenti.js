@@ -7,6 +7,7 @@ import { PORTE as PORTE_CERCHIA, TRACCIATO } from '../dati/cerchia.js';
 import { falda, matriceLotto, muro, piramide, scatola, tamponamento, timpano, uvMetri } from './cantiere.js';
 import { torre } from './edifici.js';
 import { MONUMENTO, PONTE, STRADA } from './griglia.js';
+import { INDICE, MODELLI, posaModello } from './modelli.js';
 import { LIVELLO_ACQUA, distanzaFiume, quota } from './terreno.js';
 import { rng } from './rumore.js';
 
@@ -42,7 +43,7 @@ export function rettangoloMinimo(pts) {
 // Asse: dal capo in città (A) al capo in Oltrarno (B), lungo la linea di
 // OpenStreetMap del ponte di oggi. Larghezza e arcate: ipotesi.
 const A = [8.4, -26.4], B = [-45.6, 74.4];
-const LARGH_PONTE = 7.2;
+export const LARGH_PONTE = 7.2;
 export const PONTE_ASSE = (() => {
   const dx = B[0] - A[0], dz = B[1] - A[1], L = Math.hypot(dx, dz);
   return { A, B, L, dx: dx / L, dz: dz / L, wx: -dz / L, wz: dx / L };
@@ -65,10 +66,19 @@ export function sulPonte(x, z) {
 
 function ponte(cant, griglia) {
   const P = PONTE_ASSE, LIV = 'ipotesi';
+  // base locale: x lungo l'asse, y in alto, z di traverso (verso valle)
+  const Mp = new Matrix4().makeBasis(new Vector3(P.dx, 0, P.dz), new Vector3(0, 1, 0), new Vector3(P.wx, 0, P.wz))
+    .setPosition(P.A[0] - P.wx * LARGH_PONTE / 2, 0, P.A[1] - P.wz * LARGH_PONTE / 2);
   // dove finisce la terra e comincia l'acqua, lungo l'asse
   let s1 = 0, s2 = P.L;
   for (let s = 0; s < P.L; s += 0.25) if (distanzaFiume(P.A[0] + P.dx * s, P.A[1] + P.dz * s) < 0) { s1 = s; break; }
   for (let s = P.L; s > 0; s -= 0.25) if (distanzaFiume(P.A[0] + P.dx * s, P.A[1] + P.dz * s) < 0) { s2 = s; break; }
+  if (MODELLI.ponte) {
+    // il ponte modellato in Blender, sulle stesse luci e sulle stesse quote
+    posaModello(cant, 'ponte', Mp, LIV);
+    griglia.spezzata([P.A, P.B], LARGH_PONTE - 0.6, PONTE, true);
+    return { s1, s2 };
+  }
   // cinque arcate: il ponte ricostruito dopo il crollo del 1177 (DOSSIER-TOPOGRAFICO.md, § 3)
   const n = 5, pila = 3.4;
   const luce = (s2 - s1 - (n - 1) * pila) / n;
@@ -167,6 +177,13 @@ function marte(cant, griglia) {
   // la statua guarda il ponte
   const M = new Matrix4().makeRotationY(Math.atan2(P.dx, P.dz)).setPosition(x, y, z);
   const LIV = 'ipotesi';
+  griglia.rettangolo(x, z, 1, 0, 1.0, 1.0, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
+  if (MODELLI.marte) {
+    // il modello di Blender ha la testa del cavallo verso −z: si gira di mezzo giro
+    // marmo vecchio, ingrigito: è un frammento antico già nel 1216
+    posaModello(cant, 'marte', new Matrix4().makeRotationY(Math.atan2(P.dx, P.dz) + Math.PI).setPosition(x, y, z), LIV, [0.78, 0.76, 0.71]);
+    return;
+  }
   const pietra = [0.82, 0.8, 0.74];
   cant.aggiungi(scatola(-0.95, -0.5, -0.95, 0.95, 0.45, 0.95), 'conci', LIV, M, [0.92, 0.9, 0.86]);
   cant.aggiungi(scatola(-0.7, 0.45, -0.7, 0.7, 3.1, 0.7), 'conci', LIV, M, [0.95, 0.93, 0.88]);
@@ -184,6 +201,13 @@ function marte(cant, griglia) {
 }
 
 /* ============================================================= CHIESE */
+// Santa Maria sopra Porta: impronta e lato della facciata (ipotesi). Prima
+// della ricostruzione del secondo Duecento stava forse più vicina a via
+// Por Santa Maria e aveva un altro orientamento (DOSSIER-TOPOGRAFICO.md).
+// L'asse lungo va verso via Por Santa Maria, così la facciata guarda la strada
+// (prima dell'8 ottobre l'impronta era girata e mostrava il fianco).
+export const SMSP = { impronta: [[-7.5, -182.5], [10.5, -182.5], [10.5, -171.5], [-7.5, -171.5]], verso: [16, -177] };
+
 /**
  * Chiesa basilicale sul rettangolo minimo di un'impronta. La facciata va
  * dal lato del punto «verso» (la piazza o la strada su cui si apre).
@@ -203,6 +227,13 @@ function chiesa(cant, griglia, imp, opz) {
   const px = O.cx - ux * O.a - tx * O.b, pz = O.cz - uz * O.a - tz * O.b;
   const y = quota(O.cx, O.cz);
   const M = matriceLotto(px, y, pz, nx, nz);
+  if (opz.modello && MODELLI[opz.modello]) {
+    // il modello di Blender ha le misure di questa impronta (parametri-monumenti.mjs)
+    posaModello(cant, opz.modello, M, LIV);
+    griglia.poligono(imp, MONUMENTO);
+    griglia.rettangolo(O.cx, O.cz, O.ux, O.uz, O.a + 0.3, O.b + 0.3, (i, j) => { const k = j * griglia.n + i; if (griglia.c[k] === 0) griglia.c[k] = MONUMENTO; });
+    return;
+  }
   const t = 0.9, H = opz.altezza || R.tra(12, 15);
   const tinta = [0.95, 0.93, 0.88];
   const tre = opz.navate === 3 && largo > 14;
@@ -287,6 +318,13 @@ function porta(cant, griglia, [x, z], dir) {
   const nx = dir[0], nz = dir[1], tx = nz, tz = -nx;
   const px = x - tx * W / 2 - nx * D / 2, pz = z - tz * W / 2 - nz * D / 2;
   const M = matriceLotto(px, quota(x, z), pz, nx, nz);
+  if (MODELLI.porta) {
+    // la torre di porta modellata in Blender, con le stesse misure
+    posaModello(cant, 'porta', M, LIV);
+    griglia.rettangolo(x, z, tx, tz, W / 2, D / 2, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
+    griglia.rettangolo(x, z, tx, tz, 2.0, D / 2 + 0.5, (i, j) => { griglia.c[j * griglia.n + i] = STRADA; });
+    return;
+  }
   const arco = { x: W / 2, y: 0, w: 4.2, h: 6.8, arco: true, tipo: 'porta' };
   const tinta = [0.93, 0.92, 0.88];
   cant.aggiungi(muro(W, -1.2, H, 1.2, [arco, { x: W / 2, y: 10, w: 0.8, h: 1.4, arco: true }]), 'conci', LIV, M, tinta);
@@ -427,7 +465,7 @@ export function costruisciMonumenti(cant, griglia) {
   for (const [nome, opz] of chiese) { const p = imp(nome); if (p) chiesa(cant, griglia, p, opz); }
 
   // Santa Maria sopra Porta (oggi San Biagio, in piazza di Parte Guelfa): pianta ipotetica
-  chiesa(cant, griglia, [[-4, -186], [7, -186], [7, -168], [-4, -168]], { verso: [16, -177], livello: 'ipotesi', altezza: 10, vela: true, seme: 17 });
+  chiesa(cant, griglia, SMSP.impronta, { verso: SMSP.verso, livello: 'ipotesi', altezza: 10, vela: true, seme: 17, modello: 'chiesa' });
 
   porta(cant, griglia, [84.4, -197], [0, 1]);
   for (const p of PORTE_CERCHIA) portaDellaCerchia(cant, griglia, p);
@@ -444,8 +482,13 @@ export function costruisciMonumenti(cant, griglia) {
     const amidei = t.nome === 'Torre degli Amidei';
     const nx = -O.uz, nz = O.ux;               // fronte su un lato lungo
     const W = 2 * O.a, D = 2 * O.b;
-    const L = { px: O.cx - O.ux * O.a - nx * O.b, pz: O.cz - O.uz * O.a - nz * O.b, nx, nz, W, D, seme: t.id % 9973, H: amidei ? 32 : R.tra(26, 44) };
-    torre(cant, L, 'dedotto');
+    const L = { px: O.cx - O.ux * O.a - nx * O.b, pz: O.cz - O.uz * O.a - nz * O.b, nx, nz, W, D, seme: t.id % 9973, H: amidei ? 36 : R.tra(26, 44) };
+    if (amidei && MODELLI.amidei) {
+      // la torre modellata: facciata sul lato che dà su via Por Santa Maria
+      const A = INDICE.amidei, ni = [-A.fronte.nx, -A.fronte.nz], tx = ni[1], tz = -ni[0];
+      const fx = O.cx + A.fronte.nx * A.D / 2 - tx * A.W / 2, fz = O.cz + A.fronte.nz * A.D / 2 - tz * A.W / 2;
+      posaModello(cant, 'amidei', matriceLotto(fx, quota(O.cx, O.cz), fz, ni[0], ni[1]), 'dedotto');
+    } else torre(cant, L, 'dedotto');
     griglia.poligono(t.punti, MONUMENTO);
     griglia.rettangolo(O.cx, O.cz, O.ux, O.uz, O.a, O.b, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
     torriNote.push({ nome: t.nome, x: O.cx, z: O.cz, h: L.H });

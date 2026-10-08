@@ -21,6 +21,7 @@ import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from './mondo/griglia.js';
 import { Cantiere } from './mondo/cantiere.js';
 import { areaCostruita, costruisciLotti, lottizza, pozziNeiCortili } from './mondo/edifici.js';
 import { KIT, caricaKit } from './mondo/kit.js';
+import { caricaModelli } from './mondo/modelli.js';
 import { PONTE_ASSE, costruisciMonumenti, sulPonte } from './mondo/monumenti.js';
 import { costruisciFondale } from './mondo/fondale.js';
 import { creaVegetazione } from './mondo/vegetazione.js';
@@ -96,8 +97,10 @@ async function costruisci() {
   const figure = caricaFigure().catch(e => { console.warn('figure di Blender non caricate:', e); return null; });
   // il kit edilizio (finestre, porte, botteghe, pozzi): senza, le case usano forme semplici
   const kit = params.has('senzakit') ? null : caricaKit().catch(e => { console.warn('kit edilizio non caricato:', e); return null; });
+  // i monumenti modellati in Blender: senza, quelli generati
+  const monumentiBlender = params.has('senzamodelli') ? null : caricaModelli().catch(e => { console.warn('monumenti di Blender non caricati:', e); return null; });
   await Promise.all([
-    kit,
+    kit, monumentiBlender,
     creaMateriali('alta', (k, n) => ui.progresso(`Impasto la calce e cuocio i coppi… ${k}/${n}`)),
     preparaCampo()
   ]);

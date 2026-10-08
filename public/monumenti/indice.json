@@ -1,0 +1,25 @@
+{
+ "amidei": {
+  "D": 10.671,
+  "W": 8.46,
+  "fronte": {
+   "nx": 0.883,
+   "nz": 0.469
+  },
+  "triangoli": 21628
+ },
+ "chiesa": {
+  "L": 18,
+  "W": 11,
+  "triangoli": 6232
+ },
+ "marte": {
+  "triangoli": 3182
+ },
+ "ponte": {
+  "triangoli": 35052
+ },
+ "porta": {
+  "triangoli": 9204
+ }
+}

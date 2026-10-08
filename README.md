@@ -56,7 +56,7 @@ src/dati/        luoghi e schede (luoghi.js), strade del 1216 (strade-1216.js), 
 src/mondo/       terreno e fiume, cielo e sole, materiali, case, monumenti, abitanti, suoni, vegetazione
 src/ui/          interfaccia e racconto
 public/          texture fotografiche, figure (prodotte da strumenti/figure/) e kit edilizio (da strumenti/kit/)
-strumenti/       script di Blender per le figure e per il kit edilizio (finestre, porte, botteghe, pozzi)
+strumenti/       script di Blender per le figure, il kit edilizio (finestre, porte, botteghe, pozzi) e i monumenti
 scripts/         osm-estrai.mjs (OpenStreetMap → osm.js), copione-estrai.mjs (copione → copione.js),
                  verifica.mjs (luoghi e scene raggiungibili), pubblica.sh
 dati-osm/        estratto OpenStreetMap del 01/10/2026 (ODbL)
@@ -70,4 +70,5 @@ dati-osm/        estratto OpenStreetMap del 01/10/2026 (ODbL)
 - **three.js** (MIT), incluso nel pacchetto.
 - **Texture fotografiche:** Poly Haven, licenza CC0 (autori: Rob Tuytel, Dimitrios Savva, Amal Kumar, Charlotte Baglioni, Dario Barresi; dettagli in `public/texture/FONTI.json`). Erba, marmo e suoni sono generati dal codice.
 - **Figure:** corpi MakeHuman (CC0) e movimenti del CMU Graphics Lab Motion Capture Database (http://mocap.cs.cmu.edu, finanziato da NSF EIA-0196217). Come si producono: [strumenti/figure/README.md](strumenti/figure/README.md).
+- **Monumenti del capo del ponte:** modellati da `strumenti/monumenti/monumenti.py`; la statua di Marte usa il cavallo «Rigged Horse» di Lyndon Daniels (CC0, OpenGameArt). Fonti e livelli: [strumenti/monumenti/FONTI.md](strumenti/monumenti/FONTI.md).
 - **Kit edilizio:** finestre, porte, botteghe e pozzi modellati da `strumenti/kit/kit.py` in Blender, senza materiali di terzi. Fonti, livelli di certezza e anacronismi controllati: [strumenti/kit/FONTI.md](strumenti/kit/FONTI.md).
