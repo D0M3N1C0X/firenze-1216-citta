@@ -33,13 +33,14 @@ export const LUOGHI = [
     id: 'marte',
     nome: 'La pietra di Marte',
     pos: [17, -31], raggio: 8,
-    luogo: { livello: 'documentato', nota: 'a capo del ponte, dal lato della città: tutte le cronache; Dante, Par. XVI 145–147' },
-    forma: { livello: 'ipotesi', nota: 'figura e pilastro sono inventati; il lato del ponte su cui stava è scelto da noi' },
-    testo: 'I fiorentini la chiamavano Marte e credevano che la città dipendesse da lei. Per Dante è «quella pietra scema / che guarda \'l ponte»: una statua mutila, già allora un frammento. Secondo la tradizione cadde in Arno con la piena del 1178 e fu ripescata verso il 1200. Che cosa raffigurasse davvero non lo sappiamo.',
+    luogo: { livello: 'documentato', nota: 'a capo del ponte, dal lato della città: le cronache; Dante, Par. XVI 145–147. Le fonti divergono: Vossilla (1994, da Cinelli) la mette dal lato d\'Oltrarno' },
+    forma: { livello: 'ipotesi', nota: 'una statua equestre tardoromana secondo Vossilla [da verificare]; il pilastro e le rotture sono inventati' },
+    testo: 'I fiorentini la chiamavano Marte e credevano che la città dipendesse da lei. Per Dante è «quella pietra scema / che guarda \'l ponte»: una statua mutila, già allora un frammento. Secondo la tradizione cadde in Arno con la piena del 1178 e fu ripescata verso il 1200. Era forse una statua equestre tardoromana, un cavaliere che i fiorentini chiamavano Marte: qui è mostrata così, spezzata, ma la forma della rottura è inventata.',
     fonti: [
       'Dante, Paradiso XVI 145–147; Inferno XIII 146–150',
       'R. Davidsohn, Storia di Firenze, via Faini p. 11 e n. 12',
-      'Scomparsa con l\'alluvione del 1333 [da verificare: Villani XII, 1]'
+      'Scomparsa con l\'alluvione del 1333 [da verificare: Villani XII, 1]',
+      'Statua equestre tardoromana; la colloca in Oltrarno: F. Vossilla, «Storia d\'una fontana», Mitteilungen des Kunsthistorischen Institutes in Florenz 38 (1994), da G. Cinelli [da verificare sul testo]'
     ]
   },
   {
@@ -47,7 +48,7 @@ export const LUOGHI = [
     nome: 'Il Ponte Vecchio del 1216',
     pos: [-17, 20], raggio: 30,
     luogo: { livello: 'documentato', nota: 'nel 1216 è l\'unico ponte di Firenze' },
-    forma: { livello: 'ipotesi', nota: 'cinque arcate secondo una fonte da verificare; larghezza e assenza di botteghe sono ipotesi' },
+    forma: { livello: 'ipotesi', nota: 'cinque arcate secondo le fonti divulgative, nove secondo un\'altra: le fonti divergono; larghezza e assenza di botteghe sono ipotesi' },
     testo: 'Nel 1216 l\'Arno si passa solo qui. Il ponte alla Carraia si comincia nel 1218, quello di Rubaconte nel 1237, Santa Trinita nel 1252. Questo ponte era stato ricostruito dopo il crollo per la piena del 1177, con cinque arcate [da verificare]. Il ponte che vedi oggi è un altro: fu rifatto nel 1345, dopo che la piena del 1333 aveva travolto anche questo. Di come fosse davvero non abbiamo una descrizione: arcate e carreggiata sono ricostruite per analogia.',
     fonti: [
       'Date dei ponti: G. Villani, Nuova Cronica [da verificare: capitoli]',
@@ -60,12 +61,13 @@ export const LUOGHI = [
     nome: 'La torre degli Amidei',
     pos: [15, -61], raggio: 10,
     luogo: { livello: 'dedotto', nota: 'la torre che oggi porta il nome degli Amidei; i congiurati si riunirono «in casa gli Amidei da Santo Stefano» (Villani; Faini p. 11)' },
-    forma: { livello: 'ipotesi', nota: 'l\'altezza del 1216 è ignota; la torre di oggi è stata ricostruita nel dopoguerra [da verificare]' },
+    forma: { livello: 'dedotto', nota: 'porte a doppia ghiera, leoni di marmo, filaretto e finestre dalla torre di oggi, ricostruita sulle fotografie dopo il 1944; l\'altezza del 1216 è un\'ipotesi' },
     testo: 'È uno dei punti fermi del modello: l\'impronta viene dalla torre di oggi, in via Por Santa Maria. Nel 1216 le torri potevano essere molto più alte di adesso. Furono mozzate dal governo del Primo Popolo intorno al 1250, a 50 braccia, circa 29 metri [da verificare]. L\'altezza che vedi è quindi un\'ipotesi.',
     fonti: [
       'G. Villani, Nuova Cronica VI, 38, citato da Faini p. 11',
       'Pseudo-Brunetto: l\'agguato preparato in casa Amidei (Faini p. 15)',
-      'Mozzatura delle torri: Villani VII [da verificare]'
+      'Mozzatura delle torri: Villani VII [da verificare]',
+      'La torre di oggi, documentata dal 1241: Wikipedia, «Torre degli Amidei», da E. Pieri, Firenze. Guida di architettura (1992)'
     ]
   },
   {
@@ -91,7 +93,7 @@ export const LUOGHI = [
     nome: 'Porta Santa Maria',
     pos: [84, -194], raggio: 12,
     luogo: { livello: 'ipotesi', nota: 'le fonti divergono: all\'altezza di via Vacchereccia, oppure all\'incrocio con borgo Santi Apostoli e via Lambertesca (DOSSIER-TOPOGRAFICO.md, § 2)' },
-    forma: { livello: 'ipotesi', nota: 'arco e torre sono inventati' },
+    forma: { livello: 'ipotesi', nota: 'una torre di porta con il fornice ad arco: nessuna porta della cerchia del 1172–75 è sopravvissuta' },
     testo: 'Il 10 febbraio 1216 Buondelmonte entra in città da Porta Santa Maria per andare a giurare la donna dei Donati, invece dell\'Amidei. Ma quale porta? Le fonti la collocano in due punti diversi di via Por Santa Maria: all\'altezza di via Vacchereccia, dove correva la cinta più antica, oppure più vicino al ponte, all\'incrocio con borgo Santi Apostoli e via Lambertesca, sulla cerchia del 1172–1175. Forse erano due porte con lo stesso nome. Qui è mostrata la prima: è una delle domande per il medievista.',
     fonti: ['Pseudo-Brunetto, ed. Schiaffini p. 118; Faini pp. 14–16', 'Posizione: Wikipedia, «Via Por Santa Maria» e «Mura di Firenze», da Bargellini-Guarnieri [da verificare]', 'Domanda per il medievista: DOSSIER-TOPOGRAFICO.md, n. 34']
   },
@@ -99,8 +101,8 @@ export const LUOGHI = [
     id: 'santa-maria-sopra-porta',
     nome: 'Santa Maria sopra Porta',
     pos: [15, -178], raggio: 12,
-    luogo: { livello: 'dedotto', nota: 'oggi San Biagio, in piazza di Parte Guelfa; documentata dal 1038, rifatta nella seconda metà del Duecento [da verificare]' },
-    forma: { livello: 'ipotesi', nota: 'edificio ricostruito' },
+    luogo: { livello: 'dedotto', nota: 'oggi San Biagio, in piazza di Parte Guelfa; documentata dal 1038, rifatta nella seconda metà del Duecento, forse più vicino a via Por Santa Maria e con un altro orientamento (Bargellini-Guarnieri) [da verificare]' },
+    forma: { livello: 'ipotesi', nota: 'chiesa romanica a navata unica, per analogia con le chiese fiorentine coeve' },
     testo: 'Qui, dopo il 10 febbraio, gli amici e i parenti di Oddo Arrighi si riunirono per decidere che cosa fare di Buondelmonte. Le proposte furono bastonarlo, sfregiarlo o ucciderlo. Mosca dei Lamberti chiuse il consiglio con «cosa fatta cappa à»: una cosa fatta fino in fondo non si può più disfare. All\'Inferno, nei versi di Dante, è Mosca stesso a ricordare di averlo detto: «Capo ha cosa fatta». Nel Trecento, nello stesso luogo, ebbe sede la Parte Guelfa.',
     fonti: ['Pseudo-Brunetto, ed. Schiaffini p. 118; Faini p. 15', 'Dante, Inferno XXVIII 103–111', 'Sede della Parte Guelfa: Faini p. 17']
   },

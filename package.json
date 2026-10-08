@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "osm": "node scripts/osm-estrai.mjs",
     "copione": "node scripts/copione-estrai.mjs",
-    "verifica": "node scripts/verifica.mjs"
+    "verifica": "node scripts/verifica.mjs",
+    "parametri": "node scripts/parametri-monumenti.mjs"
   },
   "dependencies": {
     "three": "0.169.0"

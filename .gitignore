@@ -5,3 +5,6 @@ dist/
 .DS_Store
 __pycache__/
 strumenti/figure/mocap/
+
+# modelli scaricati: si riscaricano (strumenti/animali/README.md)
+strumenti/animali/sorgenti/
