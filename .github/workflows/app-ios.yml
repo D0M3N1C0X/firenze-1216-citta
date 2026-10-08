@@ -1,0 +1,52 @@
+name: App iOS
+
+# Compila l'app per il simulatore, senza firma: serve a sapere che il
+# progetto Xcode in app/ios regge con un Xcode vero, visto che il Mac su cui
+# si lavora oggi non lo installa. Non pubblica niente: per TestFlight c'è
+# app-testflight.yml, e i passaggi sono in app/README.md.
+#
+# Questo flusso vive nel repository pubblico della città (la cartella citta/
+# del repository privato, pubblicata con scripts/pubblica.sh).
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'app/ios/**'
+      - 'capacitor.config.json'
+      - 'scripts/app-www.mjs'
+      - 'package.json'
+      - '.github/workflows/app-ios.yml'
+
+jobs:
+  simulatore:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      - name: Versioni disponibili
+        run: |
+          xcodebuild -version
+          sw_vers
+
+      - name: Costruisce la città e sincronizza Capacitor
+        run: npm run app
+
+      - name: Compila per il simulatore
+        run: |
+          xcodebuild \
+            -project app/ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build

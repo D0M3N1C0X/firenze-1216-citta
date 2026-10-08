@@ -53,5 +53,47 @@
    "durata": 0.72,
    "velocita": 3.348
   }
+ },
+ "palafreno": {
+  "_misure": {
+   "altezza": 1.628,
+   "lunghezza": 2.456
+  },
+  "fermo": {
+   "velocita": 0
+  },
+  "galoppo": {
+   "durata": 0.62,
+   "velocita": 7.275
+  },
+  "passo": {
+   "durata": 1.15,
+   "velocita": 1.504
+  },
+  "trotto": {
+   "durata": 0.72,
+   "velocita": 3.492
+  }
+ },
+ "sellato": {
+  "_misure": {
+   "altezza": 1.678,
+   "lunghezza": 2.532
+  },
+  "fermo": {
+   "velocita": 0
+  },
+  "galoppo": {
+   "durata": 0.62,
+   "velocita": 7.5
+  },
+  "passo": {
+   "durata": 1.15,
+   "velocita": 1.55
+  },
+  "trotto": {
+   "durata": 0.72,
+   "velocita": 3.6
+  }
  }
 }

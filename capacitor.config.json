@@ -1,0 +1,10 @@
+{
+  "appId": "io.github.d0m3n1c0x.firenze1216",
+  "appName": "Firenze 1216",
+  "webDir": "app/www",
+  "ios": {
+    "path": "app/ios",
+    "contentInset": "never",
+    "backgroundColor": "#1b1814"
+  }
+}

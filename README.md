@@ -60,6 +60,7 @@ strumenti/       script di Blender per le figure, gli animali, il kit edilizio (
 scripts/         osm-estrai.mjs (OpenStreetMap → osm.js), copione-estrai.mjs (copione → copione.js),
                  verifica.mjs (luoghi e scene raggiungibili), pubblica.sh
 dati-osm/        estratto OpenStreetMap del 01/10/2026 (ODbL)
+app/             l'app per iPhone, iPad e Mac (Capacitor): vedi app/README.md
 ```
 
 ## Licenze e attribuzioni

@@ -35,7 +35,7 @@ Scrive `public/monumenti/<nome>.glb` e `indice.json`. Le misure che devono comba
 ## 2. La pietra di Marte · forma «ipotesi»
 
 - **Che cosa era.** Francesco Vossilla la descrive come una statua equestre tardoromana, e riprende Cinelli, che la dice un Marte a cavallo tolto dal tempio di San Giovanni. La fonte è il saggio «Storia d'una fontana: il Bacco del Giambologna in Borgo San Jacopo», *Mitteilungen des Kunsthistorischen Institutes in Florenz* 38 (1994), pp. 130–146, [doi:10.11588/mkhi.1994.1.68070](https://doi.org/10.11588/mkhi.1994.1.68070). L'ho letto solo dai motori di ricerca **[da verificare sul testo]**.
-- **Dove stava. Le fonti divergono.** Secondo Vossilla stava a capo del ponte più antico, «più o meno» dove oggi si incontrano via de' Bardi e via de' Guicciardini, cioè dal lato d'Oltrarno. Le cronache e la lapide dantesca la mettono invece dal lato della città: lì c'è il capo del ponte dove fu ucciso Buondelmonte. Il modello segue le cronache (lacuna 42).
+- **Dove stava. Le fonti divergono.** Secondo Vossilla stava a capo del ponte più antico, «più o meno» dove oggi si incontrano via de' Bardi e via de' Guicciardini, cioè dal lato d'Oltrarno. Villani, che scrive nel Trecento, la mette invece dal lato della città: Buondelmonte fu ucciso «a piè del ponte Vecchio dal lato di qua, apunto a piè del pilastro ov'era la 'nsegna di Mars» (*Nuova Cronica* VI, 38, citato da Faini p. 11). Il modello segue Villani, che è anche la fonte del pilastro (lacuna 42, chiarita in parte il 9 ottobre).
 - **Com'era ridotta.** Dante la dice «pietra scema», cioè mutila. Il modello mostra:
   - un cavallo con la zampa anteriore alzata, come nelle statue equestri romane;
   - il collo spezzato e la zampa rotta sotto il ginocchio;

@@ -38,10 +38,15 @@ ANDATURE = {
     'galoppo': dict(T=0.62, v=7.5, terra=0.3, fasi={'PS': 0.0, 'PD': 0.1, 'AS': 0.28, 'AD': 0.4}, alza=0.28, sobbalzo=0.09, battiti=1),
 }
 
+# sella: il colore della gualdrappa (lineare, glTF), o None
 VARIANTI = {
-    'cavallo': dict(scala=1.0, orecchie=1.0, testa=1.0, mantello=None, basto=False),
-    'mulo':    dict(scala=0.93, orecchie=1.55, testa=1.08, mantello=('scurisci', 0.62), basto=True),
-    'asino':   dict(scala=0.72, orecchie=1.85, testa=1.18, mantello=('grigio', 0.0), basto=True),
+    'cavallo':  dict(scala=1.0, orecchie=1.0, testa=1.0, mantello=None, basto=False, sella=None),
+    'mulo':     dict(scala=0.93, orecchie=1.55, testa=1.08, mantello=('scurisci', 0.62), basto=True, sella=None),
+    'asino':    dict(scala=0.72, orecchie=1.85, testa=1.18, mantello=('grigio', 0.0), basto=True, sella=None),
+    # cavalli da sella per i cavalieri: un baio con la gualdrappa di robbia,
+    # un palafreno grigio chiaro con la gualdrappa di guado (ipotesi)
+    'sellato':  dict(scala=1.0, orecchie=1.0, testa=1.0, mantello=None, basto=False, sella=(0.32, 0.05, 0.03)),
+    'palafreno': dict(scala=0.97, orecchie=1.0, testa=1.0, mantello=('chiaro', 0.0), basto=False, sella=(0.05, 0.09, 0.25)),
 }
 
 
@@ -168,6 +173,59 @@ def basto(corpo, arm):
     return ob
 
 
+def sella(corpo, arm, panno):
+    """La sella da cavaliere: gualdrappa di panno, seduta di cuoio con gli
+    arcioni alti davanti e dietro, staffili e staffe di ferro, legata al
+    dorso. La forma segue le selle del Duecento nella pittura e nella
+    scultura: è un'ipotesi."""
+    ossa = arm.data.bones
+    a = ossa['Bone'].head_local; b = ossa['Bone'].tail_local
+    c = a.lerp(b, 0.6)                                     # un poco verso il garrese
+    vs = [v.co for v in corpo.data.vertices if abs(v.co.y - c.y) < 0.12 and abs(v.co.x) < 0.12]
+    zd = max(v.z for v in vs) if vs else c.z + 0.2
+    larg = max(abs(v.co.x) for v in corpo.data.vertices if abs(v.co.y - c.y) < 0.15 and zd - 0.5 < v.co.z < zd - 0.15)
+    b_ = bmesh.new()
+    gruppi = []                                           # facce per materiale
+    def solido(pts, mat):
+        prima = len(b_.faces)
+        bmesh.ops.convex_hull(b_, input=[b_.verts.new(p) for p in pts])
+        gruppi.append((prima, len(b_.faces), mat))
+    y0 = c.y
+    # la gualdrappa che ricade sui fianchi (un guscio sopra il dorso)
+    prof = [(0.0, zd + 0.012), (0.16, zd - 0.01), (larg * 0.8, zd - 0.12), (larg + 0.03, zd - 0.24), (larg + 0.03, zd - 0.36)]
+    for sx in (-1, 1):
+        for i in range(len(prof) - 1):
+            (x0, z0), (x1, z1) = prof[i], prof[i + 1]
+            solido([(sx * x, y, z + dz) for x, z in ((x0, z0), (x1, z1)) for y in (y0 - 0.42, y0 + 0.44) for dz in (0.0, 0.012)], 2)
+    # la seduta e gli arcioni
+    solido([(sx * 0.17, y, z) for sx in (-1, 1) for y in (y0 - 0.24, y0 + 0.24) for z in (zd + 0.01, zd + 0.08)], 0)
+    # l'arcione davanti: un arco basso sul garrese
+    arco = [(0.13 * math.cos(t), zd + 0.06 + 0.13 * math.sin(t)) for t in [math.pi * i / 8 for i in range(9)]]
+    solido([(x, y, z) for x, z in arco for y in (y0 - 0.27, y0 - 0.22)], 0)
+    # l'arcione dietro: un appoggio curvo che avvolge la seduta
+    curva = [(0.19 * math.sin(t), y0 + 0.2 + 0.08 * math.cos(t)) for t in [math.pi * (i / 8 - 0.5) for i in range(9)]]
+    solido([(x, y, z) for x, y in curva for z in (zd + 0.06, zd + 0.27)] + [(x, y + 0.04, zd + 0.06) for x, y in curva], 0)
+    # staffili e staffe
+    for sx in (-1, 1):
+        x = sx * (larg + 0.05)
+        solido([(x + dx, y0 - 0.05 + dy, z) for dx in (-0.006, 0.006) for dy in (-0.02, 0.02) for z in (zd - 0.05, zd - 0.58)], 0)
+        staffa = [(x + sx * 0.0 + dx, y0 - 0.05 + 0.07 * math.cos(t), zd - 0.58 - 0.09 * (1 - abs(math.sin(t)))) for t in [math.pi * i / 6 for i in range(13)] for dx in (-0.02, 0.02)]
+        solido(staffa, 1)
+    me = bpy.data.meshes.new('sella'); b_.to_mesh(me); b_.free()
+    for nome, col, r in (('cuoio', (0.09, 0.045, 0.02), 0.6), ('ferro_staffe', (0.03, 0.03, 0.03), 0.4), ('gualdrappa', panno, 0.85)):
+        m = bpy.data.materials.new(nome); m.use_nodes = True
+        bsdf = m.node_tree.nodes['Principled BSDF']; bsdf.inputs['Base Color'].default_value = col + (1,); bsdf.inputs['Roughness'].default_value = r
+        if nome == 'ferro_staffe': bsdf.inputs['Metallic'].default_value = 0.8
+        me.materials.append(m)
+    for (i0, i1, mat) in gruppi:
+        for i in range(i0, i1):
+            if i < len(me.polygons): me.polygons[i].material_index = mat
+    ob = bpy.data.objects.new('sella', me); bpy.context.scene.collection.objects.link(ob)
+    g = ob.vertex_groups.new(name='Bone'); g.add(range(len(me.vertices)), 1.0, 'REPLACE')
+    ob.data.uv_layers.new(name=corpo.data.uv_layers.active.name)
+    return ob
+
+
 def materiali(corpo, regola, nome):
     """I materiali del file vengono da Blender 2.6, senza nodi: il glTF non li
     leggerebbe. Si rifanno con i nodi dalle immagini incluse nel file: il
@@ -184,6 +242,11 @@ def materiali(corpo, regola, nome):
     px[:, :3] *= 0.55 + 0.45 * occl
     if regola and regola[0] == 'scurisci':
         px[:, :3] *= regola[1]
+    elif regola and regola[0] == 'chiaro':
+        # grigio chiaro pomellato: il mantello schiarito, con le macchie della foto
+        lum = px[:, :3] @ np.array([0.3, 0.59, 0.11], dtype=np.float32)
+        g = np.clip(lum * 1.25 + 0.42, 0, 1)
+        px[:, 0], px[:, 1], px[:, 2] = g * 0.97, g * 0.96, g * 0.93
     elif regola:
         lum = px[:, :3] @ np.array([0.3, 0.59, 0.11], dtype=np.float32)
         g = np.clip(lum * 1.5 + 0.13, 0, 1)
@@ -333,6 +396,7 @@ def costruisci(nome):
     s = in_metri(corpo, arm, parti, v['scala'])
     proporzioni(corpo, parti, arm, v)
     if v['basto']: parti = parti + [basto(corpo, arm)]
+    if v['sella']: parti = parti + [sella(corpo, arm, v['sella'])]
     corpo = unisci(corpo, parti, arm)
     materiali(corpo, v['mantello'], nome)
     riduci_immagini(corpo)
@@ -340,7 +404,7 @@ def costruisci(nome):
     info = {}
     act, n = fermo(arm, zoccoli); cuoci(arm, act, n, 'fermo'); info['fermo'] = {'velocita': 0}
     for nome_a, A in ANDATURE.items():
-        if nome != 'cavallo' and nome_a == 'galoppo': continue
+        if nome in ('mulo', 'asino') and nome_a == 'galoppo': continue
         act, n = andatura(arm, zoccoli, nome_a, A, v['scala'])
         cuoci(arm, act, n, nome_a)
         info[nome_a] = {'velocita': round(A['v'] * v['scala'], 3), 'durata': A['T']}

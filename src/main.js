@@ -168,6 +168,7 @@ function creaAbitanti() {
     animali,
     // muli, asini e cavalli: più nei giorni di lavoro che a Pasqua (ipotesi)
     numeroAnimali: Math.round(+(params.get('gente') || giornata.gente) * (giornata.festa ? 0.04 : 0.09)),
+    numeroCavalieri: Math.round(+(params.get('gente') || giornata.gente) * (giornata.festa ? 0.025 : 0.035)),
     numero: +(params.get('gente') || giornata.gente),
     raggio: RAGGIO_CITTA,
     extra: [{ punti: [PONTE_ASSE.A, PONTE_ASSE.B], larghezza: 5.5 }],
@@ -310,6 +311,7 @@ function ciclo() {
 // per le verifiche dalla console: ?debug
 if (params.has('debug')) window.citta = {
   renderer, scene, camera, get mondo() { return mondo; }, get composer() { return composer; }, get giornata() { return giornata; }, impostaGiornata, racconto, vaiScena,
+  get figure() { return modelli; }, get animali() { return animali; },
   /** Salva un fotogramma a piena risoluzione (solo con il server di sviluppo). */
   async cattura(nome = 'cattura') {
     composer.render(0.016);

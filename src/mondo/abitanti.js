@@ -1,6 +1,6 @@
 import {
   AnimationMixer, Bone, BufferGeometry, Float32BufferAttribute, MeshStandardMaterial, Skeleton, SkinnedMesh,
-  Uint16BufferAttribute, Vector3
+  Euler, Quaternion, Uint16BufferAttribute, Vector3
 } from 'three';
 import { clone as clonaScheletro } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { rng, smooth } from './rumore.js';
@@ -42,6 +42,32 @@ const PADRE = {
 };
 const NOMI = Object.keys(RIPOSO);
 const IDX = Object.fromEntries(NOMI.map((n, i) => [n, i]));
+
+/* --------------------------------------------------- a cavallo
+   La posa in sella di una figura di Blender: rotazioni da aggiungere a
+   quelle di riposo delle ossa (scheletro cmu_mb, assi locali di glTF:
+   y lungo l'osso). Cosce in avanti e aperte sul dorso, ginocchia appena
+   piegate, piedi nelle staffe, braccia lungo i fianchi e avambracci in
+   avanti, con le mani davanti all'arcione dove si tengono le redini.
+   Regolata a occhio l'8–9 ottobre, guardando il cavaliere di fianco e di
+   fronte nella città.
+   Chi va a cavallo nel 1216 sta seduto in sella con le gambe lunghe: la
+   posa è un'ipotesi, non viene da una registrazione. */
+export const POSA_SELLA = {
+  LeftUpLeg: [-0.8, 0, -0.38], RightUpLeg: [-0.8, 0, 0.38],
+  LeftLeg: [0.55, 0, 0], RightLeg: [0.55, 0, 0],
+  LeftFoot: [-0.25, 0, 0], RightFoot: [-0.25, 0, 0],
+  LeftArm: [0, 0, -0.75], RightArm: [0, 0, 0.75],
+  LeftForeArm: [0, -1.1, 0], RightForeArm: [0, 1.1, 0],
+  Spine: [0.04, 0, 0]
+};
+
+/** Applica POSA_SELLA (o una posa data) alla copia di una figura. */
+export function posaInSella(r, posa = POSA_SELLA) {
+  const q = new Quaternion(), e = new Euler(), { ossa, riposo } = r.userData;
+  for (const [nome, [x, y, z]] of Object.entries(posa))
+    if (ossa[nome]) ossa[nome].quaternion.copy(riposo[nome]).multiply(q.setFromEuler(e.set(x, y, z)));
+}
 
 /* ------------------------------------------------------ costruttore */
 class Corpo {
@@ -316,6 +342,21 @@ export class Abitanti {
         this.figure.push(a);
       }
     }
+    // cavalieri: pochi, a cavallo per la città, sellati (ipotesi: nobili e
+    // mercanti; le donne, che nel Duecento cavalcavano diversamente, no)
+    const sellati = ['sellato', 'palafreno'].filter(t => animali?.[t]);
+    if (sellati.length && modelli) {
+      const chi = varianti.filter(v => ['cavaliere', 'mercante'].includes(v.info?.ruolo));
+      for (let i = 0; i < Math.min(opz.numeroCavalieri || 0, 20) && chi.length; i++) {
+        const cav = this.nuovoAnimale(animali[sellati[i % sellati.length]], R);
+        const [a, b, larg] = R.scegli(archi.length ? archi : g.archi);
+        cav.da = a; cav.a = b; cav.t = R(); cav.corsiaMax = Math.max(0, larg / 2 - 1.0); cav.corsia = 0;
+        cav.vel = cav.clipVel * R.tra(0.92, 1.04);
+        cav.azione.timeScale = cav.vel / cav.clipVel;
+        this.monta(cav, chi[(i * 3) % chi.length]);
+        this.figure.push(cav);
+      }
+    }
     // gruppi fermi a parlare, dove la gente si raduna
     for (const [x, z, n] of (opz.gruppi || [])) {
       const cx = x, cz = z;
@@ -385,6 +426,44 @@ export class Abitanti {
       x: 0, z: 0, dir: 0, fermo: false, sfasa: R.tra(0, 100), v: { altezza: 1.7 }, modello: true, animale: v.nome,
       lato: R.vero(0.5) ? 1 : -1
     };
+  }
+
+  /**
+   * Mette in sella una figura: copia dello scheletro in posa (POSA_SELLA),
+   * seduta sul dorso del cavallo e agganciata all'osso della schiena, così
+   * segue il passo e il sobbalzo dell'animale.
+   */
+  monta(cav, v) {
+    const r = clonaScheletro(v.scene);
+    const ossa = {};
+    r.traverse(o => {
+      if (o.isBone) ossa[o.name] = o;
+      if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; cav.maglie.push(o); }
+    });
+    r.userData.riposo = Object.fromEntries(Object.entries(ossa).map(([n, o]) => [n, o.quaternion.clone()]));
+    r.userData.ossa = ossa;
+    posaInSella(r);
+    // la sella: tra le anche e il garrese del cavallo, sopra il dorso
+    let dorso = null, garrese = null, corpo = null;
+    cav.mesh.traverse(o => { if (o.isBone && o.name === 'Bone') dorso = o; if (o.isBone && o.name === 'Bone001') garrese = o; if (o.isSkinnedMesh && !corpo) corpo = o; });
+    garrese ||= dorso;
+    cav.mesh.updateMatrixWorld(true);
+    const a = dorso.getWorldPosition(new Vector3()), b = garrese.getWorldPosition(new Vector3());
+    const sella = a.clone().lerp(b, 0.6);
+    let alto = sella.y + 0.2;
+    if (corpo) {
+      const p = corpo.geometry.attributes.position, w = new Vector3();
+      for (let i = 0; i < p.count; i++) {
+        w.fromBufferAttribute(p, i).applyMatrix4(corpo.matrixWorld);
+        if (Math.abs(w.x - sella.x) < 0.12 && Math.abs(w.z - sella.z) < 0.15) alto = Math.max(alto, w.y);
+      }
+    }
+    r.updateMatrixWorld(true);
+    const anche = (ossa.Hips || r).getWorldPosition(new Vector3());
+    r.position.set(sella.x - anche.x, alto + 0.08 - anche.y, sella.z - anche.z);
+    r.updateMatrixWorld(true);
+    dorso.attach(r);
+    cav.cavaliere = r;
   }
 
   visibili(on) { for (const f of this.figure) f.mesh.visible = on; this.nascosti = !on; }
