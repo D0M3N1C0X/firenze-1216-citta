@@ -299,6 +299,23 @@ export class Abitanti {
       if (f.azione && f.clipVel) f.azione.timeScale = f.vel / f.clipVel;
       this.figure.push(f);
     }
+    // animali condotti a mano: muli e asini con la soma, qualche cavallo.
+    // Chi li conduce cammina al passo dell'animale, alla sua testa.
+    const animali = opz.animali;
+    if (animali && modelli) {
+      const tipi = ['mulo', 'asino', 'mulo', 'cavallo', 'asino'].filter(t => animali[t]);
+      const guide = this.figure.filter(f => f.modello);
+      for (let i = 0; i < Math.min(opz.numeroAnimali || 0, guide.length, 40); i++) {
+        const guida = guide[(i * 7) % guide.length];
+        if (guida.conduce) continue;
+        const a = this.nuovoAnimale(animali[tipi[i % tipi.length]], R);
+        a.guida = guida; guida.conduce = a;
+        guida.vel = a.clipVel * R.tra(0.92, 1.04);
+        if (guida.azione && guida.clipVel) guida.azione.timeScale = guida.vel / guida.clipVel;
+        a.vel = guida.vel;
+        this.figure.push(a);
+      }
+    }
     // gruppi fermi a parlare, dove la gente si raduna
     for (const [x, z, n] of (opz.gruppi || [])) {
       const cx = x, cz = z;
@@ -352,6 +369,24 @@ export class Abitanti {
     };
   }
 
+  /** Un animale di Blender: copia dello scheletro, andatura al passo. */
+  nuovoAnimale(v, R) {
+    const radice = clonaScheletro(v.scene);
+    const maglie = [];
+    radice.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; maglie.push(o); } });
+    this.scene.add(radice);
+    const mixer = new AnimationMixer(radice);
+    const clip = v.clip.passo || Object.values(v.clip)[0];
+    const azione = mixer.clipAction(clip);
+    azione.play();
+    azione.time = R() * clip.duration;
+    return {
+      mesh: radice, maglie, mixer, azione, clipVel: v.info.passo?.velocita || 1.4, ombra: true, accum: 0,
+      x: 0, z: 0, dir: 0, fermo: false, sfasa: R.tra(0, 100), v: { altezza: 1.7 }, modello: true, animale: v.nome,
+      lato: R.vero(0.5) ? 1 : -1
+    };
+  }
+
   visibili(on) { for (const f of this.figure) f.mesh.visible = on; this.nascosti = !on; }
 
   /** Toglie tutte le figure dalla scena, per esempio quando cambia la giornata. */
@@ -366,7 +401,17 @@ export class Abitanti {
     const g = this.g;
     this.separa();
     for (const f of this.figure) {
-      if (!f.fermo) {
+      if (f.guida) {
+        // l'animale segue chi lo conduce: un passo indietro e di lato
+        const g = f.guida, fx = Math.sin(g.dir), fz = Math.cos(g.dir);
+        const tx = g.x - fx * 1.1 + fz * f.lato * 0.75, tz = g.z - fz * 1.1 - fx * f.lato * 0.75;
+        if (!f.inizio) { f.x = tx; f.z = tz; f.dir = g.dir; f.inizio = true; }
+        const k = Math.min(1, dt * 3);
+        f.x += (tx - f.x) * k; f.z += (tz - f.z) * k;
+        let dd = g.dir - f.dir; dd = Math.atan2(Math.sin(dd), Math.cos(dd));
+        f.dir += dd * Math.min(1, dt * 3);
+        if (f.azione) f.azione.timeScale = (g.velEff ?? g.vel) / f.clipVel;
+      } else if (!f.fermo) {
         // avanza lungo l'arco; al nodo sceglie una strada nuova
         const A = g.nodi[f.da], Bn = g.nodi[f.a];
         const L = Math.hypot(Bn.x - A.x, Bn.z - A.z) || 1;
@@ -419,7 +464,7 @@ export class Abitanti {
     const F = this.figure;
     for (let i = 0; i < F.length; i++) {
       const a = F[i];
-      if (a.fermo) continue;
+      if (a.fermo || a.guida) continue;
       a.velEff = a.vel;
       for (let j = 0; j < F.length; j++) {
         if (i === j) continue;

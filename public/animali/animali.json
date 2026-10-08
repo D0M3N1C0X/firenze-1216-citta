@@ -1,0 +1,57 @@
+{
+ "asino": {
+  "_misure": {
+   "altezza": 1.314,
+   "lunghezza": 1.857
+  },
+  "fermo": {
+   "velocita": 0
+  },
+  "passo": {
+   "durata": 1.15,
+   "velocita": 1.116
+  },
+  "trotto": {
+   "durata": 0.72,
+   "velocita": 2.592
+  }
+ },
+ "cavallo": {
+  "_misure": {
+   "altezza": 1.678,
+   "lunghezza": 2.532
+  },
+  "fermo": {
+   "velocita": 0
+  },
+  "galoppo": {
+   "durata": 0.62,
+   "velocita": 7.5
+  },
+  "passo": {
+   "durata": 1.15,
+   "velocita": 1.55
+  },
+  "trotto": {
+   "durata": 0.72,
+   "velocita": 3.6
+  }
+ },
+ "mulo": {
+  "_misure": {
+   "altezza": 1.649,
+   "lunghezza": 2.375
+  },
+  "fermo": {
+   "velocita": 0
+  },
+  "passo": {
+   "durata": 1.15,
+   "velocita": 1.442
+  },
+  "trotto": {
+   "durata": 0.72,
+   "velocita": 3.348
+  }
+ }
+}

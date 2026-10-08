@@ -48,6 +48,28 @@ export async function caricaFigure(avanzamento = () => {}) {
   return { varianti, infoMov };
 }
 
+/**
+ * Cavalli, muli e asini (strumenti/animali/animali.py): un file per animale,
+ * con le andature dentro (fermo, passo, trotto, e il galoppo per il cavallo)
+ * e in animali.json la velocità di ognuna.
+ */
+export async function caricaAnimali() {
+  const info = await fetch('./animali/animali.json').then(r => r.json());
+  const loader = new GLTFLoader();
+  const out = {};
+  await Promise.all(Object.keys(info).map(async nome => {
+    const gltf = await loader.loadAsync(`./animali/${nome}.glb`);
+    gltf.scene.traverse(o => {
+      if (!o.isMesh) return;
+      const m = o.material;
+      // criniera e coda: ritaglio netto, come i capelli delle figure
+      if (m.transparent || m.alphaTest > 0) { m.transparent = false; m.depthWrite = true; m.alphaTest = 0.5; }
+    });
+    out[nome] = { nome, scene: gltf.scene, clip: Object.fromEntries(gltf.animations.map(a => [a.name, a])), info: info[nome] };
+  }));
+  return out;
+}
+
 function altezzaAnche(radice) {
   let y = 0.874;
   radice.traverse(o => { if (o.name === 'Hips') y = o.position.y; });
