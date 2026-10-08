@@ -131,7 +131,7 @@ L'ordine di lavoro è anche l'ordine dei tagli: le fasi in fondo all'elenco sono
 
 ## 8. Rischi
 
-1. **Le persone realistiche.** Dal 7 ottobre ci sono 36 figure MakeHuman in 13 ruoli, con vesti piegate dalla simulazione del tessuto e movimenti catturati dal vero (`strumenti/figure/`). Mancano gli animali, la trama della lana e le barbe; i volti sono variati, ma non studiati sul Duecento.
+1. **Le persone realistiche.** Dal 7 ottobre ci sono 36 figure MakeHuman in 13 ruoli, con vesti piegate dalla simulazione del tessuto e movimenti catturati dal vero (`strumenti/figure/`). Dall'8 ottobre ci sono anche cavalli, muli e asini condotti a mano (`strumenti/animali/`). Mancano i cavalieri, la trama della lana e le barbe; i volti sono variati, ma non studiati sul Duecento.
 2. **Le fonti topografiche.** Del 1216 non esiste nessuna pianta. Tutto ciò che si vede è ricostruito a ritroso, ed è per questo che la scheda dei luoghi e i colori della certezza non sono un accessorio.
 3. **Il caricamento**: oggi circa 18 s, di cui 7 per le texture. I rimedi sono la cache nel browser e la costruzione nei worker. L'estensione del 2 ottobre (2.750 case invece di 2.050, botteghe aperte e banchi come varianti) aggiunge circa 2 s su una macchina lenta: misurati 21,4 s contro 19,6 s, senza scheda grafica.
 4. **Il tempo.** Il 7 ottobre Domenico ha confermato tutto a dicembre, fasi comprese, con il computer nuovo solo a novembre: la regola dei tagli resta la rete di sicurezza.

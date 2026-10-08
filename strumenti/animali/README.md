@@ -18,9 +18,23 @@ Cavalli, muli e asini della città. Il 7 ottobre 2026 Domenico ha messo gli anim
 
 Il file non sta in git: si riscarica in `sorgenti/opengameart-rigged-horse/`. Va aperto solo con Blender e con gli script automatici disattivati (`blender -b -Y`).
 
-## Da fare
+## Come si producono
 
-- portarlo alla scala giusta (un cavallo da sella del Duecento è più piccolo di quelli di oggi **[da verificare]**);
-- le andature: passo, trotto e galoppo, costruite in Blender sullo scheletro;
-- ricavarne mulo e asino;
-- esportare in glTF per la città.
+```
+blender -b -Y --python animali.py -- [cavallo mulo asino] [tavola]
+```
+
+Lo script fa questi passi:
+- porta il modello in metri: 1,68 m alle orecchie per il cavallo;
+- trasforma la posa del file in posa di riposo: criniera, coda e occhi sono modellati sul corpo in posa;
+- aggiunge una radice per il sobbalzo del corpo;
+- costruisce le andature (fermo, passo, trotto, e il galoppo solo per il cavallo). Ogni zoccolo ha un bersaglio che sta a terra mentre spinge e avanza in arco mentre è sollevato, e la cinematica inversa piega le zampe;
+- «cuoce» le andature in rotazioni normali.
+
+Scrive `public/animali/<nome>.glb` e `animali.json`, con la velocità di ogni andatura: la città la usa per accordare il passo alla strada percorsa.
+
+- **Mulo e asino** sono lo stesso modello con orecchie più lunghe, testa più grande, taglia ridotta (l'asino al 72%) e il mantello ritinto. È un'approssimazione: non sono modelli anatomici.
+- **Il basto con le some** è un'ipotesi.
+- **La taglia** dei cavalli del Duecento, più piccoli di quelli di oggi, è **[da verificare]**.
+
+In città gli animali vanno al passo, condotti a mano da una persona che cammina alla loro testa: più numerosi nei giorni di lavoro, pochi a Pasqua (ipotesi). I cavalieri arriveranno quando le figure avranno una posa a cavallo.

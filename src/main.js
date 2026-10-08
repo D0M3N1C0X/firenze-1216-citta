@@ -26,7 +26,7 @@ import { PONTE_ASSE, costruisciMonumenti, sulPonte } from './mondo/monumenti.js'
 import { costruisciFondale } from './mondo/fondale.js';
 import { creaVegetazione } from './mondo/vegetazione.js';
 import { Abitanti } from './mondo/abitanti.js';
-import { caricaFigure } from './mondo/figure.js';
+import { caricaAnimali, caricaFigure } from './mondo/figure.js';
 import { Suoni } from './mondo/suoni.js';
 import { alba, formatoOra, oraCanonica } from './mondo/sole.js';
 import { Controlli } from './controlli.js';
@@ -63,6 +63,7 @@ let ora = +(params.get('ora') || scenaIniziale?.ora || giornata.ora);
 let qualita = 'alta';
 let mondo = null;
 let modelli = null;          // le figure di Blender, caricate una volta sola
+let animali = null;          // cavalli, muli e asini di Blender
 let certezzaAccesa = false;
 
 const ui = new Interfaccia({
@@ -95,6 +96,7 @@ async function costruisci() {
   await passo('Impasto la calce e cuocio i coppi…');
   // le figure si caricano mentre si fa il resto; se mancano si usano quelle generate
   const figure = caricaFigure().catch(e => { console.warn('figure di Blender non caricate:', e); return null; });
+  const bestie = caricaAnimali().catch(e => { console.warn('animali di Blender non caricati:', e); return null; });
   // il kit edilizio (finestre, porte, botteghe, pozzi): senza, le case usano forme semplici
   const kit = params.has('senzakit') ? null : caricaKit().catch(e => { console.warn('kit edilizio non caricato:', e); return null; });
   // i monumenti modellati in Blender: senza, quelli generati
@@ -141,6 +143,7 @@ async function costruisci() {
   await passo('La gente esce di casa…');
   const quotaIn = (x, z) => { const p = sulPonte(x, z); return p === null ? quota(x, z) : p; };
   modelli = params.has('manichini') ? null : await figure;
+  animali = modelli ? await bestie : null;
   const controlli = new Controlli(camera, renderer.domElement, griglia, quotaIn);
   const partenza = params.get('da');
   if (partenza) { const [x, z, y] = partenza.split(',').map(Number); controlli.colloca(x, z, y || 0, 0); }
@@ -162,6 +165,9 @@ async function costruisci() {
 function creaAbitanti() {
   return new Abitanti(scene, mondo.strade, mondo.griglia, mondo.quotaIn, {
     modelli,
+    animali,
+    // muli, asini e cavalli: più nei giorni di lavoro che a Pasqua (ipotesi)
+    numeroAnimali: Math.round(+(params.get('gente') || giornata.gente) * (giornata.festa ? 0.04 : 0.09)),
     numero: +(params.get('gente') || giornata.gente),
     raggio: RAGGIO_CITTA,
     extra: [{ punti: [PONTE_ASSE.A, PONTE_ASSE.B], larghezza: 5.5 }],
