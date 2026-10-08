@@ -260,6 +260,11 @@ def main():
     bpy.ops.object.select_all(action='DESELECT')
     arm.select_set(True)
     bpy.context.view_layer.objects.active = arm
+    # Il campionamento scrive per ogni osso anche posizione e scala, che sono
+    # quelle di questo scheletro di riferimento (un adulto). La città le
+    # scarta e tiene solo le rotazioni e la posizione delle anche
+    # (src/mondo/figure.js): altrimenti un ragazzo prenderebbe le misure
+    # dell'adulto.
     bpy.ops.export_scene.gltf(filepath=os.path.join(USCITA, 'movimenti.glb'), export_format='GLB', use_selection=True,
                               export_animations=True, export_animation_mode='ACTIONS', export_force_sampling=True,
                               export_frame_range=False, export_anim_single_armature=True, export_yup=True)

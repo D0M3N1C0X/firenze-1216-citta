@@ -37,9 +37,15 @@ export async function caricaFigure(avanzamento = () => {}) {
     const k = altezzaAnche(gltf.scene) / anche0;
     const clip = {};
     for (const c of mov.animations) {
-      // le anche: la traslazione registrata vale per lo scheletro di
-      // riferimento; su una persona più bassa o più alta va riscalata
+      // dei movimenti si tengono le rotazioni di tutte le ossa e la sola
+      // posizione delle anche. Le clip portano anche posizione e scala di
+      // ogni osso, ma sono quelle dello scheletro di riferimento, un adulto:
+      // applicate a un ragazzo gli davano proporzioni e statura da adulto
+      // (1,65 m invece di 1,45). Le anche: la traslazione registrata vale per
+      // lo scheletro di riferimento; su una persona più bassa o più alta va
+      // riscalata.
       const copia = c.clone();
+      copia.tracks = copia.tracks.filter(t => t.name.endsWith('.quaternion') || t.name === 'Hips.position');
       for (const t of copia.tracks) if (t.name === 'Hips.position') for (let i = 0; i < t.values.length; i++) t.values[i] *= k;
       clip[c.name] = copia;
     }
