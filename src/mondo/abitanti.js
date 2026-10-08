@@ -402,21 +402,36 @@ export class Abitanti {
     this.separa();
     for (const f of this.figure) {
       if (f.guida) {
-        // l'animale segue chi lo conduce: un passo indietro e di lato
+        // l'animale segue chi lo conduce: un passo indietro e di lato. Guarda
+        // dove va e avanza solo quando è girato da quella parte: quando chi
+        // lo conduce torna indietro, prima si volta e poi lo segue
         const g = f.guida, fx = Math.sin(g.dir), fz = Math.cos(g.dir);
         const tx = g.x - fx * 1.1 + fz * f.lato * 0.75, tz = g.z - fz * 1.1 - fx * f.lato * 0.75;
         if (!f.inizio) { f.x = tx; f.z = tz; f.dir = g.dir; f.inizio = true; }
-        const k = Math.min(1, dt * 3);
-        f.x += (tx - f.x) * k; f.z += (tz - f.z) * k;
-        let dd = g.dir - f.dir; dd = Math.atan2(Math.sin(dd), Math.cos(dd));
+        const mx = tx - f.x, mz = tz - f.z, dist = Math.hypot(mx, mz);
+        let dd = (dist > 0.3 ? Math.atan2(mx, mz) : g.dir) - f.dir; dd = Math.atan2(Math.sin(dd), Math.cos(dd));
         f.dir += dd * Math.min(1, dt * 3);
-        if (f.azione) f.azione.timeScale = (g.velEff ?? g.vel) / f.clipVel;
+        const allineato = Math.max(0, Math.cos(dd)) ** 2;
+        const k = Math.min(1, dt * 3) * allineato;
+        let sx = mx * k, sz = mz * k;
+        const avanti = sx * Math.sin(f.dir) + sz * Math.cos(f.dir);
+        if (avanti < 0) { sx -= avanti * Math.sin(f.dir); sz -= avanti * Math.cos(f.dir); }
+        f.x += sx; f.z += sz;
+        if (f.azione) f.azione.timeScale = Math.max(0.3 * g.vel, (g.velEff ?? g.vel) * allineato) / f.clipVel;
       } else if (!f.fermo) {
-        // avanza lungo l'arco; al nodo sceglie una strada nuova
+        // avanza lungo l'arco; al nodo sceglie una strada nuova. Si avanza
+        // solo nella misura in cui si guarda dove si va: in una svolta
+        // stretta, o in fondo a un vicolo cieco dove si torna indietro, la
+        // figura prima si gira quasi sul posto e poi riparte (prima arretrava
+        // per qualche passo guardando avanti)
         const A = g.nodi[f.da], Bn = g.nodi[f.a];
         const L = Math.hypot(Bn.x - A.x, Bn.z - A.z) || 1;
-        f.t += (f.velEff ?? f.vel) * dt / L;
-        if (f.azione && f.clipVel) f.azione.timeScale = (f.velEff ?? f.vel) / f.clipVel;
+        let dv = Math.atan2(Bn.x - A.x, Bn.z - A.z) - f.dir; dv = Math.atan2(Math.sin(dv), Math.cos(dv));
+        const allineata = f.inizio ? Math.max(0, Math.cos(dv)) ** 2 : 1;
+        const vel = (f.velEff ?? f.vel) * allineata;
+        f.t += vel * dt / L;
+        // mentre si gira fa piccoli passi: il passo non si ferma del tutto
+        if (f.azione && f.clipVel) f.azione.timeScale = Math.max(0.3 * f.vel, vel) / f.clipVel;
         if (f.t >= 1) {
           const prima = f.da; f.da = f.a; f.t = 0;
           const scelte = g.nodi[f.da].vicini.filter(v => v.n !== prima);
@@ -427,14 +442,19 @@ export class Abitanti {
         const A2 = g.nodi[f.da], B2 = g.nodi[f.a];
         const dx = B2.x - A2.x, dz = B2.z - A2.z, l = Math.hypot(dx, dz) || 1;
         const tx = A2.x + dx * f.t + (-dz / l) * f.corsia, tz = A2.z + dz * f.t + (dx / l) * f.corsia;
-        if (!f.inizio) { f.x = tx; f.z = tz; f.inizio = true; }
+        const dirT = Math.atan2(dx, dz);
+        if (!f.inizio) { f.x = tx; f.z = tz; f.dir = dirT; f.inizio = true; }
+        let dd = dirT - f.dir; dd = Math.atan2(Math.sin(dd), Math.cos(dd));
+        // si gira più svelto quando deve voltarsi del tutto
+        f.dir += dd * Math.min(1, dt * (Math.abs(dd) > 1.2 ? 8 : 5));
+        // verso il punto sulla strada, ma senza mai arretrare rispetto a dove guarda
         const k = Math.min(1, dt * 4);
         const px = f.x, pz = f.z;
-        f.x += (tx - f.x) * k; f.z += (tz - f.z) * k;
+        let mx = (tx - f.x) * k, mz = (tz - f.z) * k;
+        const avanti = mx * Math.sin(f.dir) + mz * Math.cos(f.dir);
+        if (avanti < 0) { mx -= avanti * Math.sin(f.dir); mz -= avanti * Math.cos(f.dir); }
+        f.x += mx; f.z += mz;
         const mosso = Math.hypot(f.x - px, f.z - pz);
-        const dirT = Math.atan2(dx, dz);
-        let dd = dirT - f.dir; dd = Math.atan2(Math.sin(dd), Math.cos(dd));
-        f.dir += dd * Math.min(1, dt * 5);
         // un ciclo (due passi) ogni 1,64 volte l'altezza: circa 1,4 m per un adulto
         f.fase += mosso / (0.82 * f.v.altezza) * Math.PI;
       }
