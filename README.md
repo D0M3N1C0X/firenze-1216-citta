@@ -67,10 +67,10 @@ app/             l'app per iPhone, iPad e Mac (Capacitor): vedi app/README.md
 
 - **Codice:** MIT (vedi [LICENSE](LICENSE)). **Testi, schede e testi del copione:** CC BY 4.0 (vedi [LICENSE-CONTENUTI.md](LICENSE-CONTENUTI.md)).
 - **Citare:** vedi [CITATION.cff](CITATION.cff).
-- **Dati cartografici:** © OpenStreetMap contributors, licenza [ODbL 1.0](https://opendatacommons.org/licenses/odbl/). Il letto dell'Arno, i tracciati delle strade e le impronte delle torri e delle chiese vengono da lì.
+- **Dati cartografici:** © OpenStreetMap contributors, licenza [ODbL 1.0](https://opendatacommons.org/licenses/odbl/). Il letto dell'Arno, i tracciati delle strade e le impronte delle torri, delle chiese e del Battistero vengono da lì (estratti del 1° e del 9 ottobre 2026).
 - **three.js** (MIT), incluso nel pacchetto.
 - **Texture fotografiche:** Poly Haven, licenza CC0 (autori: Rob Tuytel, Dimitrios Savva, Amal Kumar, Charlotte Baglioni, Dario Barresi; dettagli in `public/texture/FONTI.json`). Erba, marmo e suoni sono generati dal codice.
 - **Figure:** corpi MakeHuman (CC0) e movimenti del CMU Graphics Lab Motion Capture Database (http://mocap.cs.cmu.edu, finanziato da NSF EIA-0196217). Come si producono: [strumenti/figure/README.md](strumenti/figure/README.md).
 - **Cavalli, muli e asini:** dal «Rigged Horse» di Lyndon Daniels (CC0, OpenGameArt), con le andature costruite da `strumenti/animali/animali.py`. Come si producono: [strumenti/animali/README.md](strumenti/animali/README.md).
-- **Monumenti del capo del ponte:** modellati da `strumenti/monumenti/monumenti.py`; la statua di Marte usa il cavallo «Rigged Horse» di Lyndon Daniels (CC0, OpenGameArt). Fonti e livelli: [strumenti/monumenti/FONTI.md](strumenti/monumenti/FONTI.md).
+- **Monumenti** (il capo del ponte, il Battistero, Santa Reparata con l'interno): modellati da `strumenti/monumenti/monumenti.py`; la statua di Marte usa il cavallo «Rigged Horse» di Lyndon Daniels (CC0, OpenGameArt). Fonti e livelli: [strumenti/monumenti/FONTI.md](strumenti/monumenti/FONTI.md).
 - **Kit edilizio:** finestre, porte, botteghe e pozzi modellati da `strumenti/kit/kit.py` in Blender, senza materiali di terzi. Fonti, livelli di certezza e anacronismi controllati: [strumenti/kit/FONTI.md](strumenti/kit/FONTI.md).

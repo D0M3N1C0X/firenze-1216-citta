@@ -52,7 +52,9 @@ export const GIORNATE = {
     gente: 150,
     ora: 8.5,
     // dove la gente si ferma a parlare: davanti alle chiese, ai capi del ponte, al mercato
-    gruppi: [[15, -38, 3], [47, -54, 4], [-114, -121, 3], [70, -200, 4], [-70, 140, 3], [-52, 86, 2], [-40, -112, 2], [60, -72, 2], [140, -540, 4]]
+    gruppi: [[15, -38, 3], [47, -54, 4], [-114, -121, 3], [70, -200, 4], [-70, 140, 3], [-52, 86, 2], [-40, -112, 2], [60, -72, 2], [160, -528, 4],
+      // in Santa Reparata, alla messa (ipotesi)
+      [186, -549, 5], [197, -544, 4], [204, -551, 3]]
   }
 };
 

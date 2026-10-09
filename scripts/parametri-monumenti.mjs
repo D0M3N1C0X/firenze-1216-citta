@@ -15,7 +15,7 @@ import { FIUME, IMPRONTE, STRADE } from '../src/dati/osm.js';
 import { strade1216 } from '../src/dati/strade-1216.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from '../src/mondo/griglia.js';
 import { Cantiere } from '../src/mondo/cantiere.js';
-import { LARGH_PONTE, MARTE, PONTE_ASSE, SMSP, costruisciMonumenti, quotaPonte, rettangoloMinimo } from '../src/mondo/monumenti.js';
+import { BATTISTERO, LARGH_PONTE, MARTE, PONTE_ASSE, SANTA_REPARATA, SMSP, costruisciMonumenti, quotaPonte, rettangoloMinimo } from '../src/mondo/monumenti.js';
 import { LIVELLO_ACQUA, quota } from '../src/mondo/terreno.js';
 
 const griglia = new Griglia();
@@ -66,7 +66,11 @@ const out = {
     fronte: { nx: r(lati[0].nx), nz: r(lati[0].nz) }, W: r(lati[0].largo), D: r(2 * lati[0].d),
     lati: lati.map(l => `${l.nome}: ${l.strada}`)
   },
-  chiesa: { W: r(2 * C.b), L: r(2 * C.a) }
+  chiesa: { W: r(2 * C.b), L: r(2 * C.a) },
+  battistero: { apotema: r(BATTISTERO.apotema), scarsella: { prof: r(BATTISTERO.scarsella.prof), larg: r(BATTISTERO.scarsella.larg) } },
+  santa_reparata: Object.fromEntries(Object.entries(SANTA_REPARATA).filter(([k]) => !['facciata', 'asse'].includes(k)))
 };
 writeFileSync(new URL('../strumenti/monumenti/parametri.json', import.meta.url), JSON.stringify(out, null, 1));
-console.log('ponte', out.ponte.L, 'm, acqua da', out.ponte.s1, 'a', out.ponte.s2, '· Amidei', out.amidei.W, '×', out.amidei.D, 'm, lati', out.amidei.lati.join(' '), '· Marte', out.marte.x, out.marte.z, '· chiesa', out.chiesa.W, '×', out.chiesa.L);
+console.log('ponte', out.ponte.L, 'm, acqua da', out.ponte.s1, 'a', out.ponte.s2, '· Amidei', out.amidei.W, '×', out.amidei.D, 'm, lati', out.amidei.lati.join(' '), '· Marte', out.marte.x, out.marte.z, '· chiesa', out.chiesa.W, '×', out.chiesa.L,
+  '· Battistero', JSON.stringify(out.battistero), BATTISTERO.x.toFixed(2), BATTISTERO.z.toFixed(2),
+  '· Santa Reparata facciata x', SANTA_REPARATA.facciata.toFixed(2), 'asse z', SANTA_REPARATA.asse.toFixed(2));

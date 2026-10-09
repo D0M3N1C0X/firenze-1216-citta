@@ -507,5 +507,28 @@
  "chiesa": {
   "W": 11,
   "L": 18
+ },
+ "battistero": {
+  "apotema": 16.925,
+  "scarsella": {
+   "prof": 3.7,
+   "larg": 13.1
+  }
+ },
+ "santa_reparata": {
+  "W": 27.3,
+  "t": 0.9,
+  "pilastri": [
+   7.6,
+   19.7
+  ],
+  "lato": 1.1,
+  "passo": 6.625,
+  "n": 7,
+  "presbiterio": 40.65,
+  "fondo": 53.9,
+  "alzato": 1.6,
+  "portale": 2.8,
+  "portico": 4
  }
 }

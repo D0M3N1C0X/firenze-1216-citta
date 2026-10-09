@@ -22,7 +22,7 @@ import { Cantiere } from './mondo/cantiere.js';
 import { areaCostruita, costruisciLotti, lottizza, pozziNeiCortili } from './mondo/edifici.js';
 import { KIT, caricaKit } from './mondo/kit.js';
 import { caricaModelli } from './mondo/modelli.js';
-import { PONTE_ASSE, costruisciMonumenti, sulPonte } from './mondo/monumenti.js';
+import { PONTE_ASSE, costruisciMonumenti, quotaPavimento, sulPonte } from './mondo/monumenti.js';
 import { costruisciFondale } from './mondo/fondale.js';
 import { creaVegetazione } from './mondo/vegetazione.js';
 import { Abitanti } from './mondo/abitanti.js';
@@ -141,7 +141,8 @@ async function costruisci() {
   cantiere.costruisci(scene);
 
   await passo('La gente esce di casa…');
-  const quotaIn = (x, z) => { const p = sulPonte(x, z); return p === null ? quota(x, z) : p; };
+  // dove si cammina: il ponte, il pavimento di Santa Reparata, altrimenti il terreno
+  const quotaIn = (x, z) => sulPonte(x, z) ?? quotaPavimento(x, z) ?? quota(x, z);
   modelli = params.has('manichini') ? null : await figure;
   animali = modelli ? await bestie : null;
   const controlli = new Controlli(camera, renderer.domElement, griglia, quotaIn);

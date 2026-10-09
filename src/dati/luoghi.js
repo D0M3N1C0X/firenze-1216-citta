@@ -146,11 +146,14 @@ export const LUOGHI = [
   {
     id: 'battistero',
     nome: 'Il Battistero di San Giovanni',
-    pos: [128, -542], raggio: 30,
-    luogo: { livello: 'documentato', nota: 'esiste da prima del 1216' },
-    forma: { livello: 'dedotto', nota: 'volume e rivestimento in marmo bianco e verde; la lanterna è del 1150 [da verificare]' },
-    testo: 'Da qui si vede soltanto sopra i tetti. È il cuore religioso e civico della città: i fiorentini vi sono battezzati tutti.',
-    fonti: ['[da verificare] su una guida scientifica']
+    pos: [137, -547], raggio: 30,
+    luogo: { livello: 'documentato', nota: 'esiste da prima del 1216; impronta da OpenStreetMap' },
+    forma: { livello: 'documentato', nota: 'l\'edificio c\'è ancora: ottagono di 34 m sui lati, tre ordini di marmo bianco e verde, lanterna del 1150, scarsella; ipotesi i battenti di legno e il disegno delle specchiature' },
+    testo: 'È il cuore religioso e civico della città: i fiorentini vi sono battezzati tutti. Nel 1216 dentro non ci sono ancora i mosaici d\'oro: quelli della scarsella cominciano nel 1225, quelli della cupola verso il 1270. Le porte di bronzo arriveranno nel Trecento e nel Quattrocento; le due colonne di porfido alla porta est, invece, ci sono già: i Pisani le hanno donate un secolo prima.',
+    fonti: [
+      'Dimensioni, lanterna (1150, Villani), scarsella, colonne di porfido (1115 o 1117), mosaici dal 1225: Wikipedia, «Battistero di San Giovanni (Firenze)» [da verificare su una guida scientifica]',
+      'Altezza circa 39 m: Wikipedia (en), «Florence Baptistery»'
+    ]
   },
   /* --- dal 2 ottobre 2026: le case delle famiglie, il mercato, la cattedrale --- */
   {
@@ -247,13 +250,14 @@ export const LUOGHI = [
   {
     id: 'santa-reparata',
     nome: 'Santa Reparata',
-    pos: [150, -560], raggio: 22,
-    luogo: { livello: 'documentato', nota: 'la cattedrale di Firenze nel 1216; i resti sono sotto il Duomo, nell\'area archeologica' },
-    forma: { livello: 'ipotesi', nota: 'basilica a tre navate con misure e facciata ricostruite [da verificare: rilievi degli scavi]' },
-    testo: 'La mattina di Pasqua il notaio del gioco può essere qui, alla messa, quando arriva la notizia dal ponte. Il giorno dopo, l\'11 aprile, l\'obituario della cattedrale registra soltanto: «Obiit Dominus Bondelmonte», è morto messer Buondelmonte. Né come, né per mano di chi. Il Duomo che vediamo oggi sarà cominciato sopra questa chiesa alla fine del Duecento [da verificare: 1296].',
+    pos: [192, -547], raggio: 24,
+    luogo: { livello: 'documentato', nota: 'la cattedrale di Firenze nel 1216; i resti sono sotto il Duomo, nell\'area archeologica. La facciata stava circa 9,5 m davanti a quella di oggi' },
+    forma: { livello: 'dedotto', nota: 'pianta dagli scavi del 1965–1974: tre navate, sette coppie di pilastri, cripta sotto il presbiterio, absidi, portico; ipotesi le altezze, le finestre, la facciata di marmo e il campanile' },
+    testo: 'La mattina di Pasqua il notaio del gioco può essere qui, alla messa, quando arriva la notizia dal ponte. Il giorno dopo, l\'11 aprile, l\'obituario della cattedrale registra soltanto: «Obiit Dominus Bondelmonte», è morto messer Buondelmonte. Né come, né per mano di chi. Si entra dal portale grande: tre navate divise da sette coppie di pilastri, il tetto di legno a vista, il presbiterio rialzato sopra la cripta. Il Duomo che vediamo oggi sarà cominciato sopra questa chiesa l\'8 settembre 1296, e Santa Reparata resterà in uso fino al 1375.',
     fonti: [
       'Obituario di Santa Reparata: R. Davidsohn, Forschungen IV, p. 53; Faini n. 38',
-      'Area archeologica di Santa Reparata: Opera di Santa Maria del Fiore'
+      'Area archeologica di Santa Reparata: Opera di Santa Maria del Fiore',
+      'Pianta, misure, pilastri, cripta, portico, date 1296 e 1375: Wikipedia, «Santa Reparata (Firenze)», da Morozzi, Toker, Herrmann, Santa Reparata. L\'antica cattedrale fiorentina, 1974'
     ]
   }
 ];

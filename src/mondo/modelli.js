@@ -32,6 +32,16 @@ export async function caricaModelli() {
   return MODELLI;
 }
 
+/**
+ * Solo l'indice, senza le maglie: per chi costruisce la pianta senza
+ * disegnare (scripts/verifica.mjs). I monumenti risultano presenti, e la
+ * griglia è la stessa del browser.
+ */
+export function soloIndice(indice) {
+  INDICE = indice;
+  for (const nome of Object.keys(indice)) MODELLI[nome] = [];
+}
+
 /** Posa un modello nel cantiere con la matrice M (da modello a mondo). */
 export function posaModello(cant, nome, M, livello, tinta = [1, 1, 1], ombra = true) {
   for (const p of MODELLI[nome]) cant.aggiungi(p.geo.clone(), p.mat, livello, M, tinta, ombra);
