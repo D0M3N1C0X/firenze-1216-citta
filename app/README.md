@@ -37,6 +37,8 @@ La compilazione e il caricamento avvengono quindi su un Mac di GitHub Actions, n
 - **App iOS** (`.github/workflows/app-ios.yml`) compila per il simulatore, senza firma. Parte da solo quando cambia il progetto Xcode, e si può lanciare a mano dalla scheda Actions.
 - **App su TestFlight** (`.github/workflows/app-testflight.yml`) firma e carica. Si lancia solo a mano.
 
+Il 9 ottobre 2026 il primo lancio di *App iOS* ha compilato l'app per il simulatore con Xcode 26.6, senza errori.
+
 Con il MacBook Apple Silicon di novembre si potrà aprire `app/ios/App/App.xcodeproj` in Xcode e provarla sul simulatore e su un iPad vero: è lì che si giudica la fluidità.
 
 ## Per pubblicarla davvero
