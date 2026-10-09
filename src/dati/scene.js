@@ -71,8 +71,8 @@ export const SCENE = [
   },
   {
     id: 'IV2c', gruppo: 'IV2', ramo: 'A Santa Reparata', giornata: 'pasqua', ora: 8.2, luogo: 'santa-reparata',
-    vista: { x: 147, z: -561, verso: [190, -561] },
-    adattamento: 'Gli interni non ci sono ancora: la città ti lascia davanti alla facciata.'
+    vista: { x: 178, z: -547, verso: [217, -547] },
+    adattamento: 'Sei dentro la cattedrale, all\'inizio della navata, verso il presbiterio: la messa di Pasqua. La gente in chiesa è un\'ipotesi.'
   },
   {
     id: 'IV3', giornata: 'pasqua', ora: 8.6, luogo: 'capo-ponte',
@@ -81,7 +81,7 @@ export const SCENE = [
   },
   {
     id: 'IV4', giornata: 'pasqua', ora: 10, luogo: 'santa-reparata',
-    vista: { x: 146, z: -552, verso: [175, -561] },
+    vista: { x: 161, z: -541, verso: [172, -547] },
     adattamento: 'Il percorso del corteo «per tutta Firenze» non è tramandato. Il registro dei morti è dell\'11 aprile, il giorno dopo: la città resta alla mattina di Pasqua.'
   }
 ];

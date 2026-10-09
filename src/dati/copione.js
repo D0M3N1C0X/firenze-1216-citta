@@ -1,4 +1,4 @@
-/* Generato da scripts/copione-estrai.mjs il 2026-10-02. Non modificare a mano.
+/* Generato da scripts/copione-estrai.mjs il 2026-10-09. Non modificare a mano.
    Fonte: storia/copione.md del progetto «Cosa fatta capo ha» (bozza 0.1 del 15 settembre 2026. Da provare su carta con un docente e da rivedere con un medievista.).
    Testi di Domenico Perroni, licenza CC BY 4.0. */
 
@@ -192,7 +192,8 @@ export const COPIONE = {
    "Mattina presto. Dove si deve giurare la promessa è radunata la gente delle due parti; tu hai la pergamena pronta.",
    "Messer Buondelmonte arriva a cavallo ed entra da Porta Santa Maria. Passa davanti a tutti e va a giurare la figlia dei Donati.",
    "La figlia di Lambertuccio resta lì, davanti a tutti. Le cronache non hanno conservato il suo nome.",
-   "La pergamena resta bianca. Nel quaderno, come scrivi quello che ha fatto Buondelmonte?"
+   "La pergamena resta bianca. Nel quaderno, come scrivi quello che ha fatto Buondelmonte?",
+   "In margine: «Pasqua cade il 10 aprile. Contando all'indietro, e quest'anno febbraio ha ventinove giorni, oggi è mercoledì.»"
   ],
   "scelte": [
    "«Ruppe la pace giurata.»",
@@ -204,10 +205,15 @@ export const COPIONE = {
     "id": "N11a / N11b / N11c",
     "tipo": "visto",
     "testo": "la frase scelta."
+   },
+   {
+    "id": "N23",
+    "tipo": "visto",
+    "testo": "il giorno della settimana contato dal notaio."
    }
   ],
   "citazioni": [],
-  "base": "Giovedì 10 febbraio, la gente «dall'una parte e d'altra» radunata, l'ingresso da Porta Santa Maria, il giuramento con la Donati: fonte (pseudo-Brunetto; Faini pp. 14–16). Il luogo del raduno: la fonte dice solo che era dove si doveva giurare il matrimonio, nel cuore dei possessi dell'offeso [da verificare: case degli Amidei o dei Fifanti]. Il nome della sposa non è tramandato: fonte (silenzio delle cronache). La pergamena: invenzione."
+  "base": "Giovedì 10 febbraio, la gente «dall'una parte e d'altra» radunata, l'ingresso da Porta Santa Maria, il giuramento con la Donati: fonte (pseudo-Brunetto; Faini pp. 14–16). Il luogo del raduno: la fonte dice solo che era dove si doveva giurare il matrimonio, nel cuore dei possessi dell'offeso [da verificare: case degli Amidei o dei Fifanti]. Il nome della sposa non è tramandato: fonte (silenzio delle cronache). La pergamena: invenzione. Il giorno della settimana: le fonti divergono. Lo pseudo-Brunetto scrive «giovedì die X di febraio» e Faini lo accetta (pp. 14, 16 n. 37), ma il 1216 era bisestile: dal 10 febbraio alla Pasqua del 10 aprile passano 60 giorni, e il 10 febbraio cade di mercoledì (calcolo sul calendario giuliano, verificato il 2 e il 9 ottobre 2026). Il titolo della schermata tiene la parola della cronaca; la nota in margine è invenzione dichiarata, che porta nel 1216 un controllo fatto oggi."
  },
  "III1": {
   "titolo": "Santa Maria sopra Porta",

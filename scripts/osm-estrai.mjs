@@ -32,6 +32,12 @@ export const QUERY = `[out:json][timeout:80];(
 
 const QUI = dirname(fileURLToPath(import.meta.url));
 const GREZZO = join(QUI, '..', 'dati-osm', 'ponte-vecchio-2026-10-01.json');
+// Il 9 ottobre 2026 un secondo estratto, solo per piazza del Duomo, che il
+// primo lasciava fuori: le impronte del Battistero e della cattedrale di oggi.
+// Query: way["building"] e way["amenity"="place_of_worship"] nel riquadro
+// 43.7718,11.2525 – 43.7740,11.2575, «out geom tags».
+const GREZZO_DUOMO = join(QUI, '..', 'dati-osm', 'piazza-duomo-2026-10-09.json');
+const DAL_DUOMO = { 166821303: 'battistero', 43768260: 'cattedrale' };
 const USCITA = join(QUI, '..', 'src', 'dati', 'osm.js');
 
 export const LAT0 = 43.76820, LON0 = 11.25335;
@@ -68,8 +74,15 @@ for (const e of d.elements) {
   }
 }
 
+// il Battistero (documentato: è l'edificio del 1216) e la cattedrale di oggi,
+// che non è del 1216 ma dà l'asse e la facciata sotto cui sta Santa Reparata
+for (const e of JSON.parse(readFileSync(GREZZO_DUOMO, 'utf8')).elements) {
+  const tipo = DAL_DUOMO[e.id];
+  if (tipo && e.geometry) impronte.push({ id: e.id, nome: e.tags.name, tipo, wikipedia: e.tags.wikipedia || null, punti: e.geometry.map(xz) });
+}
+
 const out = `/* Generato da scripts/osm-estrai.mjs il ${new Date().toISOString().slice(0, 10)}. Non modificare a mano.
-   Dati © OpenStreetMap contributors (ODbL 1.0), estratto del 01/10/2026.
+   Dati © OpenStreetMap contributors (ODbL 1.0), estratti del 01/10/2026 e (piazza del Duomo) del 09/10/2026.
    Metri locali: origine al capo nord del Ponte Vecchio, x verso est, z verso sud. */
 
 export const ORIGINE = { lat: ${LAT0}, lon: ${LON0} };
@@ -80,7 +93,7 @@ export const FIUME = ${JSON.stringify(fiume)};
 /** Strade e piazze con nome entro ${RAGGIO} m. Quali valgono per il 1216 lo decide strade-1216.js. */
 export const STRADE = ${JSON.stringify(strade)};
 
-/** Torri e chiese di oggi con nome: impronte reali, da usare come punti fermi. */
+/** Torri e chiese di oggi con nome, il Battistero e la cattedrale: impronte reali, da usare come punti fermi. */
 export const IMPRONTE = ${JSON.stringify(impronte)};
 `;
 writeFileSync(USCITA, out);

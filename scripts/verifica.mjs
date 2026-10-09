@@ -19,7 +19,14 @@ import { COPIONE } from '../src/dati/copione.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from '../src/mondo/griglia.js';
 import { Cantiere } from '../src/mondo/cantiere.js';
 import { costruisciMonumenti } from '../src/mondo/monumenti.js';
+import { soloIndice } from '../src/mondo/modelli.js';
+import { readFileSync } from 'node:fs';
 import { lottizza } from '../src/mondo/edifici.js';
+
+// i monumenti modellati in Blender cambiano la pianta (Santa Reparata si
+// percorre dentro): qui non si caricano le maglie, ma si segna che ci sono,
+// così la griglia è la stessa del browser
+soloIndice(JSON.parse(readFileSync(new URL('../public/monumenti/indice.json', import.meta.url), 'utf8')));
 
 const t0 = Date.now();
 const griglia = new Griglia();

@@ -30,7 +30,8 @@ def prepara():
     """Scena vuota; i materiali in più rispetto al kit."""
     K.pulisci()
     K.MATERIALI.clear()
-    for nome, col in {'marmo': (0.85, 0.83, 0.78), 'marmoVerde': (0.18, 0.28, 0.22), 'coppi': (0.62, 0.32, 0.22)}.items():
+    for nome, col in {'marmo': (0.85, 0.83, 0.78), 'marmoVerde': (0.18, 0.28, 0.22), 'coppi': (0.62, 0.32, 0.22),
+                      'porfido': (0.3, 0.08, 0.08), 'cotto': (0.6, 0.32, 0.22)}.items():
         m = bpy.data.materials.new(nome); m.use_nodes = True
         m.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value = col + (1,)
         K.MATERIALI[nome] = m
@@ -601,6 +602,383 @@ def porta():
     return ob
 
 
+def innesta(P, P2, M):
+    """Unisce a P le parti di P2, trasformate con la matrice M."""
+    for m, bb in P2.bm.items():
+        me = bpy.data.meshes.new('t'); bb.to_mesh(me); bb.free()
+        me.transform(M)
+        P._bm(m).from_mesh(me); bpy.data.meshes.remove(me)
+    P2.bm.clear()
+
+
+def cornice_rettangolo(P, x0, x1, z0, z1, y, larg=0.18, sp=0.06, m='marmoVerde'):
+    """Riquadro di listelli (le specchiature verdi dei marmi fiorentini)."""
+    P.blocco(x0, x1, z0, z0 + larg, y, y + sp, m, smusso=0)
+    P.blocco(x0, x1, z1 - larg, z1, y, y + sp, m, smusso=0)
+    P.blocco(x0, x0 + larg, z0 + larg, z1 - larg, y, y + sp, m, smusso=0)
+    P.blocco(x1 - larg, x1, z0 + larg, z1 - larg, y, y + sp, m, smusso=0)
+
+
+def arco_listello(P, cx, zi, r, y, larg=0.18, sp=0.06, m='marmoVerde', n=12):
+    for i in range(n):
+        a0, a1 = math.pi * i / n, math.pi * (i + 1) / n
+        P.solido([(cx + rr * math.cos(a), yy, zi + rr * math.sin(a)) for a in (a0, a1) for rr in (r - larg, r) for yy in (y, y + sp)], m, 0)
+
+
+# ======================================================== battistero
+def battistero():
+    """Il Battistero di San Giovanni come poteva essere nel 1216.
+    Documentato (l'edificio c'è ancora): l'ottagono di 34 m sui lati esterni
+    (OpenStreetMap), i tre ordini rivestiti di marmo bianco di Carrara e
+    verde di Prato, la lanterna (1150, Villani), la scarsella rettangolare,
+    le due colonne di porfido donate da Pisa (1115 o 1117) alla porta est,
+    l'altezza di circa 39 m. Ipotesi: i battenti di legno (le porte di
+    bronzo sono del Tre e Quattrocento), il disegno delle specchiature,
+    l'attico già compiuto (la data non è nota). Centro all'origine, lati
+    piatti verso ±x e ±y: +x è est, +y è nord."""
+    B = PAR['battistero']
+    a = B['apotema']
+    lato = 2 * a * math.tan(math.pi / 8)
+    t = 1.2
+    P = K.Pezzo('battistero')
+    # zoccolo e gradino
+    Rc = a / math.cos(math.pi / 8)
+    anello = lambda r, z: [(r * math.cos(math.pi / 8 + k * math.pi / 4), r * math.sin(math.pi / 8 + k * math.pi / 4), z) for k in range(8)]
+    P.solido(anello(Rc + 0.55, -1.2) + anello(Rc + 0.55, 0.25), 'marmo', 0.02)
+    P.solido(anello(Rc + 0.25, 0.25) + anello(Rc + 0.25, 0.6), 'marmo', 0.02)
+    Z1, C1, Z2, C2, Z3, C3 = 0.6, 11.2, 11.8, 20.0, 20.6, 26.0
+    porte = {0: 'est', 90: 'nord', 270: 'sud'}
+    for k in range(8):
+        th = k * 45
+        F = K.Pezzo('_')
+        h = lato / 2
+        wp, hp = 4.6, 7.6                                        # la porta
+        fori = []
+        if th in porte:
+            fori.append([(-wp / 2, Z1), (wp / 2, Z1), (wp / 2, Z1 + hp), (-wp / 2, Z1 + hp)])
+        # finestra dell'ordine di mezzo, nella campata centrale (non sopra la scarsella)
+        fin = th != 180
+        if fin:
+            fori.append([(-0.65, 13.6), (0.65, 13.6), (0.65, 16.4), (-0.65, 16.4)])
+        lastra(F, [(-h, Z1), (h, Z1), (h, C3), (-h, C3)], fori, -t, 0, 'marmo')
+        # primo ordine: tre campate fra lesene verdi, specchiature
+        for u in (-2.35, 2.35):
+            F.blocco(u - 0.18, u + 0.18, Z1, C1, 0, 0.1, 'marmoVerde', smusso=0)
+        for (u0, u1) in ((-h + 0.9, -2.75), (2.75, h - 0.9)):
+            cornice_rettangolo(F, u0, u1, Z1 + 0.9, C1 - 0.8, 0)
+            cornice_rettangolo(F, u0 + 0.6, u1 - 0.6, Z1 + 1.5, C1 - 1.4, 0, larg=0.1)
+        if th in porte:
+            # stipiti e architrave di marmo, battenti di legno chiusi
+            for sx in (-1, 1):
+                F.blocco(sx * wp / 2, sx * (wp / 2 + 0.55), Z1, Z1 + hp, -t, 0.15, 'marmo', smusso=0.015)
+            F.blocco(-wp / 2 - 0.55, wp / 2 + 0.55, Z1 + hp, Z1 + hp + 0.7, -t, 0.2, 'marmo', smusso=0.015)
+            F.blocco(-wp / 2 - 0.55, wp / 2 + 0.55, Z1 + hp + 0.7, Z1 + hp + 0.85, -t, 0.25, 'marmoVerde', smusso=0)
+            K.anta(F, -wp / 2, 0, Z1, Z1 + hp, -0.75, -0.68)
+            K.anta(F, 0, wp / 2, Z1, Z1 + hp, -0.75, -0.68)
+            F.blocco(-wp / 2, wp / 2, Z1 - 0.01, Z1 + hp, -t + 0.05, -0.8, 'scuro', smusso=0)
+            if porte[th] == 'est':
+                # le colonne di porfido donate dai Pisani
+                for sx in (-1, 1):
+                    cx = sx * (wp / 2 + 1.25)
+                    F.solido([(cx + 0.42 * math.cos(q), 0.5 + 0.42 * math.sin(q), z) for q in [2 * math.pi * i / 12 for i in range(12)] for z in (Z1, Z1 + 0.45)], 'marmo', 0)
+                    F.solido([(cx + 0.33 * math.cos(q), 0.5 + 0.33 * math.sin(q), z) for q in [2 * math.pi * i / 14 for i in range(14)] for z in (Z1 + 0.45, Z1 + 6.6)], 'porfido', 0)
+                    F.solido([(cx + 0.45 * math.cos(q), 0.5 + 0.45 * math.sin(q), z) for q in [2 * math.pi * i / 12 for i in range(12)] for z in (Z1 + 6.6, Z1 + 7.1)], 'marmo', 0)
+        else:
+            cornice_rettangolo(F, -1.95, 1.95, Z1 + 0.9, C1 - 0.8, 0)
+            cornice_rettangolo(F, -1.35, 1.35, Z1 + 1.5, C1 - 1.4, 0, larg=0.1)
+        # cornice fra il primo e il secondo ordine
+        F.blocco(-h - 0.3, h + 0.3, C1, Z2, -t, 0.38, 'marmo', smusso=0.02)
+        F.blocco(-h - 0.3, h + 0.3, C1 + 0.22, C1 + 0.36, 0.38, 0.42, 'marmoVerde', smusso=0)
+        # secondo ordine: tre archi ciechi su lesene
+        bay = (lato - 1.3) / 3
+        for i in range(3):
+            cx = -h + 0.65 + bay * (i + 0.5)
+            r = bay / 2 - 0.15
+            for sx in (-1, 1):
+                F.blocco(cx + sx * r - 0.16, cx + sx * r + 0.16, Z2, 17.0, 0, 0.1, 'marmoVerde', smusso=0)
+            arco_listello(F, cx, 17.0, r + 0.16, 0, larg=0.32, sp=0.1)
+            if i == 1 and fin:
+                # la finestra con il timpano
+                for sx in (-1, 1):
+                    F.blocco(sx * 0.65, sx * 0.95, 13.6, 16.4, -t, 0.12, 'marmo', smusso=0.01)
+                F.blocco(-1.05, 1.05, 13.35, 13.6, -t, 0.18, 'marmo', smusso=0.01)
+                F.solido([(-1.15, yy, 16.4) for yy in (0, 0.2)] + [(1.15, yy, 16.4) for yy in (0, 0.2)] + [(0, yy, 17.25) for yy in (0, 0.2)], 'marmoVerde', 0)
+                F.blocco(-0.66, 0.66, 13.6, 16.4, -t + 0.1, -0.4, 'scuro', smusso=0)
+            else:
+                cornice_rettangolo(F, cx - r + 0.45, cx + r - 0.45, Z2 + 0.7, 16.2, 0, larg=0.12)
+        # cornice fra il secondo ordine e l'attico
+        F.blocco(-h - 0.3, h + 0.3, C2, Z3, -t, 0.38, 'marmo', smusso=0.02)
+        # attico a fasce bianche e verdi
+        z = Z3 + 0.45
+        while z < C3 - 0.3:
+            F.blocco(-h, h, z, z + 0.16, 0, 0.05, 'marmoVerde', smusso=0)
+            z += 0.6
+        F.blocco(-h - 0.45, h + 0.45, C3, C3 + 0.5, -t, 0.5, 'marmo', smusso=0.02)
+        phi = math.radians(th - 90)
+        M = Matrix.Translation((a * math.cos(math.radians(th)), a * math.sin(math.radians(th)), 0)) @ Matrix.Rotation(phi, 4, 'Z')
+        innesta(P, F, M)
+    # i pilastri d'angolo, a fasce bianche e verdi, nei due ordini bassi
+    for k in range(8):
+        q = math.pi / 8 + k * math.pi / 4
+        cx, cy = (Rc - 0.25) * math.cos(q), (Rc - 0.25) * math.sin(q)
+        z, i = Z1, 0
+        while z < C2:
+            z1 = min(C2, z + 0.55)
+            pts = [(cx + 0.75 * math.cos(q + d), cy + 0.75 * math.sin(q + d), zz) for d in (math.pi / 2, -math.pi / 2, 0.0, math.pi) for zz in (z, z1)]
+            P.solido(pts, 'marmo' if i % 2 == 0 else 'marmoVerde', 0)
+            z, i = z1, i + 1
+    # il tetto a piramide di lastre bianche, con i costoloni
+    P.solido(anello(Rc + 0.6, C3 + 0.5) + anello(Rc + 0.6, C3 + 0.75) + [(0, 0, 32.2)], 'marmo', 0)
+    for k in range(8):
+        q = math.pi / 8 + k * math.pi / 4
+        P.solido([((Rc + 0.6) * math.cos(q) + 0.2 * math.cos(q + d), (Rc + 0.6) * math.sin(q) + 0.2 * math.sin(q + d), C3 + 0.8) for d in (math.pi / 2, -math.pi / 2)] +
+                 [(0.2 * math.cos(q + d), 0.2 * math.sin(q + d), 32.35) for d in (math.pi / 2, -math.pi / 2)] + [((Rc + 0.6) * math.cos(q), (Rc + 0.6) * math.sin(q), C3 + 1.0)], 'marmo', 0)
+    # la lanterna: basamento, colonnine, cornice, cuspide, palla
+    P.solido(anello(2.9, 31.0) + anello(2.9, 31.7), 'marmo', 0)
+    P.solido(anello(1.9, 31.7) + anello(1.9, 35.6), 'scuro', 0)
+    for k in range(8):
+        q = math.pi / 8 + k * math.pi / 4
+        P.solido([(2.4 * math.cos(q) + 0.19 * math.cos(w), 2.4 * math.sin(q) + 0.19 * math.sin(w), z) for w in [2 * math.pi * i / 8 for i in range(8)] for z in (31.7, 35.6)], 'marmo', 0)
+    P.solido(anello(2.85, 35.6) + anello(2.85, 36.1), 'marmo', 0)
+    P.solido(anello(2.6, 36.1) + [(0, 0, 38.3)], 'marmo', 0)
+    P.solido([(0.32 * math.cos(w) * math.cos(v), 0.32 * math.sin(w) * math.cos(v), 38.65 + 0.32 * math.sin(v)) for w in [2 * math.pi * i / 10 for i in range(10)] for v in [math.pi * (j / 6 - 0.5) for j in range(7)]], 'marmo', 0)
+    # la scarsella, a ovest
+    S = B['scarsella']
+    x0, x1 = -a - S['prof'], -a + 0.3
+    yw = S['larg'] / 2
+    P.blocco(x0, x1, -1.2, 15.4, -yw, yw, 'marmo', smusso=0.02)
+    S2 = K.Pezzo('_')
+    cornice_rettangolo(S2, -yw + 0.7, yw - 0.7, 1.6, 9.8, 0)
+    cornice_rettangolo(S2, -yw + 0.7, yw - 0.7, 10.6, 14.4, 0)
+    innesta(P, S2, Matrix.Translation((x0, 0, 0)) @ Matrix.Rotation(math.pi / 2, 4, 'Z'))
+    P.blocco(x0 - 0.3, x1, 15.4, 15.8, -yw - 0.3, yw + 0.3, 'marmo', smusso=0.02)
+    P.solido([(x, y, z) for x in (x0 - 0.3, x1) for y in (-yw - 0.3, yw + 0.3) for z in (15.8,)] + [(x1, y, 16.6) for y in (-yw - 0.3, yw + 0.3)], 'lastre', 0)
+    return P.crea()
+
+
+# ==================================================== santa reparata
+def santa_reparata():
+    """Santa Reparata, la cattedrale del 1216, con l'interno.
+    Dedotto dagli scavi del 1965–1974 (Morozzi, Toker): tre navate, sette
+    coppie di pilastri (la ricostruzione carolingia), due cappelle laterali
+    absidate, abside con due absidiole, cripta sotto il presbiterio rialzato
+    con due scale, portico davanti alla facciata, misure interne di circa
+    58,5 × 25,5 m. Ipotesi: le altezze, le finestre, le capriate, il
+    campanile (ne restano le fondazioni: qui uno solo, a nord), la facciata
+    di marmi bianchi e verdi («probabilmente», come il Battistero).
+    Facciata sul piano y = 0 verso +y (la piazza, a ovest), l'interno verso
+    -y; x da 0 (sud) a W (nord). Le profondità d sono positive dalla
+    facciata: y = -d. Nessuna trasformazione è una specchiatura, così le
+    facce restano rivolte all'esterno."""
+    S = PAR['santa_reparata']
+    W, t, XP, LP, PAS, NP = S['W'], S['t'], S['pilastri'], S['lato'], S['passo'], S['n']
+    PRES, FONDO, ALZ, PORT, PORTICO = S['presbiterio'], S['fondo'], S['alzato'], S['portale'], S['portico']
+    xc = W / 2
+    HA, HC, HN = 8.5, 11.8, 15.5                          # muri delle navatelle, colmo dei loro tetti, navata
+    nx0, nx1 = XP[0] - 0.4, XP[1] + 0.4                   # facce esterne dei muri della navata
+    COLMO = HN + (xc - nx0 + 0.5) * 0.42
+    CAP = PRES - PAS / 2                                  # le cappelle laterali: la campata prima del presbiterio
+    sp = 0.03                                             # le pelli: pietra fuori, intonaco dentro
+    P = K.Pezzo('santa_reparata')
+    xa = (XP[0] / 2 + 0.2, (W + XP[1]) / 2 - 0.2)         # gli assi delle navatelle
+
+    def profilo():
+        return [(0, -1.2), (W, -1.2), (W, HA), (nx1 + 0.3, HC), (nx1, HN), (xc, COLMO), (nx0, HN), (nx0 - 0.3, HC), (0, HA)]
+
+    def arco(cx, w, h):
+        return arco_punti(cx, h - w / 2, w, 'tondo', n=14)
+
+    def solido_anello(cx, cy, r0, r1, a0, a1, z0, z1, m, sx=1):
+        P.solido([(cx + sx * rr * math.cos(a), cy + rr * math.sin(a), z) for a in (a0, a1) for rr in (r0, r1) for z in (z0, z1)], m, 0)
+
+    # --- la facciata, di marmo, con tre portali e l'occhio
+    portali = ((xc, PORT, 5.6), (xa[0], 1.6, 3.8), (xa[1], 1.6, 3.8))
+    occhio = [(xc + 1.0 * math.cos(q), 12.6 + 1.0 * math.sin(q)) for q in [2 * math.pi * i / 16 for i in range(16)]]
+    fori = [arco(cx, w, h) for cx, w, h in portali] + [occhio]
+    F = K.Pezzo('_')
+    lastra(F, profilo(), fori, -t, 0, 'marmo')
+    lastra(F, profilo(), fori, -t - sp, -t, 'intonaco')
+    for x in (nx0, nx1):                                   # lesene e fascia verdi
+        F.blocco(x - 0.25, x + 0.25, -1.2, HN, 0, 0.08, 'marmoVerde', smusso=0)
+    F.blocco(-0.1, W + 0.1, HA - 0.25, HA, 0, 0.12, 'marmoVerde', smusso=0)
+    cornice_rettangolo(F, xc - 2.9, xc + 2.9, 0.4, 7.4, 0)
+    for (u0, u1) in ((0.8, nx0 - 0.6), (nx1 + 0.6, W - 0.8)):
+        cornice_rettangolo(F, u0, u1, 0.4, HA - 0.7, 0)
+    for (pa, pb) in (((nx0, HN), (xc, COLMO)), ((xc, COLMO), (nx1, HN))):   # la cornice del frontone
+        for i in range(10):
+            p0 = (pa[0] + (pb[0] - pa[0]) * i / 10, pa[1] + (pb[1] - pa[1]) * i / 10)
+            p1 = (pa[0] + (pb[0] - pa[0]) * (i + 1) / 10, pa[1] + (pb[1] - pa[1]) * (i + 1) / 10)
+            F.solido([(x, y, z + dz) for x, z in (p0, p1) for y in (-0.1, 0.25) for dz in (0.0, 0.3)], 'marmo', 0)
+    for cx, w, h in portali:                               # stipiti e ghiere dei portali
+        arco_listello(F, cx, h - w / 2, w / 2 + 0.35, 0, larg=0.35, sp=0.12)
+        for sx in (-1, 1):
+            F.blocco(cx + sx * w / 2, cx + sx * (w / 2 + 0.35), 0, h - w / 2, -t, 0.12, 'marmo', smusso=0.01)
+    for q in range(16):                                    # l'anello dell'occhio, a conci bianchi e verdi
+        F.solido([(xc + r * math.cos(a), y, 12.6 + r * math.sin(a)) for a in (2 * math.pi * q / 16, 2 * math.pi * (q + 1) / 16) for r in (1.0, 1.35) for y in (-t, 0.12)],
+                 'marmoVerde' if q % 2 else 'marmo', 0)
+    for cx, w, h in portali[1:]:                           # chiusi i portali piccoli
+        K.anta(F, cx - w / 2, cx, 0, h, -0.55, -0.48, arco=(cx, h - w / 2, w / 2))
+        K.anta(F, cx, cx + w / 2, 0, h, -0.55, -0.48, arco=(cx, h - w / 2, w / 2))
+    innesta(P, F, Matrix())
+    for sx in (-1, 1):                                     # aperto il portale grande: battenti girati verso l'interno
+        A = K.Pezzo('_')
+        K.anta(A, 0, PORT / 2 - 0.05, 0, 4.2, -0.06, 0.0)
+        hx = xc + sx * PORT / 2 + (0.06 if sx > 0 else 0)
+        innesta(P, A, Matrix.Translation((hx, -t - 0.08, 0)) @ Matrix.Rotation(-math.pi / 2, 4, 'Z'))
+
+    # --- i muri delle navatelle: finestre e l'arco della cappella laterale.
+    # Costruiti nel piano (u, spessore, z) e girati: a sud u è la profondità,
+    # a nord è la profondità cambiata di segno (così la rotazione resta tale)
+    for lato in ('sud', 'nord'):
+        sg = 1 if lato == 'sud' else -1
+        fori_l = []
+        for k in range(9):
+            d = t + PAS * (k + 0.5)
+            if d > FONDO - 1 or abs(d - CAP) < 3.5: continue
+            fori_l.append([(sg * (d + px), pz + 4.6) for px, pz in arco_punti(0, 1.8, 0.8, 'tondo', n=8)])
+        fori_l.append([(sg * (CAP + px), pz) for px, pz in arco_punti(0, 3.9, 5.0, 'tondo', n=14)])
+        fori_l = [f if sg > 0 else f[::-1] for f in fori_l]
+        bordo = [(sg * t, -1.2), (sg * FONDO, -1.2), (sg * FONDO, HA), (sg * t, HA)]
+        if sg < 0: bordo = bordo[::-1]
+        Mu = K.Pezzo('_')
+        lastra(Mu, bordo, fori_l, -t, 0, 'intonaco')
+        lastra(Mu, bordo, fori_l, -t - sp, -t, 'conci')
+        if sg > 0:   # x = spessore + t, y = -u
+            M = Matrix(((0, 1, 0, t), (-1, 0, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))
+        else:        # x = W - t - spessore, y = u
+            M = Matrix(((0, -1, 0, W - t), (1, 0, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))
+        innesta(P, Mu, M)
+
+    # --- il muro di fondo, con le aperture dell'abside e delle absidiole
+    fori_e = [arco(xc, 10.6, 12.8), arco(xa[0], 4.6, 6.3), arco(xa[1], 4.6, 6.3)]
+    E = K.Pezzo('_')
+    lastra(E, profilo(), fori_e, -t, 0, 'intonaco')
+    lastra(E, profilo(), fori_e, -t - sp, -t, 'conci')
+    innesta(P, E, Matrix.Translation((0, -FONDO, 0)))
+
+    # --- i muri della navata sulle arcate, con le finestre alte; pilastri
+    D = [t + PAS * k for k in range(1, NP + 1)]
+    bordi = [t + 0.4] + D + [FONDO - 0.3]
+    campate = []
+    for i in range(len(bordi) - 1):
+        u0 = bordi[i] + (0 if i == 0 else LP / 2)
+        u1 = bordi[i + 1] - (LP / 2 if i + 1 < len(bordi) - 1 else 0)
+        campate.append((u0, u1))
+    alte = [[(px, pz + 12.3) for px, pz in arco_punti((u0 + u1) / 2, 1.75, 0.9, 'tondo', n=8)] for u0, u1 in campate]
+    for j, xp in enumerate(XP):
+        fori_n = [arco_punti((u0 + u1) / 2, 5.6, u1 - u0, 'tondo', n=14) for u0, u1 in campate] + alte
+        N = K.Pezzo('_')
+        lastra(N, [(t, -1.2), (FONDO, -1.2), (FONDO, HN), (t, HN)], fori_n, -0.4, 0.4, 'intonaco')
+        for u0, u1 in campate:                             # le ghiere delle arcate, sulle due facce
+            conci_arco(N, arco_punti((u0 + u1) / 2, 5.6, u1 - u0, 'tondo', n=14)[2:], 0.45, -0.44, 0.44)
+        # sopra i tetti delle navatelle il muro è fuori: pietra, con le finestre
+        y0 = -0.4 - sp if j == 0 else 0.4
+        lastra(N, [(t, HC - 0.2), (FONDO, HC - 0.2), (FONDO, HN), (t, HN)], alte, y0, y0 + sp, 'conci')
+        innesta(P, N, Matrix(((0, 1, 0, xp), (-1, 0, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))))
+        for d in D:
+            z0 = ALZ if d > PRES else 0
+            P.blocco(xp - LP / 2, xp + LP / 2, z0, 5.35, -d - LP / 2, -d + LP / 2, 'conci', smusso=0.02)
+            P.blocco(xp - LP / 2 - 0.12, xp + LP / 2 + 0.12, 5.35, 5.75, -d - LP / 2 - 0.12, -d + LP / 2 + 0.12, 'conci', smusso=0.03)
+            P.blocco(xp - LP / 2 - 0.1, xp + LP / 2 + 0.1, z0, z0 + 0.35, -d - LP / 2 - 0.1, -d + LP / 2 + 0.1, 'conci', smusso=0.03)
+
+    # --- pavimento di mattoni; presbiterio sulla cripta, con le scale e l'altare
+    P.blocco(t - 0.05, W - t + 0.05, -0.12, 0.0, -FONDO, -t + 0.05, 'cotto', smusso=0)
+    P.blocco(t, W - t, 0.0, ALZ - 0.06, -FONDO, -PRES, 'conci', smusso=0)
+    P.blocco(t, W - t, ALZ - 0.06, ALZ, -FONDO, -PRES, 'lastre', smusso=0)
+    scale = (xc - 3.6, xc + 3.6)
+    tratti = [t, scale[0] - 1.15, scale[0] + 1.15, scale[1] - 1.15, scale[1] + 1.15, W - t]
+    for x0, x1 in zip(tratti[::2], tratti[1::2]):          # il parapetto, interrotto dalle scale
+        P.blocco(x0, x1, ALZ, ALZ + 0.9, -PRES - 0.35, -PRES - 0.05, 'marmo', smusso=0.01)
+    for cx in scale:                                       # le due scale ai lati della cripta
+        for i in range(8):
+            P.blocco(cx - 1.1, cx + 1.1, 0, (i + 1) * ALZ / 8, -PRES, -PRES + 0.4 * (8 - i), 'lastre', smusso=0.01)
+    cr = arco_punti(xc, 1.0, 2.0, 'tondo', n=10)           # l'ingresso della cripta
+    P.solido([(x, y, z) for x, z in cr for y in (-PRES - 0.6, -PRES + 0.01)], 'scuro', 0)
+    conci_arco(P, cr[2:], 0.3, -PRES - 0.05, -PRES + 0.08)
+    P.blocco(xc - 1.2, xc + 1.2, ALZ, ALZ + 1.0, -FONDO + 2.0, -FONDO + 3.2, 'marmo', smusso=0.02)        # l'altare
+    P.blocco(xc - 1.35, xc + 1.35, ALZ + 1.0, ALZ + 1.12, -FONDO + 1.85, -FONDO + 3.35, 'marmo', smusso=0.01)
+
+    # --- abside e absidiole: mezzo cilindro, catino, tetto a mezzo cono.
+    # Il colmo del cono è alto abbastanza da restare fuori dal catino, che
+    # altrimenti dall'interno si vedrebbe bucato dal tetto
+    def abside(cx, r, h, colmo):
+        n_ = 14
+        for i in range(n_):
+            a0, a1 = math.pi + math.pi * i / n_, math.pi + math.pi * (i + 1) / n_
+            solido_anello(cx, -FONDO, r, r + t, a0, a1, -1.2, h, 'conci')
+            solido_anello(cx, -FONDO, r - sp, r, a0, a1, ALZ, h, 'intonaco')
+            for j in range(5):
+                f0, f1 = math.pi / 2 * j / 5, math.pi / 2 * (j + 1) / 5
+                P.solido([(cx + rr * math.cos(f) * math.cos(a), -FONDO + rr * math.cos(f) * math.sin(a), h + rr * math.sin(f))
+                          for a in (a0, a1) for f in (f0, f1) for rr in (r - 0.05, r)], 'intonaco', 0)
+            # il tetto parte dalla faccia esterna del muro di fondo, non da quella interna
+            P.solido([(cx + rr * math.cos(a), -FONDO - t + rr * math.sin(a), z) for a in (a0, a1) for (rr, z) in ((r + t + 0.4, h), (r + t + 0.4, h + 0.15), (0.05, colmo))], 'coppi', 0)
+        P.solido([(cx + rr * math.cos(a), -FONDO + rr * math.sin(a), z) for a in [math.pi + math.pi * i / 12 for i in range(13)] for rr in (0.0, r) for z in (ALZ - 0.1, ALZ)], 'lastre', 0)
+    abside(xc, 5.3, 7.5, 17.2)
+    abside(xa[0], 2.3, 4.0, 7.6)
+    abside(xa[1], 2.3, 4.0, 7.6)
+
+    # --- le cappelle laterali absidate, fuori dai muri delle navatelle
+    for sx, x0 in ((-1, 0.0), (1, W)):
+        r, h = 2.5, 4.6
+        for i in range(12):
+            a0, a1 = -math.pi / 2 + math.pi * i / 12, -math.pi / 2 + math.pi * (i + 1) / 12
+            if sx < 0: a0, a1 = a1, a0                      # stessa rotazione, verso opposto
+            solido_anello(x0, -CAP, r, r + 0.8, a0, a1, -1.2, h, 'conci', sx)
+            solido_anello(x0, -CAP, r - sp, r, a0, a1, 0, h, 'intonaco', sx)
+            for j in range(4):
+                f0, f1 = math.pi / 2 * j / 4, math.pi / 2 * (j + 1) / 4
+                P.solido([(x0 + sx * rr * math.cos(f) * math.cos(a), -CAP + rr * math.cos(f) * math.sin(a), h + rr * math.sin(f))
+                          for a in (a0, a1) for f in (f0, f1) for rr in (r - 0.05, r)], 'intonaco', 0)
+            P.solido([(x0 + sx * (0.04 + rr * math.cos(a)), -CAP + rr * math.sin(a), z) for a in (a0, a1) for (rr, z) in ((r + 1.2, h), (r + 1.2, h + 0.15), (0.05, 8.35))], 'coppi', 0)
+        P.solido([(x0 + sx * rr * math.cos(a), -CAP + rr * math.sin(a), z) for a in [-math.pi / 2 + math.pi * i / 12 for i in range(13)] for rr in (0.0, r) for z in (-0.12, 0.0)], 'cotto', 0)
+
+    # --- i tetti: la navata a due falde, le navatelle a uno spiovente; tavolato e capriate
+    def falda_(xa_, za_, xb_, zb_, d0, d1, m, spes=0.14):
+        P.solido([(x, -d, z + dz) for x, z in ((xa_, za_), (xb_, zb_)) for d in (d0, d1) for dz in (0.0, spes)], m, 0)
+    falda_(nx0 - 0.5, HN - 0.2, xc, COLMO, -0.4, FONDO + t + 0.3, 'coppi')
+    falda_(xc, COLMO, nx1 + 0.5, HN - 0.2, -0.4, FONDO + t + 0.3, 'coppi')
+    falda_(nx0, HN, xc, COLMO - 0.16, t, FONDO, 'legno', 0.04)
+    falda_(xc, COLMO - 0.16, nx1, HN, t, FONDO, 'legno', 0.04)
+    falda_(-0.5, HA - 0.25, nx0 + 0.05, HC - 0.05, -0.4, FONDO + t + 0.3, 'coppi')
+    falda_(nx1 - 0.05, HC - 0.05, W + 0.5, HA - 0.25, -0.4, FONDO + t + 0.3, 'coppi')
+    falda_(t, HA - 0.05, nx0, HC - 0.2, t, FONDO, 'legno', 0.04)
+    falda_(nx1, HC - 0.2, W - t, HA - 0.05, t, FONDO, 'legno', 0.04)
+    d = t + 1.6
+    while d < FONDO - 0.5:
+        # la capriata: catena, due puntoni, il monaco
+        P.blocco(nx0 + 0.4, nx1 - 0.4, HN - 0.38, HN - 0.05, -d - 0.16, -d + 0.16, 'legnoScuro', smusso=0.01)
+        for x_a in (nx0 + 0.45, nx1 - 0.45):
+            P.solido([(x, -d + dd, zz) for (x, z0_) in ((x_a, HN - 0.05), (xc, COLMO - 0.2)) for dd in (-0.14, 0.14) for zz in (z0_ - 0.3, z0_)], 'legnoScuro', 0)
+        P.blocco(xc - 0.13, xc + 0.13, HN - 0.38, COLMO - 0.25, -d - 0.13, -d + 0.13, 'legnoScuro', smusso=0.01)
+        for (x_a, z_a, x_b, z_b) in ((t, HA - 0.15, nx0, HC - 0.3), (nx1, HC - 0.3, W - t, HA - 0.15)):   # i puntoni delle navatelle
+            P.solido([(x, -d + dd, zz) for (x, z0_) in ((x_a, z_a), (x_b, z_b)) for dd in (-0.11, 0.11) for zz in (z0_ - 0.24, z0_)], 'legnoScuro', 0)
+        d += 3.3
+
+    # --- il portico: otto colonne, l'architrave, il tetto a uno spiovente
+    P.blocco(-0.3, W + 0.3, -0.12, 0.05, 0, PORTICO, 'lastre', smusso=0)
+    for i in range(8):
+        cx, cy = 0.5 + (W - 1.0) * i / 7, PORTICO - 0.45
+        P.solido([(cx + 0.42 * math.cos(q), cy + 0.42 * math.sin(q), z) for q in [2 * math.pi * k / 12 for k in range(12)] for z in (0.05, 0.4)], 'conci', 0)
+        P.solido([(cx + 0.27 * math.cos(q), cy + 0.27 * math.sin(q), z) for q in [2 * math.pi * k / 14 for k in range(14)] for z in (0.4, 4.7)], 'marmo', 0)
+        P.blocco(cx - 0.4, cx + 0.4, 4.7, 5.1, cy - 0.4, cy + 0.4, 'conci', smusso=0.03)
+    P.blocco(-0.2, W + 0.2, 5.1, 5.75, PORTICO - 0.85, PORTICO - 0.05, 'conci', smusso=0.02)
+    P.solido([(x, y, z) for x in (-0.3, W + 0.3) for (y, z) in ((0.0, 7.3), (PORTICO + 0.4, 5.75), (0.0, 7.45), (PORTICO + 0.4, 5.9))], 'coppi', 0)
+    P.solido([(x, y, z) for x in (-0.2, W + 0.2) for (y, z) in ((0.0, 7.05), (PORTICO - 0.05, 5.78), (0.0, 7.1), (PORTICO - 0.05, 5.83))], 'legno', 0)
+
+    # --- il campanile, a nord accanto al fondo, con le bifore della cella
+    cx0, cx1, cy1, cy0 = W, W + 5.6, -(FONDO - 0.9), -(FONDO - 6.5)
+    P.blocco(cx0, cx1, -1.2, 27.0, cy1, cy0, 'conci', smusso=0.02)
+    xm, ym = (cx0 + cx1) / 2, (cy0 + cy1) / 2
+    for off in (-0.85, 0.85):
+        P.blocco(cx1 - 0.02, cx1 + 0.03, 22.2, 24.8, ym + off - 0.5, ym + off + 0.5, 'scuro', smusso=0)
+        for yf in (cy0, cy1):
+            P.blocco(xm + off - 0.5, xm + off + 0.5, 22.2, 24.8, yf - 0.03, yf + 0.03, 'scuro', smusso=0)
+    P.blocco(cx0 - 0.2, cx1 + 0.2, 27.0, 27.4, cy1 - 0.2, cy0 + 0.2, 'conci', smusso=0.02)
+    P.solido([(x, y, 27.4) for x in (cx0 - 0.3, cx1 + 0.3) for y in (cy1 - 0.3, cy0 + 0.3)] + [(xm, ym, 30.2)], 'coppi', 0)
+    return P.crea()
+
+
 def esporta(ob, nome):
     os.makedirs(USCITA, exist_ok=True)
     bpy.ops.object.select_all(action='DESELECT')
@@ -641,7 +1019,8 @@ def tavola(ob, nome, dist=None, alto=0.35, lato=0.5):
     bpy.data.objects.remove(cam, do_unlink=True)
 
 
-COSTRUTTORI = {'amidei': amidei, 'marte': marte, 'ponte': ponte, 'chiesa': chiesa, 'porta': porta}
+COSTRUTTORI = {'amidei': amidei, 'marte': marte, 'ponte': ponte, 'chiesa': chiesa, 'porta': porta, 'battistero': battistero,
+               'santa_reparata': santa_reparata}
 POSA = {'amidei': lambda: {k: PAR['amidei'][k] for k in ('fronte', 'W', 'D')},
         'chiesa': lambda: dict(PAR['chiesa'])}
 

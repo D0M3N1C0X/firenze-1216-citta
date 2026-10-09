@@ -191,6 +191,9 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
     if (['conci', 'pietrame', 'intonaco', 'coppi', 'lastre'].includes(nome)) variaTono(MAT[nome]);
     else sfasaCopie(MAT[nome]);
   }
+  // il porfido delle colonne del Battistero e il cotto del pavimento di Santa Reparata
+  MAT.porfido = new MeshStandardMaterial({ color: 0x5b2226, roughness: 0.32, metalness: 0, vertexColors: true });
+  MAT.cotto = materiale(tex.lastre || tex.conci, { color: new Color(0.95, 0.56, 0.42) });
   // ferro battuto (bandelle, chiodi, anelli) e tela oliata delle impannate
   MAT.ferro = new MeshStandardMaterial({ color: 0x2b2826, roughness: 0.55, metalness: 0.7, vertexColors: true });
   MAT.tela = new MeshStandardMaterial({ color: 0xc9b98f, roughness: 0.85, metalness: 0, vertexColors: true });

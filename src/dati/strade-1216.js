@@ -133,10 +133,12 @@ export const AGGIUNTE = [
 
 /**
  * Corridoi dove si costruisce anche oltre il raggio della città percorribile:
- * il percorso del corteo funebre verso Santa Reparata (copione, IV4).
+ * il percorso del corteo funebre verso Santa Reparata (copione, IV4). Dal
+ * 9 ottobre arriva oltre l'abside: lì il fondale schematico entrava nella
+ * chiesa, che è più lunga del modello di prima.
  */
 export const CORRIDOI = [
-  { punti: [[150, -400], [155, -470], [150, -515], [135, -560]], larghezza: 55 }
+  { punti: [[150, -400], [155, -470], [150, -515], [135, -560], [245, -547]], larghezza: 55 }
 ];
 
 /** Metri dal capo del ponte in cui la città è costruita casa per casa (400 fino al 1° ottobre). */

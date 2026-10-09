@@ -6,7 +6,7 @@ import { IMPRONTE } from '../dati/osm.js';
 import { PORTE as PORTE_CERCHIA, TRACCIATO } from '../dati/cerchia.js';
 import { falda, matriceLotto, muro, piramide, scatola, tamponamento, timpano, uvMetri } from './cantiere.js';
 import { torre } from './edifici.js';
-import { MONUMENTO, PONTE, STRADA } from './griglia.js';
+import { MONUMENTO, PIAZZA, PONTE, STRADA } from './griglia.js';
 import { INDICE, MODELLI, posaModello } from './modelli.js';
 import { LIVELLO_ACQUA, distanzaFiume, quota } from './terreno.js';
 import { rng } from './rumore.js';
@@ -371,8 +371,57 @@ function portaDellaCerchia(cant, griglia, p) {
   }
 }
 
+/* ============================================== PIAZZA DI SAN GIOVANNI
+   Le impronte di OpenStreetMap del 9 ottobre 2026 (dati/osm.js). */
+const improntaTipo = tipo => IMPRONTE.find(i => i.tipo === tipo)?.punti;
+
+/** Il Battistero: l'ottagono senza la scarsella, che sporge a ovest. */
+export const BATTISTERO = (() => {
+  const p = improntaTipo('battistero');
+  if (!p) return null;
+  const xMin = Math.min(...p.map(q => q[0]));
+  const ott = p.filter(q => q[0] > xMin + 1);           // via i punti della scarsella
+  const x0 = Math.min(...ott.map(q => q[0])), x1 = Math.max(...ott.map(q => q[0]));
+  const z0 = Math.min(...ott.map(q => q[1])), z1 = Math.max(...ott.map(q => q[1]));
+  const sc = p.filter(q => q[0] < x0 - 1);
+  return {
+    x: (x0 + x1) / 2, z: (z0 + z1) / 2, apotema: ((x1 - x0) + (z1 - z0)) / 4, impronta: p,
+    scarsella: { prof: x0 - xMin, larg: Math.max(...sc.map(q => q[1])) - Math.min(...sc.map(q => q[1])) }
+  };
+})();
+
+/**
+ * Santa Reparata sotto la cattedrale di oggi: stesso asse; la facciata
+ * stava circa 9,5 m più a ovest di quella attuale, perché circa tre campate
+ * della basilica antica (interasse 3,19 m) sono sotto il sagrato e la
+ * scalinata (Wikipedia, «Santa Reparata», dagli scavi del 1965–1974).
+ * Misure interne dagli scavi: 58,5 m abside compresa, 25–26 m di larghezza.
+ */
+export const SANTA_REPARATA = (() => {
+  const p = improntaTipo('cattedrale');
+  if (!p) return null;
+  const xMin = Math.min(...p.map(q => q[0]));
+  const fac = p.filter(q => q[0] < xMin + 2);
+  const zs = fac.map(q => q[1]);
+  return {
+    facciata: fac.reduce((a, q) => a + q[0], 0) / fac.length - 9.5, asse: (Math.min(...zs) + Math.max(...zs)) / 2,
+    // esterno e muri; due file di sette pilastri (la ricostruzione carolingia)
+    W: 27.3, t: 0.9, pilastri: [7.6, 19.7], lato: 1.1, passo: 6.625, n: 7,
+    // profondità dalla facciata: il presbiterio rialzato sulla cripta, il fondo
+    presbiterio: 40.65, fondo: 53.9, alzato: 1.6, portale: 2.8, portico: 4.0
+  };
+})();
+
 /* ============================================================ BATTISTERO */
 function battistero(cant, griglia, [x, z]) {
+  if (MODELLI.battistero && BATTISTERO) {
+    // il modello di Blender sull'impronta reale: lati piatti verso i punti
+    // cardinali, la scarsella a ovest, la porta principale a est
+    const B = BATTISTERO;
+    posaModello(cant, 'battistero', new Matrix4().setPosition(B.x, quota(B.x, B.z), B.z), 'documentato');
+    griglia.poligono(B.impronta, MONUMENTO);
+    return;
+  }
   const LIV = 'dedotto', y = quota(x, z);
   griglia.rettangolo(x, z, 1, 0, 14.6, 14.6, (i, j) => {
     const cx = griglia.min + (i + 0.5) * griglia.cella - x, cz = griglia.min + (j + 0.5) * griglia.cella - z;
@@ -408,10 +457,53 @@ function battistero(cant, griglia, [x, z]) {
 }
 
 /* ====================================================== SANTA REPARATA */
-// La cattedrale del 1216, i cui resti sono sotto il Duomo. Pianta e misure
-// del modello sono ipotesi [da verificare: rilievi degli scavi del 1965–1974].
-// Dal 2 ottobre la piazza davanti si percorre: la chiesa occupa la griglia.
+// La cattedrale del 1216, sotto il Duomo di oggi (SANTA_REPARATA, sopra).
+// Con il modello di Blender si entra: navate, pilastri, presbiterio
+// rialzato sulla cripta. Senza, resta la basilica generata, chiusa.
+let PAVIMENTO = null;
+
+/** Quota del pavimento dove si cammina dentro Santa Reparata e sotto il portico, altrimenti null. */
+export function quotaPavimento(x, z) {
+  if (!PAVIMENTO) return null;
+  const { px, pz, y, S } = PAVIMENTO, bx = pz - z, d = x - px;
+  return bx > 0 && bx < S.W && d > -S.portico && d < S.presbiterio ? y : null;
+}
+
 function santaReparata(cant, griglia) {
+  const S = SANTA_REPARATA;
+  if (MODELLI.santa_reparata && S) {
+    // matriceLotto: x locale lungo la facciata (da sud a nord), z locale verso l'abside (est)
+    // il pavimento è piano: lo si mette al punto più alto del terreno sotto
+    // la chiesa e il portico, così il terreno non affiora tra i mattoni
+    const px = S.facciata, pz = S.asse + S.W / 2;
+    let y = -Infinity;
+    for (let d = -S.portico; d <= S.fondo; d += 1.5) for (let b = 0; b <= S.W; b += 1.5) y = Math.max(y, quota(px + d, pz - b));
+    y += 0.03;
+    posaModello(cant, 'santa_reparata', matriceLotto(px, y, pz, 1, 0), 'dedotto');
+    PAVIMENTO = { px, pz, y, S };
+    const rett = (b0, b1, d0, d1, v) => griglia.poligono([[px + d0, pz - b0], [px + d1, pz - b0], [px + d1, pz - b1], [px + d0, pz - b1]], v);
+    const CAP = S.presbiterio - S.passo / 2, xc = S.W / 2;
+    // l'ingombro: corpo, abside, cappelle laterali, campanile, con una fascia
+    // di 2,5 m tutto intorno: le gronde delle case vicine non entrano nella chiesa
+    const m = 2.5;
+    rett(-m, S.W + m, 0, S.fondo + S.t + 6.4 + m, MONUMENTO);
+    rett(-3.6 - m, 0, CAP - 3.6 - m, CAP + 3.6 + m, MONUMENTO);
+    rett(S.W, S.W + 3.6 + m, CAP - 3.6 - m, CAP + 3.6 + m, MONUMENTO);
+    rett(S.W, S.W + 5.8 + m, S.fondo - 6.7 - m, S.fondo - 0.7 + m, MONUMENTO);
+    // dove si cammina: le navate fino al presbiterio, il portale grande, il portico
+    rett(S.t + 0.35, S.W - S.t - 0.35, S.t + 0.3, S.presbiterio - 0.15, PIAZZA);
+    rett(xc - S.portale / 2 + 0.15, xc + S.portale / 2 - 0.15, -0.1, S.t + 0.4, PIAZZA);
+    rett(0, S.W, -S.portico, 0, PIAZZA);
+    // i pilastri, le scale del presbiterio, le colonne del portico
+    for (let k = 1; k <= S.n; k++) {
+      const d = S.t + S.passo * k;
+      if (d < S.presbiterio) for (const xp of S.pilastri) rett(xp - 0.75, xp + 0.75, d - 0.75, d + 0.75, MONUMENTO);
+    }
+    for (const cx of [xc - 3.6, xc + 3.6]) rett(cx - 1.25, cx + 1.25, S.presbiterio - 3.4, S.presbiterio, MONUMENTO);
+    for (let i = 0; i < 8; i++) { const cx = 0.5 + (S.W - 1.0) * i / 7; rett(cx - 0.5, cx + 0.5, -(S.portico - 0.45) - 0.5, -(S.portico - 0.45) + 0.5, MONUMENTO); }
+    return;
+  }
+  // senza il modello di Blender: la basilica generata, con pianta e misure ipotetiche, chiusa
   const imp = [[160, -575], [222, -575], [222, -548], [160, -548]];
   chiesa(cant, griglia, imp, { verso: [128, -560], livello: 'ipotesi', altezza: 19, navate: 3, seme: 31 });
 }
@@ -469,7 +561,7 @@ export function costruisciMonumenti(cant, griglia) {
 
   porta(cant, griglia, [84.4, -197], [0, 1]);
   for (const p of PORTE_CERCHIA) portaDellaCerchia(cant, griglia, p);
-  battistero(cant, griglia, [128, -542]);
+  battistero(cant, griglia, BATTISTERO ? [BATTISTERO.x, BATTISTERO.z] : [128, -542]);
   santaReparata(cant, griglia);
   mercatoVecchio(cant);
 

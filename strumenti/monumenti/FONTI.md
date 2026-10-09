@@ -81,15 +81,54 @@ Scrive `public/monumenti/<nome>.glb` e `indice.json`. Le misure che devono comba
 
   Lo stesso modello vale per tutte le porte della cerchia. Le porte trecentesche che si vedono oggi (San Niccolò, San Frediano, Romana) sono di un'altra cerchia e molto più alte: non sono un modello (lacuna 44).
 
+## 5b. Il Battistero · forma «documentato»
+
+L'edificio c'è ancora. Il modello ne riprende:
+- l'impronta di OpenStreetMap (estratto del 9 ottobre 2026): ottagono di 34 m sui lati esterni, con la scarsella a ovest. Prima del 9 ottobre il modello usava come larghezza esterna i 25,6 m, che sono il diametro interno, e lo metteva circa 7 m fuori posto;
+- i tre ordini rivestiti di marmo bianco di Carrara e verde di Prato, con i pilastri d'angolo a fasce, gli archi ciechi del secondo ordine, l'attico a strisce, il tetto a piramide di lastre bianche, la lanterna;
+- l'altezza di circa 39 m (Wikipedia en, «Florence Baptistery»; un'altra fonte dice poco più di 40);
+- le due colonne di porfido donate da Pisa alla porta est (1115 o 1117: **le fonti divergono**, nella stessa voce).
+
+Che cosa c'era nel 1216, e che cosa no ([Wikipedia, «Battistero di San Giovanni (Firenze)»](https://it.wikipedia.org/wiki/Battistero_di_San_Giovanni_(Firenze))):
+- **la lanterna**, finita nel 1150 secondo Villani. La stessa voce parla però di lavori duecenteschi con cui «venne completamente coperto il foro» dalla lanterna: **le fonti divergono** sulla data;
+- **la scarsella** rettangolare: per Richa cominciata nel 1202, forse poco prima del 1150 secondo la voce;
+- **non** i mosaici dell'interno: quelli della scarsella cominciano nel 1225, quelli della cupola verso il 1270;
+- **non** le porte di bronzo (1330–1336, 1403–1424, 1425–1452): nel 1216 il modello mostra battenti di legno (ipotesi);
+- **l'attico e il tetto a piramide**: la data non è nota; il modello li mostra (ipotesi).
+
+## 5c. Santa Reparata · pianta «dedotto», alzato «ipotesi»
+
+Dagli scavi del 1965–1974 (G. Morozzi, F. Toker, A. Herrmann, *Santa Reparata. L'antica cattedrale fiorentina*, 1974; riassunto in [Wikipedia, «Santa Reparata (Firenze)»](https://it.wikipedia.org/wiki/Santa_Reparata_(Firenze))):
+- **misure interne:** circa 58,5 m abside compresa e 25–26 m di larghezza;
+- **dove stava:** sullo stesso asse del Duomo, con la facciata circa 9,5 m più a ovest di quella di oggi, perché circa tre campate della basilica antica (interasse 3,19 m) sono sotto il sagrato e la scalinata;
+- **pianta:** tre navate con sette coppie di pilastri, che nella ricostruzione carolingia presero il posto delle quattordici coppie di colonne. Poi due cappelle laterali absidate, l'abside con le due absidiole aggiunte prima del 1055, la cripta sotto il presbiterio rialzato, con due scale;
+- **il portico** a otto pilastri o colonne davanti alla facciata. Tra il Battistero e la chiesa restavano «non più di 17, massimo 18, metri»;
+- **il pavimento:** di mattoni, al livello della ricostruzione del 1055;
+- **i campanili:** due, accanto all'abside, del IX o X secolo; quello a sud forse fu demolito con le absidiole. Il modello ne mostra uno solo, a nord.
+
+**Ipotesi:**
+- le altezze (navatelle 8,5 m, navata 15,5 m, colmo 18,3 m);
+- le finestre e le capriate;
+- il passo fra i pilastri, uguale per tutte le campate (6,6 m);
+- il presbiterio dal sesto pilastro in poi;
+- la facciata di marmi bianchi e verdi: «probabilmente», dice la voce, come il Battistero;
+- il campanile alto 27 m.
+
+Si entra dal portale grande e si cammina nelle tre navate fino al presbiterio, che non è percorribile.
+
 ## 6. Lacune (seguono le 37–41 del kit)
 
 42. **Il lato della pietra di Marte**: il capo del ponte in città (le cronache) o in Oltrarno (Vossilla, da Cinelli)? Va controllato il testo di Vossilla e, in Villani, il capitolo sull'omicidio.
 43. **Santa Maria sopra Porta prima della ricostruzione**: dove stava esattamente, e come era orientata?
 44. **Le porte della cerchia del 1172–75**: com'erano fatte? C'è qualche raffigurazione o qualche descrizione negli atti?
 45. **Il ponte del 1216**: quante arcate (cinque o nove), quanto largo, con o senza botteghe?
+46. **Santa Reparata in alzato**: quanto erano alte navata e navatelle? Com'era la facciata nel 1216? Quale campanile era in piedi?
+47. **Il Battistero nel 1216**: l'attico e il tetto a piramide erano già finiti? La lanterna è del 1150 o di un rifacimento duecentesco?
 
 ## 7. Registro delle verifiche
 
 14. **08/10/2026 — Pietra di Marte.** La statua equestre è sostenuta da Vossilla (1994, da Cinelli); la posizione sul lato della città resta quella delle cronache; la divergenza è dichiarata (lacuna 42).
 15. **08/10/2026 — Torre degli Amidei.** Porte a doppia ghiera, protomi di leone, filaretto e finestre a tutto sesto ripresi dalla torre di oggi, ricostruita nel dopoguerra sulle fotografie.
 16. **08/10/2026 — Ponte.** Cinque arcate contro nove: si tengono cinque, la fonte delle nove è citata (lacuna 45).
+17. **09/10/2026 — Il Battistero.** Spostato sull'impronta reale (OpenStreetMap) e portato da 25,6 m a 34 m di larghezza esterna: i 25,6 m erano il diametro interno.
+18. **09/10/2026 — Santa Reparata.** Posta sotto il Duomo, sul suo asse, con la facciata 9,5 m più a ovest di quella di oggi; misure interne e pianta dagli scavi.
