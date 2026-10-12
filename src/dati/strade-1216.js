@@ -16,6 +16,8 @@
    F. Sznura, L'espansione urbana di Firenze nel Dugento, 1975.
    ===================================================================== */
 
+import { MURO, PORTE, dentroTracciato } from './cerchia.js';
+
 /** Strade che nel 1216 non c'erano, o non così. Il motivo è dichiarato. */
 export const ESCLUSE = {
   'Lungarno degli Acciaioli': 'i lungarni sono successivi; nel Duecento le case arrivano al fiume [da verificare]',
@@ -58,7 +60,18 @@ export const ESCLUSE = {
   'Lungarno Amerigo Vespucci': 'i lungarni sono successivi',
   'Pista Ciclabile Arno Sx': 'pista ciclabile di oggi',
   'Piazza Carlo Goldoni': 'slargo al capo del ponte alla Carraia, successivo al 1218',
-  'Piazza di Santo Spirito': 'la piazza si forma con il convento agostiniano, dalla metà del Duecento [da verificare]'
+  'Piazza di Santo Spirito': 'la piazza si forma con il convento agostiniano, dalla metà del Duecento [da verificare]',
+  // entrate con l'estratto fino alla cerchia (12 ottobre 2026)
+  'Piazza del Duomo': 'la piazza di oggi si apre con la cattedrale nuova, dal 1296; quella del 1216 è più piccola (AGGIUNTE, piazza di San Giovanni)',
+  'Piazza di San Giovanni': 'nella forma di oggi è successiva; quella del 1216 è disegnata a mano (AGGIUNTE)',
+  'Piazza della Signoria': 'la piazza si apre dopo il 1268, sulle case degli Uberti, e con il palazzo dei Priori dal 1299',
+  'Piazza dei Mozzi': 'slargo al capo del ponte Rubaconte, che è del 1237',
+  'Via dei Renai': 'i renai erano i banchi di sabbia lungo il fiume; la strada è successiva [da verificare]',
+  'Piazza Demidoff': 'piazza dell\'Ottocento',
+  'Lungarno Serristori': 'i lungarni sono successivi',
+  'Lungarno delle Grazie': 'i lungarni sono successivi',
+  'Lungarno della Zecca Vecchia': 'i lungarni sono successivi',
+  'Ponte alle Grazie': 'è il ponte Rubaconte, del 1237 (Villani) [da verificare]'
 };
 
 /** Larghezze ipotetiche in metri, per nome. Le altre seguono il tipo di strada. */
@@ -113,39 +126,97 @@ export const AGGIUNTE = [
     motivo: 'lo spazio davanti alla cattedrale; nel 1216 era più piccolo della piazza di oggi e in parte cimitero [da verificare]'
   },
   {
-    nome: 'Corso degli Adimari',
-    larghezza: 5.5,
-    // prosegue via dei Calzaiuoli oltre il margine dell'estratto, fino a San Giovanni
-    punti: [[157, -444], [155, -480], [151, -514]],
-    motivo: 'oggi via dei Calzaiuoli; l\'estratto si ferma a 440 m dal ponte e il tratto finale è tracciato a mano [da verificare: il nome della strada nel 1216]'
-  },
-  {
     nome: 'Strada per San Felice',
     larghezza: 5.5,
-    // dal fondo di via de' Guicciardini verso San Felice in Piazza e la porta
-    // di San Pier Gattolino [da verificare: posizione della porta nel 1216], sotto quella
-    // che nel Quattrocento diventerà piazza Pitti
-    // l'ultimo tratto passa dritto per la porta della cerchia (dati/cerchia.js)
-    punti: [[-199, 187], [-258, 232], [-316, 276], [-334, 288], [-338, 300], [-341, 312]],
-    motivo: 'la via per Roma attraverso l\'Oltrarno; piazza Pitti è successiva e qui il tracciato è ipotetico [da verificare]'
+    // dal fondo di via de' Guicciardini a piazza San Felice, sulla strada che
+    // oggi passa davanti a palazzo Pitti (la «Piazza dei Pitti» di OSM):
+    // all'ingresso della piazza c'è la porta di Piazza (dati/cerchia.js)
+    punti: [[-198.8, 187.3], [-209, 200.8], [-226, 217.7], [-263.7, 243.1], [-337.5, 290.9], [-404.3, 334]],
+    motivo: 'la via per Roma attraverso l\'Oltrarno; piazza Pitti è del Quattrocento e qui il tracciato è quello della strada di oggi [da verificare]'
   }
 ];
 
-/**
- * Corridoi dove si costruisce anche oltre il raggio della città percorribile:
- * il percorso del corteo funebre verso Santa Reparata (copione, IV4). Dal
- * 9 ottobre arriva oltre l'abside: lì il fondale schematico entrava nella
- * chiesa, che è più lunga del modello di prima.
- */
+/* ---------------------------------------------------------------------
+   DENTRO E FUORI LE MURA
+
+   Dal 12 ottobre 2026 la città si costruisce dentro la cerchia del 1172–75
+   (dati/cerchia.js). Le strade di oggi si tagliano sul perimetro; lungo il
+   muro, dove oggi corrono via dei Fossi, via de' Pucci, via Verdi e le
+   altre, nel 1216 c'erano il muro e il fosso, non una strada. Fuori si
+   tengono soltanto le strade che escono da una porta, per un tratto: le
+   vie dei borghi e della campagna.
+   --------------------------------------------------------------------- */
+
+const SUL_MURO = 7;           // metri dall'asse del muro: il muro e il fosso
+const FUORI_PORTA = 220;      // metri di strada tenuti fuori da ogni porta
+
+function distanza(pts, x, z) {
+  let best = Infinity;
+  for (let k = 0; k + 1 < pts.length; k++) {
+    const [ax, az] = pts[k], [bx, bz] = pts[k + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    best = Math.min(best, Math.hypot(ax + t * dx - x, az + t * dz - z));
+  }
+  return best;
+}
+
+const lunghezza = pts => pts.reduce((l, p, k) => k ? l + Math.hypot(p[0] - pts[k - 1][0], p[1] - pts[k - 1][1]) : 0, 0);
+
+/** Toglie i punti allineati che il taglio aggiunge. */
+function semplifica(pts) {
+  const out = [pts[0]];
+  for (let k = 1; k + 1 < pts.length; k++) {
+    const [ax, az] = out.at(-1), [bx, bz] = pts[k], [cx, cz] = pts[k + 1];
+    if (Math.abs((bx - ax) * (cz - az) - (bz - az) * (cx - ax)) > 0.05 * Math.hypot(cx - ax, cz - az)) out.push(pts[k]);
+  }
+  out.push(pts.at(-1));
+  return out.map(p => [+p[0].toFixed(1), +p[1].toFixed(1)]);
+}
+
+/** I tratti di una spezzata dove vale tiene(x, z), a passi di al più 3 m. */
+function ritaglia(pts, tiene) {
+  const tratti = [];
+  let cur = null;
+  for (let k = 0; k + 1 < pts.length; k++) {
+    const [ax, az] = pts[k], [bx, bz] = pts[k + 1], n = Math.max(1, Math.ceil(Math.hypot(bx - ax, bz - az) / 3));
+    for (let i = 0; i < n; i++) {
+      const p0 = [ax + (bx - ax) * i / n, az + (bz - az) * i / n], p1 = [ax + (bx - ax) * (i + 1) / n, az + (bz - az) * (i + 1) / n];
+      if (tiene((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2)) { if (!cur) tratti.push(cur = [p0]); cur.push(p1); } else cur = null;
+    }
+  }
+  return tratti.filter(t => lunghezza(t) > 4).map(semplifica);
+}
+
+const PORTE_POSTE = PORTE.filter(p => p.pos);
+const sulMuro = (x, z) => distanza(MURO, x, z) < SUL_MURO;
+const dentro = (x, z) => dentroTracciato(x, z) && !sulMuro(x, z);
+const vicinoPorta = (x, z, r) => PORTE_POSTE.some(p => Math.hypot(x - p.pos[0], z - p.pos[1]) < r);
+
+/** Le strade del 1216: quelle di oggi che valgono, tagliate sulla cerchia, più le aggiunte e i passaggi delle porte. */
+export function strade1216(tutte) {
+  const out = [];
+  for (const s of tutte.filter(s => valeNel1216(s.nome)).map(s => ({ ...s, larghezza: larghezza(s.nome) })).concat(AGGIUNTE.map(a => ({ ...a, larghezza: a.larghezza || 4.2 })))) {
+    if (s.area) {
+      const c = s.punti.reduce((a, p) => [a[0] + p[0] / s.punti.length, a[1] + p[1] / s.punti.length], [0, 0]);
+      if (dentro(c[0], c[1])) out.push(s);
+      continue;
+    }
+    for (const punti of ritaglia(s.punti, dentro)) out.push({ ...s, punti });
+    // fuori le mura: solo le strade che escono da una porta, per un tratto
+    for (const punti of ritaglia(s.punti, (x, z) => !dentroTracciato(x, z) && !sulMuro(x, z) && vicinoPorta(x, z, FUORI_PORTA)))
+      if (vicinoPorta(...punti[0], 16) || vicinoPorta(...punti.at(-1), 16)) out.push({ ...s, punti, larghezza: Math.min(s.larghezza, 4.5), fuori: true });
+  }
+  // il passaggio di ogni porta, da una parte all'altra del muro
+  for (const p of PORTE_POSTE) {
+    const [x, z] = p.pos, [dx, dz] = p.dir, l = 13;
+    out.push({ nome: p.nome, porta: p.id, larghezza: p.tipo === 'porta' ? 4.2 : 2.6, punti: [[x - dx * l, z - dz * l], [x + dx * l, z + dz * l]] });
+  }
+  return out;
+}
+
+// PROVVISORIO (12/10/2026): main.js, verifica e fondale usano ancora il raggio
+// e i corridoi; vanno sostituiti con dentroTracciato (dati/cerchia.js).
 export const CORRIDOI = [
   { punti: [[150, -400], [155, -470], [150, -515], [135, -560], [245, -547]], larghezza: 55 }
 ];
-
-/** Metri dal capo del ponte in cui la città è costruita casa per casa (400 fino al 1° ottobre). */
 export const RAGGIO_CITTA = 480;
-
-/** Le strade del 1216: quelle di oggi che valgono, con la loro larghezza, più le aggiunte. */
-export function strade1216(tutte) {
-  return tutte.filter(s => valeNel1216(s.nome)).map(s => ({ ...s, larghezza: larghezza(s.nome) }))
-    .concat(AGGIUNTE.map(a => ({ ...a, larghezza: a.larghezza || 4.2 })));
-}
