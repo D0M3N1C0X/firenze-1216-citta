@@ -21,6 +21,9 @@ from mathutils import Vector, Matrix
 QUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(QUI, '..', 'kit'))
 import kit as K                     # Pezzo, blocco, conci, ghiere, ante, materiali
+sys.path.insert(0, QUI)
+import arredo as AR                 # panche, tavole, cassoni, camino… (gli interni)
+AR.usa_kit(K)
 USCITA = os.path.abspath(os.path.join(QUI, '..', '..', 'public', 'monumenti'))
 PAR = json.load(open(os.path.join(QUI, 'parametri.json')))
 CAVALLO = os.path.join(QUI, '..', 'animali', 'sorgenti', 'opengameart-rigged-horse', 'riggedHorse.blend')
@@ -31,7 +34,9 @@ def prepara():
     K.pulisci()
     K.MATERIALI.clear()
     for nome, col in {'marmo': (0.85, 0.83, 0.78), 'marmoVerde': (0.18, 0.28, 0.22), 'coppi': (0.62, 0.32, 0.22),
-                      'porfido': (0.3, 0.08, 0.08), 'cotto': (0.6, 0.32, 0.22)}.items():
+                      'porfido': (0.3, 0.08, 0.08), 'cotto': (0.6, 0.32, 0.22),
+                      'pane': (0.62, 0.42, 0.2), 'carne': (0.35, 0.16, 0.08), 'drappo': (0.45, 0.06, 0.05),
+                      'drappoBlu': (0.06, 0.12, 0.35), 'fuoco': (1.0, 0.55, 0.15)}.items():
         m = bpy.data.materials.new(nome); m.use_nodes = True
         m.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value = col + (1,)
         K.MATERIALI[nome] = m
@@ -186,8 +191,14 @@ def amidei():
         za = zp + 0.32 + 0.34
         acu = arco_punti(cx, za, wp + 0.9, 'acuto', n=14)[2:]
         conci_arco(P, acu, 0.32, -t, 0.05)
-        # battenti di tavole sotto l'arco ribassato
-        K.anta(P, cx - wp / 2, cx + wp / 2, 0, zp + 0.25, -0.42, -0.36)
+        # battenti di tavole sotto l'arco ribassato: aperto quello di sinistra,
+        # girato verso l'interno sul cardine
+        if cx == porte[0]:
+            Bt = K.Pezzo('_')
+            K.anta(Bt, 0, wp, 0, zp + 0.25, -0.03, 0.03)
+            innesta(P, Bt, Matrix.Translation((cx - wp / 2 + 0.05, -0.42, 0)) @ Matrix.Rotation(-math.pi / 2, 4, 'Z'))
+        else:
+            K.anta(P, cx - wp / 2, cx + wp / 2, 0, zp + 0.25, -0.42, -0.36)
         # soglia
         P.blocco(cx - wp / 2 - 0.3, cx + wp / 2 + 0.3, -0.15, 0.015, -t, 0.3, 'conci', smusso=0.015)
         # protome di leone in marmo bianco, sporgente sopra la porta
@@ -225,8 +236,30 @@ def amidei():
             me.transform(mat)
             P._bm(m).from_mesh(me)
             bpy.data.meshes.remove(me)
-    # il buio dell'interno
-    P.blocco(t, W - t, -0.5, H - 0.4, -D + t, -t, 'scuro', smusso=0)
+    # --- l'interno del piano terra (ipotesi): pavimento di lastre, solaio di
+    # travi e tavole, una botola con la scala a pioli; le armi alla parete,
+    # i cassoni, le botti. Sopra il solaio, il buio dei piani alti
+    SOL = 5.0
+    P.blocco(t, W - t, -0.12, 0.0, -D + t, -t, 'lastre', smusso=0)
+    yb = -t - 0.45
+    while yb > -D + t:
+        P.blocco(t, W - t, SOL - 0.25, SOL, yb - 0.11, yb + 0.11, 'legnoScuro', smusso=0.01)
+        yb -= 0.95
+    P.blocco(t, W - t, SOL, SOL + 0.08, -D + t, -t, 'legno', smusso=0)
+    P.blocco(5.4, 6.4, SOL - 0.005, SOL + 0.001, -D + t, -D + t + 0.95, 'scuro', smusso=0)      # la botola
+    P.blocco(t, W - t, SOL + 0.1, H - 0.4, -D + t, -t, 'scuro', smusso=0)
+    AR.posa(P, AR.scala_pioli(alta=SOL + 0.1, incl=0.18), 5.9, -D + t, math.pi, K=K)
+    AR.posa(P, AR.rastrelliera(n=5, larg=1.8), W / 2 - 0.6, -D + t, math.pi, K=K)
+    AR.posa(P, AR.scudo('drappo'), t, -3.6, math.pi / 2, z=2.0, K=K)
+    AR.posa(P, AR.scudo('intonaco'), t, -4.9, math.pi / 2, z=2.0, K=K)
+    AR.posa(P, AR.scudo('drappoBlu'), t, -6.2, math.pi / 2, z=2.0, K=K)
+    AR.posa(P, AR.mazza(), t + 0.07, -7.3, 0.0, z=0.0, K=K)
+    AR.posa(P, AR.cassone(), W - t - 0.3, -3.3, -math.pi / 2, K=K)
+    AR.posa(P, AR.cassone(lun=1.3), W - t - 0.3, -5.1, -math.pi / 2, K=K)
+    AR.posa(P, AR.botte(), 2.1, -D + t + 0.55, 0.0, K=K)
+    AR.posa(P, AR.botte(in_piedi=True), 1.75, -D + t + 1.6, 0.0, K=K)
+    AR.posa(P, AR.lucerna(), t, -2.0, math.pi / 2, z=2.5, K=K)
+    AR.posa(P, AR.lucerna(), W - t, -6.8, -math.pi / 2, z=2.5, K=K)
     # coronamento: merli guelfi e tetto basso a padiglione (ipotesi)
     P.blocco(-0.05, W + 0.05, H - 0.35, H, -D - 0.05, 0.05, 'conci', smusso=0.01)
     passo = 1.15
@@ -242,6 +275,17 @@ def amidei():
     ob = P.crea()
     scala_uv(ob, 2.2)                                       # filaretto: conci piccoli e regolari
     return ob
+
+
+def amidei_posa():
+    """Dove si cammina dentro la torre e che cosa ingombra: rettangoli
+    [x0, x1, y0, y1] nelle coordinate del modello (y negativa verso il retro)."""
+    A_ = PAR['amidei']; W, D, t = A_['W'], A_['D'], 1.3
+    cx, wp = W * 0.27, 1.7
+    return dict(
+        pavimento=[[t + 0.2, W - t - 0.2, -D + t + 0.2, -t], [cx - wp / 2 + 0.25, cx + wp / 2 - 0.15, -t - 0.05, 0.4]],
+        ostacoli=[[W - t - 0.65, W - t, -6.0, -2.4], [t, 2.75, -D + t, -D + t + 2.0], [W / 2 - 1.6, W / 2 + 0.4, -D + t, -D + t + 0.35],
+                  [5.5, 6.3, -D + t, -D + t + 1.05], [cx - wp / 2, cx - wp / 2 + 0.2, -t - 1.75, -t]])
 
 
 def protome(P, cx, z):
@@ -450,7 +494,9 @@ def chiesa():
     della seconda metà del Duecento. Non sappiamo com'era (ipotesi): navata
     unica di pietraforte, facciata a capanna con portale a lunetta bicroma
     (per analogia con Santo Stefano al Ponte, 1233), oculo, campanile a
-    vela, archetti pensili, abside semicircolare."""
+    vela, archetti pensili, abside semicircolare. Dentro (ipotesi): muri
+    intonacati, tetto a capriate a vista, l'altare su un gradino
+    nell'abside, panche di pietra lungo i muri; il portale è aperto."""
     Q = PAR['chiesa']
     W, L = Q['W'], Q['L']
     H, t = 9.0, 0.9
@@ -461,6 +507,7 @@ def chiesa():
     portale = [(W / 2 - wp / 2, 0.0), (W / 2 + wp / 2, 0.0)] + [(W / 2 + wp / 2 * math.cos(a), zi + wp / 2 * math.sin(a)) for a in [math.pi * i / 16 for i in range(17)]]
     oculo = [(W / 2 + 0.6 * math.cos(a), H - 1.4 + 0.6 * math.sin(a)) for a in [2 * math.pi * i / 20 for i in range(20)]]
     lastra(P, [(0, -1.5), (W, -1.5), (W, H), (W / 2, H + hT), (0, H)], [portale, oculo], -t, 0)
+    lastra(P, [(0, -1.5), (W, -1.5), (W, H), (W / 2, H + hT), (0, H)], [portale, oculo], -t - 0.03, -t, 'intonaco')
     # il portale: stipiti, architrave, lunetta a tarsie bianche e verdi, ghiera
     for lato in (-1, 1):
         z = 0
@@ -478,8 +525,11 @@ def chiesa():
     ghi = [(W / 2 + wp / 2 * math.cos(a), zi + wp / 2 * math.sin(a)) for a in [math.pi * i / 13 for i in range(14)]]
     conci_arco(P, ghi, 0.34, -t, 0.05)
     P.blocco(W / 2 - wp / 2 - 0.4, W / 2 + wp / 2 + 0.4, -0.2, 0.015, -t, 0.5, 'conci', smusso=0.015)             # soglia
-    K.anta(P, W / 2 - wp / 2, W / 2, 0, zi - 0.5, -0.55, -0.48)
-    K.anta(P, W / 2, W / 2 + wp / 2, 0, zi - 0.5, -0.55, -0.48)
+    for sx in (-1, 1):                                       # i battenti, aperti verso l'interno
+        Bt = K.Pezzo('_')
+        K.anta(Bt, 0, wp / 2, 0, zi - 0.5, -0.035, 0.035)
+        cardine = W / 2 + sx * (wp / 2 - 0.05)
+        innesta(P, Bt, Matrix.Translation((cardine, -0.52, 0)) @ Matrix.Rotation(-math.pi / 2, 4, 'Z'))
     # l'oculo con l'anello di conci e il buio dietro
     oc = [(W / 2 + 0.6 * math.cos(a), H - 1.4 + 0.6 * math.sin(a)) for a in [2 * math.pi * i / 14 for i in range(15)]]
     conci_arco(P, oc, 0.25, -t, 0.04)
@@ -501,6 +551,7 @@ def chiesa():
         fori_l = [[(px, pz + H - 3.6) for px, pz in arco_punti(sx, 1.4, 0.5, 'tondo', n=8)] for sx in (3.5, 8.5, 13.5) if sx < L - 2]
         P2 = K.Pezzo('_')
         lastra(P2, [(0, -1.5), (L - 2 * t, -1.5), (L - 2 * t, H), (0, H)], [[(px - t, pz) for px, pz in f] for f in fori_l], -t, 0)
+        lastra(P2, [(0, -1.5), (L - 2 * t, -1.5), (L - 2 * t, H), (0, H)], [[(px - t, pz) for px, pz in f] for f in fori_l], -t - 0.03, -t, 'intonaco')
         for m, bb in P2.bm.items():
             me = bpy.data.meshes.new('t'); bb.to_mesh(me); bb.free()
             # la faccia esterna guarda fuori (−x a sinistra, +x a destra), il muro corre verso il fondo
@@ -512,17 +563,27 @@ def chiesa():
             yy = -0.5 - k * 0.6
             sx = -0.12 if lato == 0 else W + 0.12
             P.solido([(sx + (0.0 if lato == 0 else 0.0) + d, yy - 0.22 * math.cos(a), H - 0.45 + 0.14 * math.sin(a)) for a in [math.pi * j / 6 for j in range(7)] for d in ((0.0, 0.14) if lato == 0 else (-0.14, 0.0))], 'conci', 0)
-    # il retro, con l'abside
+    # il retro, con l'arco dell'abside
     rA = min(3.6, W * 0.33)
-    P.blocco(0, W, -1.5, H, -L, -L + t, 'conci', smusso=0)
+    ri, IMP = rA - 0.8, 4.8                                  # raggio interno e imposta del catino
+    arco_abs = arco_punti(W / 2, IMP, 2 * ri, 'tondo', n=16)
+    lastra(P, [(0, -1.5), (W, -1.5), (W, H), (0, H)], [arco_abs], -L, -L + t)
+    lastra(P, [(0, -1.5), (W, -1.5), (W, H), (0, H)], [arco_abs], -L + t, -L + t + 0.03, 'intonaco')
+    conci_arco(P, arco_abs[2:], 0.3, -L + t - 0.02, -L + t + 0.06)
     P.solido([(0, -L + t + 0.01, H), (W, -L + t + 0.01, H), (W / 2, -L + t + 0.01, H + hT), (0, -L, H), (W, -L, H), (W / 2, -L, H + hT)], 'conci', 0)
+    # l'abside: mezzo cilindro, il catino intonacato, il tetto a mezzo cono
     seg = 18
     for i in range(seg):
         a0, a1 = math.pi * i / seg, math.pi * (i + 1) / seg
-        q = [(W / 2 + rr * math.cos(a), -L - rr * math.sin(a) * 0 - (rr * math.sin(a)), z) for a in (a0, a1) for rr in (rA - 0.8, rA) for z in (-1.5, H * 0.75)]
-        P.solido(q, 'conci', 0)
-    P.solido([(W / 2 + (rA + 0.35) * math.cos(a), -L - (rA + 0.35) * math.sin(a), H * 0.75) for a in [math.pi * i / 12 for i in range(13)]] +
-             [(W / 2, -L + 0.2, H * 0.75 + rA * 0.45), (W / 2 - rA - 0.35, -L + 0.2, H * 0.75), (W / 2 + rA + 0.35, -L + 0.2, H * 0.75)], 'coppi', 0)
+        P.solido([(W / 2 + rr * math.cos(a), -L - rr * math.sin(a), z) for a in (a0, a1) for rr in (ri, rA) for z in (-1.5, IMP)], 'conci', 0)
+        P.solido([(W / 2 + rr * math.cos(a), -L - rr * math.sin(a), z) for a in (a0, a1) for rr in (ri - 0.03, ri) for z in (0.2, IMP)], 'intonaco', 0)
+        for j in range(5):
+            f0, f1 = math.pi / 2 * j / 5, math.pi / 2 * (j + 1) / 5
+            P.solido([(W / 2 + rr * math.cos(f) * math.cos(a), -L - rr * math.cos(f) * math.sin(a), IMP + rr * math.sin(f))
+                      for a in (a0, a1) for f in (f0, f1) for rr in (ri - 0.05, ri)], 'intonaco', 0)
+        P.solido([(W / 2 + rr * math.cos(a), -L - rr * math.sin(a), z) for a in (a0, a1) for (rr, z) in ((rA + 0.35, IMP), (rA + 0.35, IMP + 0.15), (0.05, IMP + 4.2))], 'coppi', 0)
+    P.solido([(W / 2 + rr * math.cos(a), -L - rr * math.sin(a), z) for a in [math.pi * i / 12 for i in range(13)] for rr in (0.0, ri) for z in (0.0, 0.25)], 'lastre', 0)
+    P.blocco(W / 2 - ri, W / 2 + ri, 0.0, 0.25, -L - 0.01, -L + t + 0.6, 'lastre', smusso=0.01)       # il gradino
     # il tetto a due falde, con la gronda
     for sx in (-1, 1):
         P.solido([(W / 2 + sx * (W / 2 + 0.6), y, H - 0.6 * pend) for y in (0.35, -L - 0.3)] +
@@ -534,9 +595,34 @@ def chiesa():
            [[(px, pz + vb + 0.5) for px, pz in arco_punti(W / 2, 1.1, 1.0, 'tondo', n=10)]], -0.55, 0.02)
     P.solido([(W / 2 + 0.28 * math.cos(a), -0.27 + 0.28 * math.sin(a), vb + 0.85) for a in [2 * math.pi * i / 10 for i in range(10)]] +
              [(W / 2 + 0.14 * math.cos(a), -0.27 + 0.14 * math.sin(a), vb + 1.35) for a in [2 * math.pi * i / 10 for i in range(10)]], 'ferro', 0)
-    # il buio dentro
-    P.blocco(t, W - t, -0.5, H - 0.3, -L + t + 0.2, -t - 0.2, 'scuro', smusso=0)
+    # dentro: pavimento, tavolato sotto il tetto, capriate
+    P.blocco(t, W - t, -0.12, 0.0, -L + t, -t, 'lastre', smusso=0)
+    for sx in (-1, 1):
+        P.solido([(W / 2 + sx * (W / 2 - t), y, z) for y in (-t, -L + t) for z in (H - 0.02, H + 0.02)] +
+                 [(W / 2, y, z) for y in (-t, -L + t) for z in (H + hT - 0.18, H + hT - 0.14)], 'legno', 0)
+    d = t + 1.2
+    while d < L - t - 0.5:
+        P.blocco(t, W - t, H - 0.32, H - 0.05, -d - 0.13, -d + 0.13, 'legnoScuro', smusso=0.01)
+        for x_a in (t + 0.1, W - t - 0.1):
+            P.solido([(x, -d + dd, zz) for (x, z0_) in ((x_a, H - 0.05), (W / 2, H + hT - 0.2)) for dd in (-0.12, 0.12) for zz in (z0_ - 0.26, z0_)], 'legnoScuro', 0)
+        P.blocco(W / 2 - 0.11, W / 2 + 0.11, H - 0.32, H + hT - 0.22, -d - 0.11, -d + 0.11, 'legnoScuro', smusso=0.01)
+        d += 3.0
+    # le panche di pietra lungo i muri, l'altare, le lucerne
+    for x0, x1 in ((t, t + 0.42), (W - t - 0.42, W - t)):
+        P.blocco(x0, x1, 0.0, 0.45, -L + t + 0.8, -t - 1.6, 'conci', smusso=0.015)
+    AR.posa(P, AR.altare(), W / 2, -L - 0.9, math.pi, z=0.25, K=K)
+    AR.posa(P, AR.lucerna(), t, -L / 2, math.pi / 2, z=2.6, K=K)
+    AR.posa(P, AR.lucerna(), W - t, -L / 2, -math.pi / 2, z=2.6, K=K)
     return P.crea()
+
+
+def chiesa_posa():
+    """Dove si cammina dentro Santa Maria sopra Porta (coordinate del modello)."""
+    Q = PAR['chiesa']; W, L, t, wp = Q['W'], Q['L'], 0.9, 1.8
+    return dict(
+        pavimento=[[t + 0.45, W - t - 0.45, -L + t + 0.2, -t], [W / 2 - wp / 2 + 0.15, W / 2 + wp / 2 - 0.15, -t - 0.05, 0.6]],
+        ostacoli=[[W / 2 - wp / 2 - 0.15, W / 2 - wp / 2 + 0.1, -t - 1.05, -t], [W / 2 + wp / 2 - 0.1, W / 2 + wp / 2 + 0.15, -t - 1.05, -t]])
+
 
 
 # ============================================================= porta
@@ -979,6 +1065,202 @@ def santa_reparata():
     return P.crea()
 
 
+# ============================================================== campi
+# Il castello dei Mazzinghi a Campi, nel gennaio 1216: un luogo a parte,
+# fuori dalla città (scene I1–I3). Coordinate del modello: origine al
+# centro del recinto, x verso est, y verso nord.
+CA = dict(X=22.0, Y=18.0, mura=1.6, h_mura=8.0, h_sala=10.2,
+          sala=(-20.4, 8.0, 8.0, 16.4),        # interno della sala: x0, x1, y0, y1
+          fac=7.0, porta_sala=-6.0, pedana=3.2, cassero=(13.0, 22.0, 9.0, 18.0))
+
+
+def campi():
+    """Il castello di Campi e la sala del convito. Che il castello dei
+    Mazzinghi esistesse è attestato (dal X secolo; distrutto dopo
+    Montaperti, nel 1260); il suo aspetto no: la Rocca Strozzi di oggi è
+    del Trecento. Tutto è un'ipotesi sul tipo dei castelli del contado:
+    recinto di mura merlate con la porta, il cassero, la sala addossata
+    alle mura. La sala sta al piano terra perché ci si possa entrare a
+    piedi; nei castelli era spesso al primo piano [da verificare]. Dentro:
+    il camino, le tavole su cavalletti a ferro di cavallo con la tavola alta
+    sulla pedana, le panche, i drappi alle pareti (FONTI.md, § 8)."""
+    X, Y, mu, hm, hs = CA['X'], CA['Y'], CA['mura'], CA['h_mura'], CA['h_sala']
+    sx0, sx1, sy0, sy1 = CA['sala']
+    P = K.Pezzo('campi')
+    xi, yi = X - mu, Y - mu                                  # facce interne del recinto
+
+    def merli(x0, x1, y0, y1, z, passo=1.2):
+        lungo_x = (x1 - x0) >= (y1 - y0)
+        lungo = (x1 - x0) if lungo_x else (y1 - y0)
+        k = 0.0
+        while k < lungo - 0.3:
+            a_, b_ = k, min(lungo, k + passo * 0.55)
+            if lungo_x: P.blocco(x0 + a_, x0 + b_, z, z + 1.2, y0, y1, 'conci')
+            else: P.blocco(x0, x1, z, z + 1.2, y0 + a_, y0 + b_, 'conci')
+            k += passo
+
+    # --- il recinto: a sud la porta ad arco; a nord e a ovest, dietro la sala, più alto
+    porta = arco_punti(0, 3.4, 3.6, 'tondo', n=16)
+    S_ = K.Pezzo('_')
+    lastra(S_, [(-X, -1.5), (X, -1.5), (X, hm), (-X, hm)], [porta], -mu, 0)
+    conci_arco(S_, porta[2:], 0.5, -mu - 0.02, 0.04)
+    for sx in (-1, 1):
+        Bt = K.Pezzo('_')
+        K.anta(Bt, 0, 1.75, 0, 4.6, -0.04, 0.04)
+        innesta(S_, Bt, Matrix.Translation((sx * 1.75, -mu - 0.06, 0)) @ Matrix.Rotation(-math.pi / 2 if sx < 0 else math.pi / 2, 4, 'Z') @
+                (Matrix() if sx < 0 else Matrix.Translation((-1.75, 0, 0))))
+    # la faccia esterna a sud: y = -Y. lastra ha y ∈ [-mu, 0]: la si gira di mezzo giro
+    innesta(P, S_, Matrix.Translation((0, -Y, 0)) @ Matrix.Rotation(math.pi, 4, 'Z'))
+    merli(-X, X, -Y, -Y + 0.7, hm)
+    P.blocco(-X, X, -1.5, hs, yi, Y, 'conci', smusso=0)                                   # nord, dietro la sala
+    merli(-X, X, Y - 0.7, Y, hs)
+    P.blocco(-X, -xi, -1.5, hm, -yi, CA['fac'], 'conci', smusso=0)                     # ovest, nel cortile
+    P.blocco(-X, -xi, -1.5, hs, CA['fac'], yi, 'conci', smusso=0)                      # ovest, dietro la sala
+    merli(-X, -X + 0.7, -yi, CA['fac'], hm); merli(-X, -X + 0.7, CA['fac'], yi, hs)
+    P.blocco(xi, X, -1.5, hm, -yi, yi, 'conci', smusso=0)                               # est
+    merli(X - 0.7, X, -yi, yi, hm)
+    for (x, y) in ((-X, -Y), (X - 2.6, -Y)):                                            # due torricelle d'angolo
+        P.blocco(x, x + 2.6, -1.5, hm + 3.0, y, y + 2.6, 'conci', smusso=0.01)
+        merli(x, x + 2.6, y, y + 0.6, hm + 3.0, 0.9); merli(x, x + 2.6, y + 2.0, y + 2.6, hm + 3.0, 0.9)
+
+    # --- il cassero, a nord-est
+    c0, c1, c2, c3 = CA['cassero']
+    P.blocco(c0, c1, -1.5, 24.0, c2, c3, 'conci', smusso=0.01)
+    for z in (7.0, 12.5, 18.0):
+        P.blocco(c0 - 0.02, c0 + 0.01, z, z + 1.1, (c2 + c3) / 2 - 0.12, (c2 + c3) / 2 + 0.12, 'scuro', smusso=0)
+        P.blocco((c0 + c1) / 2 - 0.12, (c0 + c1) / 2 + 0.12, z + 1.5, z + 2.6, c2 - 0.01, c2 + 0.02, 'scuro', smusso=0)
+    P.blocco(c0 - 0.03, c0 + 0.01, 0, 2.6, c2 + 1.5, c2 + 2.8, 'legnoScuro', smusso=0)      # la porta del cassero
+    P.blocco(c0 - 0.3, c1 + 0.3, 24.0, 24.4, c2 - 0.3, c3 + 0.3, 'conci', smusso=0.01)
+    for (x0, y0, x1, y1) in ((c0 - 0.3, c2 - 0.3, c1 + 0.3, c2 + 0.4), (c0 - 0.3, c3 - 0.4, c1 + 0.3, c3 + 0.3),
+                             (c0 - 0.3, c2 + 0.4, c0 + 0.4, c3 - 0.4), (c1 - 0.4, c2 + 0.4, c1 + 0.3, c3 - 0.4)):
+        merli(x0, x1, y0, y1, 24.4)
+
+    # --- la sala: facciata sul cortile con la porta e le finestre; muro est; tetto a uno spiovente
+    fy = CA['fac']
+    z_fac, z_nord = 7.3, 9.9
+    pd = CA['porta_sala']
+    finestre = [-16.0, -11.0, -1.0, 4.0]
+    fori = [arco_punti(pd, 2.9, 1.8, 'tondo', n=12)] + [[(px, pz + 2.6) for px, pz in arco_punti(fx, 1.45, 1.1, 'tondo', n=10)] for fx in finestre]
+    # la facciata è costruita con lo spessore verso +y (l'interno della sala):
+    # faccia esterna in y = 0, poi spostata in y = fy senza specchiature
+    F = K.Pezzo('_')
+    bordo = [(-xi, -1.5), (sx1 + 1.0, -1.5), (sx1 + 1.0, z_fac), (-xi, z_fac)]
+    lastra(F, bordo, fori, 0, 1.0)
+    lastra(F, bordo, fori, 1.0, 1.03, 'intonaco')
+    conci_arco(F, arco_punti(pd, 2.9, 1.8, 'tondo', n=12)[2:], 0.32, -0.04, 1.04)
+    for sx in (-1, 1):
+        F.blocco(min(pd + sx * 0.9, pd + sx * 1.22), max(pd + sx * 0.9, pd + sx * 1.22), 0, 2.9, -0.04, 1.04, 'conci', smusso=0.01)
+    for fx in finestre:
+        conci_arco(F, [(px, pz + 2.6) for px, pz in arco_punti(fx, 1.45, 1.1, 'tondo', n=10)][2:], 0.22, -0.04, 1.04)
+        F.blocco(fx - 0.7, fx + 0.7, 2.5, 2.615, -0.1, 0.3, 'conci', smusso=0.01)
+        for sx in (-1, 1):                                    # gli scuri aperti, girati verso l'interno
+            Bt = K.Pezzo('_')
+            K.anta(Bt, 0, 0.55, 0, 1.9, -0.025, 0.025)
+            innesta(F, Bt, Matrix.Translation((fx + sx * 0.53, 1.06, 2.6)) @ Matrix.Rotation(math.pi / 2, 4, 'Z'))
+    for sx in (-1, 1):                                        # i battenti della porta, aperti
+        Bt = K.Pezzo('_')
+        K.anta(Bt, 0, 0.9, 0, 3.0, -0.035, 0.035)
+        innesta(F, Bt, Matrix.Translation((pd + sx * 0.86, 1.08, 0)) @ Matrix.Rotation(math.pi / 2, 4, 'Z'))
+    innesta(P, F, Matrix.Translation((0, fy, 0)))
+    # il muro est della sala: profilo che sale con il tetto
+    E = K.Pezzo('_')
+    prof = [(fy, -1.5), (yi, -1.5), (yi, z_nord + 0.2), (fy, z_fac)]
+    lastra(E, prof, [], -1.0, 0)
+    lastra(E, prof, [], 0, 0.03, 'intonaco')
+    # x = sx1 - spessore (il muro da sx1 a sx1 + 1, l'intonaco verso la sala), y = u: una rotazione
+    innesta(P, E, Matrix(((0, -1, 0, sx1), (1, 0, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))))
+    # le pelli d'intonaco sui muri del recinto, dentro la sala
+    P.blocco(sx0, sx1, 0, z_nord, sy1 - 0.03, sy1, 'intonaco', smusso=0)
+    P.blocco(sx0, sx0 + 0.03, 0, z_nord, sy0, sy1, 'intonaco', smusso=0)
+    # il tetto: coppi su tavolato e travicelli, dalla cima delle mura alla facciata
+    P.solido([(x, y, z + dz) for x in (-xi - 0.1, sx1 + 1.5) for (y, z) in ((yi + 0.3, z_nord + 0.35), (fy - 0.9, z_fac - 0.25)) for dz in (0.0, 0.16)], 'coppi', 0)
+    P.solido([(x, y, z + dz) for x in (sx0, sx1) for (y, z) in ((sy1, z_nord), (sy0, z_fac + 0.02)) for dz in (0.0, 0.04)], 'legno', 0)
+    x = sx0 + 0.5
+    while x < sx1:
+        P.solido([(x + dx, y, z - dz) for dx in (-0.08, 0.08) for (y, z) in ((sy1, z_nord), (sy0, z_fac)) for dz in (0.0, 0.22)], 'legnoScuro', 0)
+        x += 1.1
+    # il camino, sul muro ovest, con il comignolo sopra le mura
+    AR.posa(P, AR.camino(), sx0, (sy0 + sy1) / 2, math.pi / 2, K=K)
+    P.blocco(-X + 0.2, -xi - 0.2, hs, hs + 2.4, (sy0 + sy1) / 2 - 0.7, (sy0 + sy1) / 2 + 0.7, 'conci', smusso=0.01)
+    P.blocco(-X + 0.3, -xi - 0.3, hs + 2.39, hs + 2.41, (sy0 + sy1) / 2 - 0.6, (sy0 + sy1) / 2 + 0.6, 'scuro', smusso=0)
+    # il pavimento di cotto e la pedana della tavola alta
+    P.blocco(sx0, sx1, -0.1, 0.05, sy0, sy1, 'cotto', smusso=0)
+    P.blocco(pd - 0.9, pd + 0.9, -0.1, 0.05, fy, sy0, 'cotto', smusso=0)
+    AR.posa(P, AR.pedana(CA['pedana'], sx1, sy0, sy1, 0.3), 0, 0, 0, z=0.05, K=K)
+    # i drappi: rossi sul muro nord, azzurri dietro la tavola alta
+    for cx in (-15.5, -9.5, -3.5, 1.5):
+        AR.posa(P, AR.drappo(4.6, 2.3, 'drappo'), cx, sy1, 0.0, z=1.25, K=K)
+    AR.posa(P, AR.drappo(6.4, 2.6, 'drappoBlu'), sx1, (sy0 + sy1) / 2, -math.pi / 2, z=1.45, K=K)
+
+    # --- le tavole a ferro di cavallo: i commensali siedono dal lato del muro
+    posti = []
+    def fila(cx, cy, lun, rot, z0, guarda):
+        AR.posa(P, AR.tavola(lun, 0.8, 0.76), cx, cy, rot, z=z0, K=K)
+        n = int(lun / 0.7)
+        AR.posa(P, AR.apparecchia(lun, 0.8, 0.76, n, R), cx, cy, rot, z=z0, K=K)
+        ux, uy = math.cos(rot), math.sin(rot)               # lungo la tavola
+        bx, by = -guarda[0] * 1.0, -guarda[1] * 1.0          # dalla tavola verso la panca
+        AR.posa(P, AR.panca(lun, 0.45, 0.32), cx + bx, cy + by, rot, z=z0, K=K)
+        for k in range(n):
+            u = -lun / 2 + (k + 0.5) * lun / n
+            posti.append([round(cx + bx + ux * u, 3), round(cy + by + uy * u, 3), guarda[0], guarda[1], round(z0, 3)])
+    for cx in (-13.0, -7.0, -1.0):                            # la fila nord: si guarda a sud
+        fila(cx, 14.6, 5.8, math.pi, 0.05, (0.0, -1.0))
+    fila(-12.25, 9.8, 7.0, 0.0, 0.05, (0.0, 1.0))             # la fila sud, interrotta davanti alla porta
+    fila(-0.5, 9.8, 5.0, 0.0, 0.05, (0.0, 1.0))
+    fila(5.0, (sy0 + sy1) / 2, 6.4, math.pi / 2, 0.35, (-1.0, 0.0))   # la tavola alta, sulla pedana
+    CA['posti'] = posti
+
+    # --- il cortile: il pozzo e gli anelli per i cavalli sul muro ovest
+    cilindro = AR.cilindro
+    for i in range(16):
+        a0, a1 = 2 * math.pi * i / 16, 2 * math.pi * (i + 1) / 16
+        P.solido([(-4.0 + r * math.cos(a), -7.0 + r * math.sin(a), z) for a in (a0 + 0.01, a1 - 0.01) for r in (0.6, 0.82) for z in (0, 0.85)], 'conci', 0)
+    P.solido([(-4.0 + 0.6 * math.cos(a), -7.0 + 0.6 * math.sin(a), z) for a in [2 * math.pi * i / 12 for i in range(12)] for z in (0.0, 0.02)], 'scuro', 0)
+    for sx in (-1, 1):
+        P.blocco(-4.0 + sx * 0.72 - 0.1, -4.0 + sx * 0.72 + 0.1, 0.8, 2.2, -7.1, -6.9, 'legno', smusso=0.01)
+    P.blocco(-4.9, -3.1, 2.2, 2.35, -7.1, -6.9, 'legno', smusso=0.01)
+    for y in (-12.0, -9.0, -6.0, -3.0):
+        P.blocco(-xi, -xi + 0.04, 1.45, 1.55, y - 0.04, y + 0.04, 'ferro', smusso=0)
+        cilindro(P, -xi + 0.1, y, 0.07, 0.07, 1.33, 1.36, 'ferro', n=10)
+    return P.crea()
+
+
+def campi_posa():
+    """Pavimenti, ostacoli, posti a sedere, servitori e cavalli del castello
+    di Campi, nelle coordinate del modello (x est, y nord)."""
+    X, Y, mu = CA['X'], CA['Y'], CA['mura']
+    xi, yi = X - mu, Y - mu
+    sx0, sx1, sy0, sy1 = CA['sala']
+    fy, pd = CA['fac'], CA['porta_sala']
+    ost = [
+        [-X, X, -Y, -yi], [-X, X, yi, Y], [-X, -xi, -Y, Y], [xi, X, -Y, Y],     # le mura
+        [-X, -X + 2.6, -Y, -Y + 2.6], [X - 2.6, X, -Y, -Y + 2.6],
+        list(CA['cassero']),
+        [sx0 - 1.0, pd - 0.95, fy - 0.05, sy0 + 0.05], [pd + 0.95, sx1 + 1.0, fy - 0.05, sy0 + 0.05],   # la facciata della sala
+        [sx1, sx1 + 1.0, fy, yi],                                              # il muro est della sala
+        [sx0, sx0 + 1.3, (sy0 + sy1) / 2 - 1.6, (sy0 + sy1) / 2 + 1.6],      # il camino
+        [CA['pedana'], sx1, sy0, sy1],                                         # la pedana con la tavola alta
+        [-15.95, 1.95, 13.75, 16.4], [-15.85, -8.65, 8.0, 10.25], [-3.05, 2.05, 8.0, 10.25],     # tavole e panche
+        [-4.95, -3.05, -7.95, -6.05]                                           # il pozzo
+    ]
+    ost = [[o[0], o[1]] + ([o[2], o[3]] if o[2] < o[3] else [o[3], o[2]]) for o in ost]
+    # gli ostacoli: [x0, x1, y0, y1]; il porta del recinto si attraversa
+    ost[0] = [-X, -1.7, -Y, -yi]
+    ost.insert(1, [1.7, X, -Y, -yi])
+    return dict(
+        pavimenti=[[sx0, sx1, sy0, sy1, 0.05], [pd - 0.85, pd + 0.85, fy - 0.1, sy0, 0.05]],
+        ostacoli=ost,
+        posti=CA.get('posti', []),
+        servitori=[[-10.5, 12.2, 0.0, 1.0], [-4.5, 12.0, 0.0, -1.0], [0.8, 12.4, 1.0, 0.0], [-17.6, 10.6, -1.0, 0.3],
+                   [-7.4, 11.7, 0.3, 1.0], [2.4, 11.0, -1.0, 0.0], [-13.5, 12.4, 0.0, 1.0]],
+        giullare=[-7.2, 12.6, 0.0, 1.0],
+        cavalli=[[-19.2, -12.0, -1.0, 0.0], [-19.2, -9.0, -1.0, 0.0], [-19.2, -6.0, -1.0, 0.0], [-19.2, -3.0, -1.0, 0.0]],
+        stallieri=[[-16.8, -10.2, -1.0, 0.2], [-16.5, -4.6, -1.0, -0.3]],
+        partenza=[0.0, -24.0, 0.0, -10.0]
+    )
+
+
 def esporta(ob, nome):
     os.makedirs(USCITA, exist_ok=True)
     bpy.ops.object.select_all(action='DESELECT')
@@ -1020,9 +1302,10 @@ def tavola(ob, nome, dist=None, alto=0.35, lato=0.5):
 
 
 COSTRUTTORI = {'amidei': amidei, 'marte': marte, 'ponte': ponte, 'chiesa': chiesa, 'porta': porta, 'battistero': battistero,
-               'santa_reparata': santa_reparata}
-POSA = {'amidei': lambda: {k: PAR['amidei'][k] for k in ('fronte', 'W', 'D')},
-        'chiesa': lambda: dict(PAR['chiesa'])}
+               'santa_reparata': santa_reparata, 'campi': campi}
+POSA = {'amidei': lambda: dict({k: PAR['amidei'][k] for k in ('fronte', 'W', 'D')}, **amidei_posa()),
+        'campi': lambda: campi_posa(),
+        'chiesa': lambda: dict(PAR['chiesa'], **chiesa_posa())}
 
 if __name__ == '__main__':
     args = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []

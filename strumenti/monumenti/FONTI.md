@@ -116,6 +116,46 @@ Dagli scavi del 1965–1974 (G. Morozzi, F. Toker, A. Herrmann, *Santa Reparata.
 
 Si entra dal portale grande e si cammina nelle tre navate fino al presbiterio, che non è percorribile.
 
+## 8. Gli interni e il castello di Campi · forma «ipotesi»
+
+Il 9 ottobre 2026 Domenico ha scelto gli interni **arredati con le fonti**, con dentro **figure generiche**, senza dare un volto ai personaggi storici. Campi è un **luogo a parte** (`?luogo=campi`).
+
+**L'arredo** (`arredo.py`). Le notizie sono quasi tutte del Trecento e riportate al 1216, quindi la forma di ogni oggetto è un'ipotesi:
+- **le tavole** erano assi mobili su cavalletti, coperte da tovaglie, montate per il pasto e tolte subito dopo ([edatlas, «Vita quotidiana: mobili e suppellettili nelle case del '300»](https://www.edatlas.it/it/contenuti-digitali/documenti/ff8af3ac-ef19-45bd-a9e3-746bfa3fe0bd); C. Calabretto, tesi, Università di Padova). La cronaca del convito lo conferma a modo suo: la rissa scoppia «quando furono levate le tavole» (pseudo-Brunetto; Faini p. 14);
+- **a tavola** c'erano un piatto e una coppa ogni due commensali, coltello e cucchiaio, niente forchette (edatlas). Il modello mette un tagliere di legno, il pane, una coppa e un coltello ogni due posti, qualche tagliere con la carne e le brocche di terracotta;
+- **la tavola del signore** stava rialzata rispetto alle altre; gli ospiti di rango inferiore sedevano su panche (fonte divulgativa sul Trecento) **[da verificare]**;
+- **i cassoni** per la biancheria e le cose: di legno, con bandelle di ferro;
+- **il camino a muro**: nelle case del Duecento spesso c'era ancora il focolare in mezzo alla stanza, e i camini con la canna si diffondono nel Tre e Quattrocento. Nei castelli il camino a parete c'era prima. Il modello lo mette nella sala di Campi, non nella torre degli Amidei **[da verificare]**.
+
+**Santa Maria sopra Porta.** L'interno è un'ipotesi, come la chiesa:
+- muri intonacati e tetto a capriate a vista;
+- l'abside con il catino e un gradino, l'altare con la tovaglia, la croce e due candelieri;
+- le panche di pietra lungo i muri, perché non c'erano banchi per i fedeli;
+- due lucerne a muro.
+
+Il portale è aperto.
+
+**La torre degli Amidei, piano terra.** Il piano terra delle torri serviva da magazzino e da ingresso; qui ci sono armi e provviste, perché la mattina di Pasqua gli uccisori si radunarono «in casa gli Amidei» (Villani VI, 38). L'arredo è un'ipotesi:
+- pavimento di lastre e solaio di travi e tavole con la botola e la scala a pioli;
+- la rastrelliera con le lance, tre scudi a mandorla dipinti in tinta unita (niente stemmi: l'araldica nel 1216 è troppo incerta), una mazza d'arme;
+- due cassoni, le botti, due lucerne.
+
+Si entra dalla porta di sinistra.
+
+**Il castello di Campi.**
+- **Che cosa è attestato.** Il convito «nella terra di Campi, apresso a Florenzia VJ milgla» (pseudo-Brunetto; Faini p. 13). Il castello dei Mazzinghi c'era dal X secolo e fu distrutto per vendetta dai ghibellini dopo Montaperti, nel 1260. La Rocca Strozzi che c'è oggi è stata costruita dal 1366 ([castellitoscani, «Rocca degli Strozzi»](https://castellitoscani.com/en/rocca-strozzi-fortress); [museionline, «Rocca Strozzi»](https://www.museionline.info/toscana-musei-monumenti/rocca-strozzi)) **[da verificare]**.
+- **Il modello (tutto ipotesi).** Riprende il tipo dei castelli del contado:
+  - recinto di mura merlate, 44 × 36 m, con la porta ad arco a sud e due torricelle d'angolo;
+  - il cassero a nord-est;
+  - nel cortile il pozzo e gli anelli per i cavalli, con quattro cavalli sellati;
+  - la sala addossata alle mura, 28 × 8,4 m, con il tetto a uno spiovente.
+- **La sala** sta al piano terra perché ci si possa entrare a piedi; nei castelli stava spesso al primo piano **[da verificare]**. Dentro:
+  - il camino;
+  - le tavole a ferro di cavallo e la tavola alta sulla pedana, con 50 posti;
+  - i drappi tinti di robbia e di guado.
+- **Il giorno** (metà gennaio) e **l'ora** (mezzogiorno) sono ipotesi: la fonte dice solo «ai primi dell'anno».
+- **Gli invitati** sono figure generiche, sedute. Ci sono poche donne, ed è un'ipotesi: se ci fossero donne al convito la fonte non lo dice.
+
 ## 6. Lacune (seguono le 37–41 del kit)
 
 42. **Il lato della pietra di Marte**: il capo del ponte in città (le cronache) o in Oltrarno (Vossilla, da Cinelli)? Va controllato il testo di Vossilla e, in Villani, il capitolo sull'omicidio.
@@ -124,6 +164,9 @@ Si entra dal portale grande e si cammina nelle tre navate fino al presbiterio, c
 45. **Il ponte del 1216**: quante arcate (cinque o nove), quanto largo, con o senza botteghe?
 46. **Santa Reparata in alzato**: quanto erano alte navata e navatelle? Com'era la facciata nel 1216? Quale campanile era in piedi?
 47. **Il Battistero nel 1216**: l'attico e il tetto a piramide erano già finiti? La lanterna è del 1150 o di un rifacimento duecentesco?
+48. **Il castello dei Mazzinghi a Campi**: com'era? Dove stava la sala? Esistono descrizioni o rilievi del castello prima della Rocca Strozzi?
+49. **Il convito**: chi sedeva a tavola, c'erano donne? Come si disponevano le tavole? Che cosa si mangiava a un'investitura del 1216?
+50. **Le case delle grandi famiglie dentro**: che cosa c'era al piano terra di una torre nel 1216? Dove si cucinava, dove si dormiva?
 
 ## 7. Registro delle verifiche
 
@@ -132,3 +175,4 @@ Si entra dal portale grande e si cammina nelle tre navate fino al presbiterio, c
 16. **08/10/2026 — Ponte.** Cinque arcate contro nove: si tengono cinque, la fonte delle nove è citata (lacuna 45).
 17. **09/10/2026 — Il Battistero.** Spostato sull'impronta reale (OpenStreetMap) e portato da 25,6 m a 34 m di larghezza esterna: i 25,6 m erano il diametro interno.
 18. **09/10/2026 — Santa Reparata.** Posta sotto il Duomo, sul suo asse, con la facciata 9,5 m più a ovest di quella di oggi; misure interne e pianta dagli scavi.
+19. **09/10/2026 — Gli interni.** Santa Maria sopra Porta, il piano terra della torre degli Amidei e la sala del convito a Campi si percorrono a piedi. Sono arredati con oggetti di cui esistono notizie per il Due e Trecento; la forma di ciascuno è un'ipotesi.

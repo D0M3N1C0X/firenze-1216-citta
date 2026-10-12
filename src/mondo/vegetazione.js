@@ -15,18 +15,26 @@ import { rng } from './rumore.js';
    fiorentino, per esempio Ch. M. de La Roncière].
    ===================================================================== */
 
+/**
+ * opz.pianura: la piana di Campi (mondo/campi.js), con la sua quota e uno
+ * spazio libero attorno al castello; alberi sparsi lungo i campi, niente
+ * fiume e niente mura della città.
+ */
 export function creaVegetazione(scene, opz = {}) {
   const R = rng(1209);
   const ulivi = [], cipressi = [];
   const tenta = opz.tentativi || 14000;
+  const qT = opz.pianura?.quota || quota;
   for (let i = 0; i < tenta; i++) {
     // solo sul terreno a maglia fine: altrove gli alberi galleggerebbero
     const x = R.tra(-785, 785), z = R.tra(-785, 785);
-    if (dentroCerchia(x, z) || distanzaFiume(x, z) < 10) continue;
-    const y = quota(x, z);
+    if (opz.pianura) {
+      if (Math.hypot(x, z) < opz.pianura.libero || !R.vero(0.35)) continue;
+    } else if (dentroCerchia(x, z) || distanzaFiume(x, z) < 10) continue;
+    const y = qT(x, z);
     // gli ulivi stanno sui colli; la piana resta a campi e orti
     const colle = y > 4;
-    if (!colle && !R.vero(0.08)) continue;
+    if (!opz.pianura && !colle && !R.vero(0.08)) continue;
     // a filari e a macchie: un rumore grossolano decide dove c'è l'oliveto
     if (Math.sin(x * 0.011 + Math.sin(z * 0.007) * 2) * Math.cos(z * 0.013) < -0.15) continue;
     if (R.vero(0.07)) cipressi.push([x, y, z]); else ulivi.push([x, y, z]);

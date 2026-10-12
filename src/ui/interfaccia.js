@@ -1,5 +1,9 @@
 import { LIVELLI } from '../mondo/materiali.js';
-import { LUOGHI } from '../dati/luoghi.js';
+import { LUOGHI as TUTTI } from '../dati/luoghi.js';
+import { MONDO, mondoDi } from '../mondo/dove.js';
+
+// i luoghi del mondo in cui si è: la città, oppure un luogo a parte (Campi)
+const LUOGHI = TUTTI.filter(l => mondoDi(l) === MONDO);
 
 /* L'interfaccia: avvio, testata, luogo vicino, scheda, elenco, legenda. */
 
@@ -83,7 +87,8 @@ export class Interfaccia {
     $('#avvio .data').textContent = `${g.titolo} · ${g.nota}`;
     const b = $('#b-giorno');
     b.textContent = 'Giorno: ' + g.nome;
-    b.title = 'Passa a ' + (g.id === 'pasqua' ? '10 febbraio' : 'Pasqua');
+    b.title = MONDO === 'campi' ? 'A Campi c\'è un giorno solo: il convito' : 'Passa a ' + (g.id === 'pasqua' ? '10 febbraio' : 'Pasqua');
+    b.disabled = MONDO === 'campi';
     const r = $('#cursore-ora');
     r.min = (Math.floor((alba - 0.4) * 20) / 20).toFixed(2);
     r.value = ora;

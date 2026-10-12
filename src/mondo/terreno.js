@@ -92,7 +92,18 @@ function materialeTerreno() {
   return m;
 }
 
-function costruisci(x0, z0, lato, seg, abbassa, conPeso) {
+/**
+ * La piana di Campi (un luogo a parte, mondo/campi.js): piatta attorno al
+ * castello, con lievi ondulazioni; lontano, a nord, i monti (Monte Morello,
+ * la Calvana). Approssimata, come il rilievo della città.
+ */
+export function quotaPianura(x, z) {
+  let h = (fbm(x / 90 + 5, z / 90 + 3, 3) - 0.5) * 0.7 * smooth(40, 90, Math.hypot(x, z));
+  h += 650 * smooth(3500, 9000, -z) * (0.6 + 0.4 * fbm(x / 1800 + 2, 0.7, 3));
+  return h;
+}
+
+function costruisci(x0, z0, lato, seg, abbassa, conPeso, q = quota, fiume = true) {
   const g = new PlaneGeometry(lato, lato, seg, seg);
   g.rotateX(-Math.PI / 2);
   g.translate(x0, 0, z0);
@@ -101,7 +112,7 @@ function costruisci(x0, z0, lato, seg, abbassa, conPeso) {
   const peso = new Float32Array(n * 3), xz = new Float32Array(n * 2), uv = g.attributes.uv;
   for (let k = 0; k < n; k++) {
     const x = pos.getX(k), z = pos.getZ(k);
-    let y = quota(x, z);
+    let y = q(x, z);
     // il terreno lontano ha maglie di 80 m: dentro il riquadro vicino va
     // tenuto ben sotto, o spunterebbe attraverso il letto del fiume
     if (abbassa && Math.abs(x) < 790 && Math.abs(z) < 790) y = -40;
@@ -110,12 +121,13 @@ function costruisci(x0, z0, lato, seg, abbassa, conPeso) {
     xz[k * 2] = x; xz[k * 2 + 1] = z;
     uv.setXY(k, x, z);
     if (conPeso) {
-      const d = distanzaFiume(x, z);
+      const d = fiume ? distanzaFiume(x, z) : 99;
       const riva = smooth(4, -2, d) * smooth(-12, -3, d);
       const acqua = smooth(-3, -9, d);
       const colle = smooth(4, 14, y) + 0.35 * smooth(-1, -6, d) * (1 - acqua);
       const macchia = fbm(x / 40 + 3, z / 40 + 7, 4);
-      let wE = Math.min(1, colle * 1.2 + smooth(0.62, 0.8, macchia) * 0.6);
+      // nella piana senza fiume (Campi): prati e campi arati, a macchie
+      let wE = fiume ? Math.min(1, colle * 1.2 + smooth(0.62, 0.8, macchia) * 0.6) : 0.2 + 0.75 * smooth(0.42, 0.62, macchia);
       let wG = Math.max(riva, acqua);
       let wT = Math.max(0, 1 - wE - wG);
       peso[k * 3] = wT; peso[k * 3 + 1] = wE * (1 - wG); peso[k * 3 + 2] = wG;
@@ -127,13 +139,13 @@ function costruisci(x0, z0, lato, seg, abbassa, conPeso) {
   return g;
 }
 
-export function creaTerreno(scene, qualita = 'alta') {
+export function creaTerreno(scene, qualita = 'alta', q = quota, fiume = true) {
   const mat = materialeTerreno();
-  const vicino = new Mesh(costruisci(0, 0, 1600, qualita === 'alta' ? 800 : 480, false, true), mat);
+  const vicino = new Mesh(costruisci(0, 0, 1600, qualita === 'alta' ? 800 : 480, false, true, q, fiume), mat);
   vicino.receiveShadow = true;
   vicino.name = 'terreno';
   scene.add(vicino);
-  const lontano = new Mesh(costruisci(0, 0, 16000, 200, true, true), mat);
+  const lontano = new Mesh(costruisci(0, 0, 16000, 200, true, true, q, fiume), mat);
   lontano.receiveShadow = false;
   scene.add(lontano);
   return { vicino, lontano };

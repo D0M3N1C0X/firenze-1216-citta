@@ -194,6 +194,12 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
   // il porfido delle colonne del Battistero e il cotto del pavimento di Santa Reparata
   MAT.porfido = new MeshStandardMaterial({ color: 0x5b2226, roughness: 0.32, metalness: 0, vertexColors: true });
   MAT.cotto = materiale(tex.lastre || tex.conci, { color: new Color(0.95, 0.56, 0.42) });
+  // l'arredo degli interni: pane, carne, i drappi tinti di robbia e di guado, il fuoco
+  MAT.pane = new MeshStandardMaterial({ color: 0xb8864e, roughness: 0.9, metalness: 0, vertexColors: true });
+  MAT.carne = new MeshStandardMaterial({ color: 0x6a3420, roughness: 0.6, metalness: 0, vertexColors: true });
+  MAT.drappo = new MeshStandardMaterial({ color: 0x8a2a1e, roughness: 0.92, metalness: 0, vertexColors: true });
+  MAT.drappoBlu = new MeshStandardMaterial({ color: 0x2c3f6e, roughness: 0.92, metalness: 0, vertexColors: true });
+  MAT.fuoco = new MeshStandardMaterial({ color: 0xffa040, emissive: 0xff7a1a, emissiveIntensity: 2.2, roughness: 1, metalness: 0, vertexColors: true });
   // ferro battuto (bandelle, chiodi, anelli) e tela oliata delle impannate
   MAT.ferro = new MeshStandardMaterial({ color: 0x2b2826, roughness: 0.55, metalness: 0.7, vertexColors: true });
   MAT.tela = new MeshStandardMaterial({ color: 0xc9b98f, roughness: 0.85, metalness: 0, vertexColors: true });

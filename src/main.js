@@ -15,7 +15,9 @@ import { SCENE } from './dati/scene.js';
 import { COPIONE } from './dati/copione.js';
 import { creaMateriali, impostaAnisotropia } from './mondo/materiali.js';
 import { Cielo } from './mondo/cielo.js';
-import { creaAcqua, creaTerreno, quota } from './mondo/terreno.js';
+import { creaAcqua, creaTerreno, quota, quotaPianura } from './mondo/terreno.js';
+import { costruisciCampi } from './mondo/campi.js';
+import { MONDO, mondoDi } from './mondo/dove.js';
 import { preparaCampo } from './mondo/fiume.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from './mondo/griglia.js';
 import { Cantiere } from './mondo/cantiere.js';
@@ -44,6 +46,18 @@ const params = new URLSearchParams(location.search);
 // rallentati fino a fermare la costruzione, i messaggi no.
 const pausa = () => new Promise(r => { const c = new MessageChannel(); c.port1.onmessage = () => r(); c.port2.postMessage(0); });
 
+// a Campi la schermata d'avvio parla del convito, non della mattina di Pasqua
+if (MONDO === 'campi') {
+  document.title = 'Campi, il convito del 1216 — Firenze 1216';
+  document.getElementById('titolo').textContent = 'Campi, il convito di gennaio 1216';
+  document.querySelector('#avvio .data').textContent = 'Gennaio 1216 · il castello dei Mazzinghi, sei miglia a nord-ovest di Firenze';
+  document.querySelector('#avvio .data + p').innerHTML = 'Il convito in cui comincia la storia: un castello da percorrere a piedi, costruito a partire dalle fonti. Dove le fonti si fermano, il modello lo dice: l\'interruttore <b>Certezza</b> colora ogni cosa secondo quanto ne sappiamo.';
+  document.querySelector('#avvio details ul').innerHTML =
+    '<li><b>Non è una ricostruzione validata.</b> È un prototipo, e un medievista non l\'ha ancora visto.</li>' +
+    '<li><b>Il castello non c\'è più.</b> Recinto, sala e arredo sono ricostruiti sul tipo dei castelli del contado: sono un\'ipotesi.</li>' +
+    '<li><b>Gli invitati non hanno un volto.</b> Chi sia ciascuno non lo diciamo: lo racconta il gioco, con le fonti.</li>';
+}
+
 const renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: params.has('cattura') });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
@@ -58,7 +72,12 @@ const scene = new Scene();
 const camera = new PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 40000);
 // dal gioco si arriva su una scena: ?scena=IV3 (dati/scene.js)
 const scenaIniziale = SCENE.find(s => s.id === params.get('scena')) || null;
-let giornata = GIORNATE[params.get('giorno')] || GIORNATE[scenaIniziale?.giornata] || GIORNATE[GIORNATA_PREDEFINITA];
+// una scena di un altro mondo (dal gioco si arriva con ?scena=I1, che è a Campi): si va lì
+if (scenaIniziale?.vista && mondoDi(scenaIniziale) !== MONDO) {
+  if (mondoDi(scenaIniziale) === 'citta') params.delete('luogo'); else params.set('luogo', mondoDi(scenaIniziale));
+  location.replace('?' + params.toString());
+}
+let giornata = GIORNATE[params.get('giorno')] || GIORNATE[scenaIniziale?.giornata] || GIORNATE[MONDO === 'campi' ? 'gennaio' : GIORNATA_PREDEFINITA];
 let ora = +(params.get('ora') || scenaIniziale?.ora || giornata.ora);
 let qualita = 'alta';
 let mondo = null;
@@ -69,7 +88,7 @@ let certezzaAccesa = false;
 const ui = new Interfaccia({
   entra,
   certezza: on => { certezzaAccesa = on; mondo.cantiere.certezza(on); mondo.abitanti.visibili(!on); },
-  giorno: () => impostaGiornata(giornata.id === 'pasqua' ? 'febbraio' : 'pasqua'),
+  giorno: () => { if (MONDO === 'citta') impostaGiornata(giornata.id === 'pasqua' ? 'febbraio' : 'pasqua'); },
   volo: on => mondo.controlli.impostaVolo(on),
   inVolo: () => mondo?.controlli.volo,
   ora: h => { ora = h; impostaOra(); },
@@ -104,10 +123,11 @@ async function costruisci() {
   await Promise.all([
     kit, monumentiBlender,
     creaMateriali('alta', (k, n) => ui.progresso(`Impasto la calce e cuocio i coppi… ${k}/${n}`)),
-    preparaCampo()
+    MONDO === 'citta' ? preparaCampo() : null
   ]);
   impostaAnisotropia(renderer.capabilities.getMaxAnisotropy());
   console.info(`materiali e fiume in ${((performance.now() - t0) / 1000).toFixed(1)} s`);
+  if (MONDO === 'campi') return costruisciCampiMondo(passo, figure, bestie, t0);
 
   await passo('Il cielo del mattino…');
   const cielo = new Cielo(renderer, scene);
@@ -163,7 +183,45 @@ async function costruisci() {
   if (params.has('subito')) entra();
 }
 
+/**
+ * Campi, il castello del convito: un luogo a parte (?luogo=campi). Niente
+ * città, niente fiume: la piana, il castello, gli invitati a tavola.
+ */
+async function costruisciCampiMondo(passo, figure, bestie, t0) {
+  await passo('Il cielo di gennaio…');
+  const cielo = new Cielo(renderer, scene);
+  await passo('La piana di Campi…');
+  creaTerreno(scene, 'alta', quotaPianura, false);
+  creaVegetazione(scene, { pianura: { quota: quotaPianura, libero: 70 }, tentativi: 3000 });
+  await passo('Il castello dei Mazzinghi…');
+  const griglia = new Griglia();
+  const cantiere = new Cantiere();
+  const campi = costruisciCampi(cantiere, griglia);
+  cantiere.costruisci(scene);
+  await passo('Gli invitati prendono posto…');
+  modelli = params.has('manichini') ? null : await figure;
+  animali = modelli ? await bestie : null;
+  const controlli = new Controlli(camera, renderer.domElement, griglia, campi.quotaIn);
+  collocaVista(controlli, scenaIniziale?.vista || campi.partenza);
+  mondo = { cielo, acqua: null, griglia, cantiere, monumenti: null, lotti: [], strade: [], controlli, quotaIn: campi.quotaIn, suoni: new Suoni(), campi };
+  mondo.abitanti = creaAbitanti();
+  impostaGiornata(giornata.id, { ora });
+  impostaComposizione();
+  await passo('');
+  console.info(`Campi pronto in ${((performance.now() - t0) / 1000).toFixed(1)} s · oggetti ${cantiere.mesh.length}`);
+  ui.pronto();
+  if (params.has('subito')) entra();
+}
+
 function creaAbitanti() {
+  if (MONDO === 'campi') {
+    const C = mondo.campi;
+    return new Abitanti(scene, [], mondo.griglia, mondo.quotaIn, {
+      modelli, animali, numero: 0,
+      seduti: C.seduti.filter((_, i) => i % 7 !== 3),     // qualche posto vuoto
+      fermi: C.fermi, cavalliFermi: C.cavalli
+    });
+  }
   return new Abitanti(scene, mondo.strade, mondo.griglia, mondo.quotaIn, {
     modelli,
     animali,
@@ -200,7 +258,7 @@ function impostaGiornata(id, opz = {}) {
 function impostaOra() {
   if (!mondo) return;
   mondo.cielo.imposta(ora);
-  mondo.acqua.material.uniforms.sunDirection.value.copy(mondo.cielo.dir);
+  mondo.acqua?.material.uniforms.sunDirection.value.copy(mondo.cielo.dir);
   ui.ora(formatoOra(ora) + ' ora solare', oraCanonica(ora, giornata.doy));
 }
 
@@ -254,6 +312,15 @@ function collocaVista(c, v) {
 
 /** La città va nella giornata, all'ora e nel punto di vista di una scena. */
 function vaiScena(s) {
+  // una scena in un altro mondo (Campi o la città): si riapre la pagina lì
+  if (mondoDi(s) !== MONDO) {
+    const q = new URLSearchParams(location.search);
+    for (const k of ['luogo', 'giorno', 'ora', 'da', 'scena']) q.delete(k);
+    if (mondoDi(s) !== 'citta') q.set('luogo', mondoDi(s));
+    q.set('scena', s.id); q.set('racconto', '');
+    location.search = q.toString();
+    return;
+  }
   if (s.giornata) impostaGiornata(s.giornata, { ora: s.ora ?? GIORNATE[s.giornata].ora });
   if (s.vista && mondo) collocaVista(mondo.controlli, s.vista);
 }
@@ -292,7 +359,7 @@ function ciclo() {
     const c = mondo.controlli;
     c.aggiorna(dt);
     mondo.cielo.segui(camera.position);
-    mondo.acqua.material.uniforms.time.value += dt * 0.55;
+    if (mondo.acqua) mondo.acqua.material.uniforms.time.value += dt * 0.55;
     mondo.abitanti.aggiorna(dt, camera.position);
     mondo.cantiere.aggiornaLod(camera.position);
     mondo.suoni.aggiorna(dt, camera, mondo.abitanti);
@@ -300,6 +367,7 @@ function ciclo() {
       tHud = 0;
       let best = null, bd = Infinity;
       for (const l of LUOGHI) {
+        if (mondoDi(l) !== MONDO) continue;
         const d = Math.hypot(camera.position.x - l.pos[0], camera.position.z - l.pos[1]);
         if (d < l.raggio && d < bd) { bd = d; best = l; }
       }

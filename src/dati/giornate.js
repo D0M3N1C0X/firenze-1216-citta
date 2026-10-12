@@ -22,6 +22,24 @@
    ===================================================================== */
 
 export const GIORNATE = {
+  // il convito di Campi (copione, atto I): la data non è tramandata, solo
+  // che è «ai primi dell'anno» (Faini p. 16, n. 37). Qui, a metà gennaio,
+  // a mezzogiorno: ipotesi
+  gennaio: {
+    id: 'gennaio',
+    nome: 'Gennaio',
+    titolo: 'Gennaio 1216 · il convito di Campi',
+    nota: 'per i fiorentini ancora 1215; il giorno non è tramandato: qui metà gennaio',
+    doy: 22,                    // 22 gennaio gregoriano
+    gregoriano: '22 gennaio',
+    festa: true,
+    rondini: false,
+    foschia: 1.5,
+    campane: 'ore',
+    gente: 0,
+    ora: 12.5,
+    gruppi: []
+  },
   febbraio: {
     id: 'febbraio',
     nome: '10 febbraio',

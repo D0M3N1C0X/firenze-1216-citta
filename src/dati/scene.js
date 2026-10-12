@@ -28,15 +28,24 @@ export const TIPI_NOTA = {
   documento: { nome: 'documento', testo: 'è scritto in un atto', colore: '#5d4a8a' }
 };
 
-const CAMPI = 'A Campi, sei miglia fuori Firenze, nella casa del nuovo cavaliere: è fuori dal modello.';
+// l'atto I è a Campi, un luogo a parte: la scena apre la pagina con ?luogo=campi
+const CAMPI = { mondo: 'campi', luogo: 'campi', giornata: 'gennaio', ora: 12.5 };
 
 export const SCENE = [
   { id: 'P1', fuori: 'La bottega di Sanzanome: dove fosse non lo sappiamo.' },
-  { id: 'I1', fuori: CAMPI },
-  { id: 'I2a', gruppo: 'I2', ramo: 'Accanto a Uberto', fuori: CAMPI },
-  { id: 'I2b', gruppo: 'I2', ramo: 'Vicino ai Fifanti', fuori: CAMPI },
-  { id: 'I2c', gruppo: 'I2', ramo: 'In fondo alla sala', fuori: CAMPI },
-  { id: 'I3', fuori: CAMPI },
+  {
+    id: 'I1', ...CAMPI,
+    vista: { x: -6, z: -10.4, verso: [5, -12.2] },
+    adattamento: 'Il castello dei Mazzinghi non c\'è più: castello, sala e convito sono un\'ipotesi. Gli invitati non hanno un volto: chi sia ciascuno non lo diciamo.'
+  },
+  { id: 'I2a', gruppo: 'I2', ramo: 'Accanto a Uberto', ...CAMPI, vista: { x: -12, z: -12.0, verso: [-11, -15.6] } },
+  { id: 'I2b', gruppo: 'I2', ramo: 'Vicino ai Fifanti', ...CAMPI, vista: { x: -2.5, z: -11.6, verso: [-13, -14.6] } },
+  { id: 'I2c', gruppo: 'I2', ramo: 'In fondo alla sala', ...CAMPI, vista: { x: -17.4, z: -12.0, verso: [4, -12.2] } },
+  {
+    id: 'I3', ...CAMPI, ora: 15,
+    vista: { x: 2, z: 2, verso: [-6, -7.5] },
+    adattamento: 'Il notaio è uscito nel cortile a portare le panche. Dentro le tavole sono ancora apparecchiate: la città mostra il convito, non il momento dopo.'
+  },
   { id: 'II1', fuori: 'Dove si riunì il consiglio della pace le fonti non lo dicono.' },
   {
     id: 'II2', giornata: 'febbraio', ora: 9.2, luogo: 'case-donati',

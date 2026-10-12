@@ -62,6 +62,17 @@ export const POSA_SELLA = {
   Spine: [0.04, 0, 0]
 };
 
+/* Seduti a tavola (il convito di Campi): cosce in avanti, ginocchia piegate
+   ad angolo retto, avambracci in avanti sulla tavola. Una posa ferma. */
+export const POSA_SEDUTA = {
+  LeftUpLeg: [-1.5, 0, -0.08], RightUpLeg: [-1.5, 0, 0.08],
+  LeftLeg: [1.45, 0, 0], RightLeg: [1.45, 0, 0],
+  LeftFoot: [-0.15, 0, 0], RightFoot: [-0.15, 0, 0],
+  LeftArm: [0, 0, -0.8], RightArm: [0, 0, 0.8],
+  LeftForeArm: [0, -1.3, 0], RightForeArm: [0, 1.3, 0],
+  Spine: [0.1, 0, 0]
+};
+
 /** Applica POSA_SELLA (o una posa data) alla copia di una figura. */
 export function posaInSella(r, posa = POSA_SELLA) {
   const q = new Quaternion(), e = new Euler(), { ossa, riposo } = r.userData;
@@ -316,7 +327,7 @@ export class Abitanti {
     if (!modelli) for (let i = 0; i < (opz.varianti || 48); i++) varianti.push(creaFigura(1000 + i));
     const altezza = v => modelli ? v.info.altezza : v.altezza;
     const archi = g.archi.filter(([a, b]) => g.nodi[a].vicini.length + g.nodi[b].vicini.length > 2);
-    for (let i = 0; i < (opz.numero || 140); i++) {
+    for (let i = 0; i < (opz.numero ?? 140); i++) {
       const v = varianti[i % varianti.length];
       const [a, b, larg] = R.scegli(archi.length ? archi : g.archi);
       const f = modelli ? this.nuovaModello(v, R, 'cammina') : this.nuova(v, R);
@@ -355,6 +366,23 @@ export class Abitanti {
         cav.azione.timeScale = cav.vel / cav.clipVel;
         this.monta(cav, chi[(i * 3) % chi.length]);
         this.figure.push(cav);
+      }
+    }
+    // figure in un posto preciso, con un ruolo e un movimento (Campi: i
+    // servitori, il giullare, gli stallieri); figure sedute; cavalli fermi
+    const perRuolo = ruoli => { const l = varianti.filter(v => ruoli?.includes(v.info?.ruolo)); return l.length ? l : varianti; };
+    if (modelli) {
+      for (const p of opz.fermi || []) {
+        const f = this.nuovaModello(R.scegli(perRuolo(p.ruoli)), R, p.clip || 'fermo');
+        Object.assign(f, { fermo: true, x: p.x, z: p.z, dir: p.dir, parla: R.tra(0, 10) });
+        this.figure.push(f);
+      }
+      for (const p of opz.seduti || []) this.figure.push(this.nuovaSeduta(R.scegli(perRuolo(p.ruoli)), R, p));
+      for (const c of opz.cavalliFermi || []) {
+        if (!animali?.[c.tipo]) continue;
+        const a = this.nuovoAnimale(animali[c.tipo], R, 'fermo');
+        Object.assign(a, { fermo: true, x: c.x, z: c.z, dir: c.dir });
+        this.figure.push(a);
       }
     }
     // gruppi fermi a parlare, dove la gente si raduna
@@ -410,14 +438,32 @@ export class Abitanti {
     };
   }
 
-  /** Un animale di Blender: copia dello scheletro, andatura al passo. */
-  nuovoAnimale(v, R) {
+  /** Una figura seduta: copia dello scheletro nella posa POSA_SEDUTA, senza animazione. */
+  nuovaSeduta(v, R, p) {
+    const r = clonaScheletro(v.scene);
+    const maglie = [], ossa = {};
+    r.traverse(o => { if (o.isBone) ossa[o.name] = o; if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; maglie.push(o); } });
+    r.userData.riposo = Object.fromEntries(Object.entries(ossa).map(([n, o]) => [n, o.quaternion.clone()]));
+    r.userData.ossa = ossa;
+    r.updateMatrixWorld(true);
+    const anche = (ossa.Hips || r).getWorldPosition(new Vector3()).y;
+    posaInSella(r, POSA_SEDUTA);
+    this.scene.add(r);
+    // il bacino sulla panca: piano della panca a 0,45 m dal pavimento
+    return {
+      mesh: r, maglie, x: p.x, z: p.z, dir: p.dir, yFisso: p.y + 0.45 + 0.07 - anche, fermo: true, statico: true,
+      ombra: true, accum: 0, sfasa: R.tra(0, 100), v: { altezza: v.info.altezza }, modello: true
+    };
+  }
+
+  /** Un animale di Blender: copia dello scheletro, andatura al passo (o un'altra). */
+  nuovoAnimale(v, R, andatura = 'passo') {
     const radice = clonaScheletro(v.scene);
     const maglie = [];
     radice.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; maglie.push(o); } });
     this.scene.add(radice);
     const mixer = new AnimationMixer(radice);
-    const clip = v.clip.passo || Object.values(v.clip)[0];
+    const clip = v.clip[andatura] || v.clip.passo || Object.values(v.clip)[0];
     const azione = mixer.clipAction(clip);
     azione.play();
     azione.time = R() * clip.duration;
@@ -541,11 +587,12 @@ export class Abitanti {
       const vis = d < 160;
       f.mesh.visible = vis;
       if (!vis) continue;
-      f.mesh.position.set(f.x, this.quotaIn(f.x, f.z), f.z);
+      f.mesh.position.set(f.x, f.yFisso ?? this.quotaIn(f.x, f.z), f.z);
       f.mesh.rotation.y = f.dir;
       if (f.modello) {
         const ombra = d < 50;
         if (ombra !== f.ombra) { f.ombra = ombra; for (const m of f.maglie) m.castShadow = ombra; }
+        if (f.statico) continue;
         // da lontano si anima meno spesso, ma il tempo non si perde
         f.accum += dt;
         if (d > 70 && ((this.tempo * 20 + f.sfasa) | 0) % 3) continue;

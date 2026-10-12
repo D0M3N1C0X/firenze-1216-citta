@@ -259,5 +259,20 @@ export const LUOGHI = [
       'Area archeologica di Santa Reparata: Opera di Santa Maria del Fiore',
       'Pianta, misure, pilastri, cripta, portico, date 1296 e 1375: Wikipedia, «Santa Reparata (Firenze)», da Morozzi, Toker, Herrmann, Santa Reparata. L\'antica cattedrale fiorentina, 1974'
     ]
+  },
+  /* --- dal 9 ottobre 2026: un luogo a parte, fuori dalla città (?luogo=campi) --- */
+  {
+    id: 'campi',
+    mondo: 'campi',
+    nome: 'Il castello dei Mazzinghi a Campi',
+    pos: [-6, -12], raggio: 16,
+    luogo: { livello: 'documentato', nota: 'il convito «nella terra di Campi, apresso a Florenzia VJ milgla» (pseudo-Brunetto; Faini p. 13); il castello dei Mazzinghi c\'era dal X secolo' },
+    forma: { livello: 'ipotesi', nota: 'il castello fu distrutto nel 1260 e la Rocca Strozzi di oggi è del Trecento: recinto, cassero, sala e arredo sono ricostruiti sul tipo dei castelli del contado' },
+    testo: 'Messer Mazzingo Tegrimi dei Mazzinghi è stato fatto cavaliere e ha invitato «tutta la buona gente di Firenze». Le tavole sono assi posate su cavalletti, coperte da tovaglie: alla fine del pasto si tolgono, e la cronaca ne tiene il ricordo, perché la rissa scoppia «quando furono levate le tavole». Un tagliere di legno e una coppa ogni due commensali, coltelli e pane; niente forchette. Come fosse davvero questa sala non lo sappiamo: il castello dei Mazzinghi non c\'è più.',
+    fonti: [
+      'Pseudo-Brunetto, ed. Schiaffini 1954, pp. 118–119; Faini pp. 13–14',
+      'Il castello dei Mazzinghi, distrutto dopo Montaperti (1260); la Rocca Strozzi dal 1366: castellitoscani.com, «Rocca degli Strozzi»; museionline, «Rocca Strozzi» [da verificare]',
+      'Tavole su cavalletti, tovaglie, un piatto e una coppa ogni due commensali (Trecento): edatlas, «Vita quotidiana: mobili e suppellettili nelle case del \'300»'
+    ]
   }
 ];

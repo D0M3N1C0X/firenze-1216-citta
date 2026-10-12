@@ -6,7 +6,7 @@ La Firenze della mattina di Pasqua del 1216, da percorrere a piedi. È la sezion
 
 Serve un computer o un tablet con una buona scheda grafica: il modello è pensato per l'hardware di fascia alta e la prima apertura richiede qualche decina di secondi.
 
-**Prototipo** (ottobre 2026): il capo del Ponte Vecchio, con circa 480 metri di città intorno, il percorso fino a Santa Reparata e il resto come fondale; texture fotografiche e persone animate. Due giornate: **il 10 febbraio**, la promessa rotta, e **la mattina di Pasqua**, il delitto. Il **racconto** porta di scena in scena del gioco, ciascuna nel suo luogo. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
+**Prototipo** (ottobre 2026): il capo del Ponte Vecchio, con circa 480 metri di città intorno, il percorso fino a Santa Reparata e il resto come fondale; texture fotografiche e persone animate. Due giornate: **il 10 febbraio**, la promessa rotta, e **la mattina di Pasqua**, il delitto. Il **racconto** porta di scena in scena del gioco, ciascuna nel suo luogo. Il convito di gennaio 1216 è un luogo a parte, il castello dei Mazzinghi a Campi: ci si arriva dalle scene del primo atto o con `?luogo=campi`. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
 
 ## Dal gioco alla città
 
@@ -35,7 +35,7 @@ Poi aprire http://localhost:5216. Serve una scheda video di fascia alta: il mode
 | **Giorno** | passa dal 10 febbraio a Pasqua e ritorno |
 | **M** | silenzia i suoni |
 
-Parametri: `?scena=IV3` (apre su una scena), `?racconto` (apre il racconto dall'inizio), `?giorno=febbraio`, `?ora=7.5` (ora solare), `?gente=300`, `?da=x,z,direzione`.
+Parametri: `?scena=IV3` (apre su una scena), `?luogo=campi` (apre il castello del convito invece della città), `?racconto` (apre il racconto dall'inizio), `?giorno=febbraio`, `?ora=7.5` (ora solare), `?gente=300`, `?da=x,z,direzione`.
 
 Dopo ogni modifica a strade, luoghi o scene: `npm run verifica` controlla che ogni luogo si raggiunga a piedi e che ogni scena abbia un punto di vista percorribile. Se cambia il copione del gioco: `npm run copione` (solo dal repository completo del progetto).
 
@@ -72,5 +72,5 @@ app/             l'app per iPhone, iPad e Mac (Capacitor): vedi app/README.md
 - **Texture fotografiche:** Poly Haven, licenza CC0 (autori: Rob Tuytel, Dimitrios Savva, Amal Kumar, Charlotte Baglioni, Dario Barresi; dettagli in `public/texture/FONTI.json`). Erba, marmo e suoni sono generati dal codice.
 - **Figure:** corpi MakeHuman (CC0) e movimenti del CMU Graphics Lab Motion Capture Database (http://mocap.cs.cmu.edu, finanziato da NSF EIA-0196217). Come si producono: [strumenti/figure/README.md](strumenti/figure/README.md).
 - **Cavalli, muli e asini:** dal «Rigged Horse» di Lyndon Daniels (CC0, OpenGameArt), con le andature costruite da `strumenti/animali/animali.py`. Come si producono: [strumenti/animali/README.md](strumenti/animali/README.md).
-- **Monumenti** (il capo del ponte, il Battistero, Santa Reparata con l'interno): modellati da `strumenti/monumenti/monumenti.py`; la statua di Marte usa il cavallo «Rigged Horse» di Lyndon Daniels (CC0, OpenGameArt). Fonti e livelli: [strumenti/monumenti/FONTI.md](strumenti/monumenti/FONTI.md).
+- **Monumenti** (il capo del ponte, il Battistero, Santa Reparata, gli interni di Santa Maria sopra Porta e della torre degli Amidei, il castello di Campi con la sala del convito): modellati da `strumenti/monumenti/monumenti.py`; la statua di Marte usa il cavallo «Rigged Horse» di Lyndon Daniels (CC0, OpenGameArt). Fonti e livelli: [strumenti/monumenti/FONTI.md](strumenti/monumenti/FONTI.md).
 - **Kit edilizio:** finestre, porte, botteghe e pozzi modellati da `strumenti/kit/kit.py` in Blender, senza materiali di terzi. Fonti, livelli di certezza e anacronismi controllati: [strumenti/kit/FONTI.md](strumenti/kit/FONTI.md).
