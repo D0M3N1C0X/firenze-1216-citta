@@ -251,6 +251,18 @@ export const LUOGHI = [
     ]
   },
   {
+    id: 'casa-del-notaio',
+    nome: 'La casa del notaio (luogo del gioco)',
+    pos: [-26.6, -163.2], raggio: 10,
+    luogo: { livello: 'ipotesi', nota: 'il notaio è un personaggio del gioco: la sua casa la sceglie il gioco, non le fonti' },
+    forma: { livello: 'ipotesi', nota: 'una delle case generate di via delle Terme' },
+    testo: 'Qui il gioco mette la casa del notaio che racconta la storia: in via delle Terme, a due passi da Santa Maria sopra Porta, dove si è tenuto il consiglio. È un\'invenzione dichiarata. Il notaio non è esistito, e la sua casa, con la bottega e il banco aperto sulla strada nei giorni di lavoro, è una qualsiasi delle case della via. Le scene che si svolgono qui, la sera del messaggio e il quaderno chiuso, sono inventate anche nel copione.',
+    fonti: [
+      'Il copione del gioco, scene III3b e III3c: «invenzione» (storia/copione.md)',
+      'Via delle Terme: tracciato medievale, dal nome delle terme romane [da verificare]'
+    ]
+  },
+  {
     id: 'santa-reparata',
     nome: 'Santa Reparata',
     pos: [192, -547], raggio: 24,

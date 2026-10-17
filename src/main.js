@@ -13,6 +13,7 @@ import { TRACCIATO, dentroTracciato } from './dati/cerchia.js';
 import { LUOGHI } from './dati/luoghi.js';
 import { GIORNATA_PREDEFINITA, GIORNATE } from './dati/giornate.js';
 import { SCENE } from './dati/scene.js';
+import { figureNegliInterni } from './dati/interni.js';
 import { COPIONE } from './dati/copione.js';
 import { creaMateriali, impostaAnisotropia } from './mondo/materiali.js';
 import { Cielo } from './mondo/cielo.js';
@@ -243,7 +244,9 @@ function creaAbitanti() {
     numero: +(params.get('gente') || giornata.gente),
     raggio: 5000,             // tutta la città, fino ai borghi: le strade sono già solo quelle
     extra: [{ punti: [PONTE_ASSE.A, PONTE_ASSE.B], larghezza: 5.5 }],
-    gruppi: giornata.gruppi
+    gruppi: giornata.gruppi,
+    // in chiesa e nella torre degli Amidei (dati/interni.js)
+    fermi: figureNegliInterni(giornata)
   });
 }
 

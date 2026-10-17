@@ -64,8 +64,16 @@ export const SCENE = [
   },
   { id: 'III2', giornata: 'febbraio', luogo: 'santa-maria-sopra-porta' },
   { id: 'III3a', gruppo: 'III3', ramo: 'Dal messo del podestà', fuori: 'Dove ricevesse il messo del podestà nel 1216 non lo sappiamo: il palazzo del Popolo, oggi Bargello, sarà cominciato nel 1255 [da verificare].' },
-  { id: 'III3b', gruppo: 'III3', ramo: 'Il messaggio', fuori: 'Una sera, in città: nessun luogo preciso.' },
-  { id: 'III3c', gruppo: 'III3', ramo: 'Il quaderno chiuso', fuori: 'Al banco del notaio: nessun luogo preciso.' },
+  {
+    id: 'III3b', gruppo: 'III3', ramo: 'Il messaggio', giornata: 'febbraio', ora: 17, luogo: 'casa-del-notaio',
+    vista: { x: -31.5, z: -166, verso: [-21.8, -169.6] },
+    adattamento: 'Una sera, in città: il copione non dice dove abiti il notaio. La città lo mette in via delle Terme, vicino a Santa Maria sopra Porta, con la luce di febbraio.'
+  },
+  {
+    id: 'III3c', gruppo: 'III3', ramo: 'Il quaderno chiuso', giornata: 'febbraio', ora: 17.3, luogo: 'casa-del-notaio',
+    vista: { x: -31.5, z: -166, verso: [-21.8, -169.6] },
+    adattamento: 'Il banco del notaio: nella città è una bottega di via delle Terme, con il banco aperto sulla strada. È un luogo del gioco, non delle fonti.'
+  },
   {
     id: 'IV1', giornata: 'pasqua', ora: 7, luogo: 'ponte',
     vista: { x: -28, z: 105, y: 62, verso: [15, -45], volo: true }

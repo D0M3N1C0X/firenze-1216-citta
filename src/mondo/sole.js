@@ -66,7 +66,16 @@ export function oraCanonica(ora, doy = PASQUA_1216.doy) {
   if (ora < terza - 0.4) return 'tra Prima e Terza';
   if (ora < terza + 0.4) return 'Terza';
   if (ora < 11.6) return 'tra Terza e Sesta';
-  return 'Sesta';
+  if (ora < 12.4) return 'Sesta';
+  // il pomeriggio (scene della sera e di Campi): in ora solare il tramonto
+  // cade, quasi, simmetrico all'alba rispetto a mezzogiorno
+  const tramonto = 24 - a, nona = (12 + tramonto) / 2;
+  if (ora < nona - 0.4) return 'tra Sesta e Nona';
+  if (ora < nona + 0.4) return 'Nona';
+  if (ora < tramonto - 1) return 'tra Nona e Vespro';
+  if (ora < tramonto) return 'Vespro';
+  if (ora < tramonto + 1.2) return 'Compieta';
+  return 'Notte';
 }
 
 export function formatoOra(ora) {
