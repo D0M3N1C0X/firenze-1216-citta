@@ -6,6 +6,7 @@ import { Water } from 'three/examples/jsm/objects/Water.js';
 import { distanzaFiume } from './fiume.js';
 import { MAT } from './materiali.js';
 import { fbm, lerp, smooth } from './rumore.js';
+import { FOSSATO } from '../dati/cerchia.js';
 
 export { distanzaFiume };
 
@@ -24,15 +25,29 @@ export { distanzaFiume };
 export const LIVELLO_ACQUA = -5.2;
 
 /* ------------------------------------------------------------ quote */
+// Oltrarno: dove finisce il piano lungo il fiume e comincia il colle (z del
+// piede, secondo x) e quanto sale il colle. Le vie lungo l'Arno (via de'
+// Bardi, via di San Niccolò, la strada davanti a quello che sarà palazzo
+// Pitti, piazza San Felice) stanno in piano, come oggi. Fino al 13 ottobre
+// 2026 il colle cominciava in linea retta a 150 m dal ponte, e via di San
+// Niccolò risultava 70 m più in alto della città.
+const PIEDE = [[-900, 450], [-450, 400], [-300, 330], [-150, 220], [0, 170], [100, 190], [250, 300], [400, 410], [700, 470], [1000, 500]];
+const ALTEZZA = [[-900, 18], [-600, 22], [-300, 42], [-100, 55], [400, 55], [700, 50], [1000, 45]];
+function interp(tab, x) {
+  if (x <= tab[0][0]) return tab[0][1];
+  for (let k = 1; k < tab.length; k++) if (x <= tab[k][0]) return lerp(tab[k - 1][1], tab[k][1], (x - tab[k - 1][0]) / (tab[k][0] - tab[k - 1][0]));
+  return tab.at(-1)[1];
+}
+
 export function quota(x, z) {
-  // Oltrarno: la collina sale ripida dietro via de' Bardi (Costa San
-  // Giorgio): da Forte Belvedere, circa 50 m più in alto della città a
-  // 470 m dal ponte, verso ovest più dolce (Boboli, Porta Romana)
-  const sud = smooth(150, 470, z);
-  const verso = 0.6 + 0.4 * smooth(-800, 250, x);
-  let h = 52 * sud * verso + 14 * smooth(470, 900, z);
-  // San Miniato, a sud-est
-  h += 64 * Math.exp(-(((x - 950) ** 2) / (2 * 380 ** 2) + ((z - 760) ** 2) / (2 * 300 ** 2)));
+  // il colle: Costa San Giorgio e Forte Belvedere, circa 55 m più in alto
+  // della città, Boboli più dolce a ovest
+  const piede = interp(PIEDE, x);
+  const sud = smooth(piede, piede + 300, z);
+  let h = interp(ALTEZZA, x) * sud + 14 * smooth(piede + 320, piede + 750, z);
+  // San Miniato, a sud-est (43,7594 N 11,2650 E), circa 75 m più in alto della
+  // città: solo oltre il piede del colle
+  h += 30 * smooth(piede - 20, piede + 80, z) * Math.exp(-(((x - 936) ** 2) / (2 * 320 ** 2) + ((z - 960) ** 2) / (2 * 280 ** 2)));
   // Fiesole e le colline a nord: oltre i 3 km
   h += 280 * smooth(2600, 6200, -z) * (0.6 + 0.4 * fbm(x / 1500 + 9, 0.3, 3));
   // a sud, oltre i 2,5 km, le colline verso il Chianti
@@ -41,6 +56,9 @@ export function quota(x, z) {
   h += (fbm(x / 220 + 40, z / 220 + 40, 4) - 0.5) * 14 * Math.max(sud, smooth(2000, 4000, -z));
   // la città non è un biliardo, ma quasi
   h += (fbm(x / 60, z / 60, 3) - 0.5) * 0.35;
+
+  // il fossato lungo il muro est (dati/cerchia.js): largo circa 9 m, profondo 2,5
+  h -= fosso(x, z);
 
   // il letto del fiume
   const d = distanzaFiume(x, z);
@@ -51,6 +69,30 @@ export function quota(x, z) {
     h = lerp(h, fondo, s);
   }
   return h;
+}
+
+/** Quanto il fossato scava il terreno in (x, z): 0 lontano dal fossato. */
+// i tratti in celle di 20 m, ciascuna con quelli che passano a meno di 6 m
+const F_CELLA = 20, F_SEG = new Float64Array(FOSSATO.flat(2)), F_CELLE = new Map();
+FOSSATO.forEach(([[ax, az], [bx, bz]], k) => {
+  for (let i = Math.floor((Math.min(ax, bx) - 6) / F_CELLA); i <= Math.floor((Math.max(ax, bx) + 6) / F_CELLA); i++)
+    for (let j = Math.floor((Math.min(az, bz) - 6) / F_CELLA); j <= Math.floor((Math.max(az, bz) + 6) / F_CELLA); j++) {
+      const c = i * 10007 + j;
+      if (!F_CELLE.has(c)) F_CELLE.set(c, []);
+      F_CELLE.get(c).push(k * 4);
+    }
+});
+export function fosso(x, z) {
+  const lista = F_CELLE.get(Math.floor(x / F_CELLA) * 10007 + Math.floor(z / F_CELLA));
+  if (!lista) return 0;
+  let d2 = Infinity;
+  for (const o of lista) {
+    const ax = F_SEG[o], az = F_SEG[o + 1], dx = F_SEG[o + 2] - ax, dz = F_SEG[o + 3] - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    const ex = ax + t * dx - x, ez = az + t * dz - z;
+    d2 = Math.min(d2, ex * ex + ez * ez);
+  }
+  return d2 > 25 ? 0 : 2.5 * smooth(4.8, 2.6, Math.sqrt(d2));
 }
 
 /* -------------------------------------------- materiale del terreno */
@@ -115,8 +157,9 @@ function costruisci(x0, z0, lato, seg, abbassa, conPeso, q = quota, fiume = true
     let y = q(x, z);
     // il terreno lontano ha maglie di 80 m: dentro il riquadro vicino va
     // tenuto ben sotto, o spunterebbe attraverso il letto del fiume
-    if (abbassa && Math.abs(x) < 790 && Math.abs(z) < 790) y = -40;
-    else if (abbassa && Math.abs(x) < 810 && Math.abs(z) < 810) y -= 1.2;
+    const vx = Math.abs(x - VICINO.x), vz = Math.abs(z - VICINO.z), m = VICINO.lato / 2;
+    if (abbassa && vx < m - 10 && vz < m - 10) y = -40;
+    else if (abbassa && vx < m + 10 && vz < m + 10) y -= 1.2;
     pos.setY(k, y);
     xz[k * 2] = x; xz[k * 2 + 1] = z;
     uv.setXY(k, x, z);
@@ -139,9 +182,15 @@ function costruisci(x0, z0, lato, seg, abbassa, conPeso, q = quota, fiume = true
   return g;
 }
 
+/**
+ * Il riquadro del terreno a maglia fine: dal 13 ottobre 2026 copre tutta la
+ * cerchia del 1172–75 e i borghi fuori porta (2 km di lato, maglie di 2,2 m).
+ */
+export const VICINO = { x: 100, z: -240, lato: 2000 };
+
 export function creaTerreno(scene, qualita = 'alta', q = quota, fiume = true) {
   const mat = materialeTerreno();
-  const vicino = new Mesh(costruisci(0, 0, 1600, qualita === 'alta' ? 800 : 480, false, true, q, fiume), mat);
+  const vicino = new Mesh(costruisci(VICINO.x, VICINO.z, VICINO.lato, qualita === 'alta' ? 900 : 540, false, true, q, fiume), mat);
   vicino.receiveShadow = true;
   vicino.name = 'terreno';
   scene.add(vicino);

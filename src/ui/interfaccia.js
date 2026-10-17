@@ -37,8 +37,11 @@ export class Interfaccia {
     });
     $('#legenda').innerHTML = '<b>Certezza della forma</b>' + Object.values(LIVELLI)
       .map(l => `<div><i style="background:${l.colore}"></i><span>${l.nome}<small>${l.testo}</small></span></div>`).join('');
-    $('#elenco-luoghi').innerHTML = LUOGHI.map(l =>
-      `<li><button data-id="${l.id}"><i style="background:${LIVELLI[l.forma.livello].colore}"></i>${esc(l.nome)}</button></li>`).join('');
+    // i luoghi principali, poi le porte della cerchia in un gruppo che si apre
+    const voce = l => `<li><button data-id="${l.id}"><i style="background:${LIVELLI[l.forma.livello].colore}"></i>${esc(l.nome)}</button></li>`;
+    const porte = LUOGHI.filter(l => l.gruppo === 'porte');
+    $('#elenco-luoghi').innerHTML = LUOGHI.filter(l => !l.gruppo).map(voce).join('') +
+      (porte.length ? `<li class="gruppo"><details><summary>Le porte della cerchia (${porte.length})</summary><ul>${porte.map(voce).join('')}</ul></details></li>` : '');
     for (const b of document.querySelectorAll('#elenco-luoghi button')) b.addEventListener('click', () => {
       const l = LUOGHI.find(x => x.id === b.dataset.id);
       $('#elenco').hidden = true;

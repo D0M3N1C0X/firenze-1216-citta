@@ -25,6 +25,29 @@ Fonte: [Wikipedia, «Mura di Firenze»](https://it.wikipedia.org/wiki/Mura_di_Fi
 
 **Che cosa cambia per il modello.** Il perimetro della città nel fondale è disegnato a mano e va rifatto su questo tracciato. Il caso più delicato è il lato sud: se le mura correvano lungo Lambertesca e Borgo Santi Apostoli, la striscia tra le mura e il fiume (dove stanno la torre degli Amidei e Santo Stefano al Ponte) era *fuori* dalla cerchia. Oppure le mura correvano più vicine all'acqua e quelle vie le costeggiavano solo dall'interno. Le postierle d'Arno e d'Altafronte, che stanno proprio sul fiume, fanno pensare alla seconda ipotesi **[da verificare: domanda per il medievista]**.
 
+### Aggiornamento del 12–17 ottobre 2026: la cerchia nel modello
+
+La stessa voce di Wikipedia, riletta il 12 ottobre, dà l'elenco completo delle porte, ciascuna con la via o la piazza di oggi:
+
+| Lato | Porte e postierle |
+|---|---|
+| Ovest | Porta a San Paolo (via Palazzuolo); postierle del Trebbio (via del Trebbio), della Baschiera (via de' Panzani), di Campo Corbolini (via Faenza) |
+| Nord | Porta di San Lorenzo (via de' Ginori); postierla degli Spadai (fine di via de' Martelli); Porta di Balla (via dei Servi, piazzetta dei Visdomini); postierla degli Albertinelli (borgo Pinti); Porta San Piero (piazza Salvemini) |
+| Est | Porta Ghibellina (via Ghibellina); Porta d'Isola d'Arno o di San Simone (via dell'Anguillara); Porta dei Buoi (corso dei Tintori) |
+| Sud, riva destra | postierla d'Arno (piazza Mentana); postierla d'Altafronte (piazza dei Giudici); Porta Santa Maria; postierla di Carraia (piazza Goldoni) |
+| Oltrarno | Porta Vecchia (via di San Niccolò, verso via del Giardino Serristori); Porta Romana o di Santa Lucia dei Magnoli (piazza de' Mozzi); Porta di Piazza (piazza San Felice); una porta in piazza de' Frescobaldi, lungo via Maggio; Porta Pisana o di San Jacopo (fondo di via di Santo Spirito) |
+
+La fonte aggiunge che il muro era «in pietre di fiume e materiali di recupero» (Scampoli 2010, p. 233), che il fossato è attestato lungo via Verdi e via de' Benci, e che in Oltrarno non c'erano «vere fortificazioni in muratura»: chiudevano le case, con le pareti verso l'esterno senza aperture, e una palizzata. Il recinto di Santo Spirito è «dopo il 1260».
+
+**Come lo costruisce il modello** (`src/dati/cerchia.js`, `src/mondo/mura.js`):
+- il muro segue l'asse delle vie che la fonte nomina, prese da un nuovo estratto OpenStreetMap del 12 ottobre; dove la fonte non nomina una via (piazza Santa Maria Novella, piazza Madonna degli Aldobrandini, piazza Salvemini, piazza Santa Croce, piazza Mentana) va dritto da un capo all'altro. Tracciato «dedotto»; altezza (10 m), spessore (2,2 m) e merli «ipotesi»;
+- ogni porta sta dove la sua via incontra il muro; le porte hanno una torre, le postierle un varco ad arco;
+- il fossato corre fuori dal muro solo lungo via Verdi e via de' Benci, interrotto davanti alle porte;
+- in Oltrarno una palizzata disegnata a mano dietro le case di via di San Niccolò, de' Bardi, della strada davanti a palazzo Pitti e di via di Santo Spirito, con le porte di legno. Via Maggio resta fuori: la fonte mette una porta a ciascuno dei suoi capi, e il recinto di Santo Spirito, più a ovest, è successivo. Tutto «ipotesi»;
+- fuori dalle porte, i borghi lungo le strade, per circa 200 m (ipotesi).
+
+**Il lato sud (domanda 33): un indizio nuovo.** Sulla pianta di oggi via dei Vagellai e via dei Saponai, dove la fonte mette il muro, stanno 80–90 m dentro la riva. Almeno a est, dunque, il muro non correva lungo l'acqua. Per il tratto da piazza dei Giudici a piazza Goldoni, «a ridosso» di via Lambertesca, borgo Santi Apostoli e via del Parione, resta aperta la domanda: il modello non costruisce niente e, con l'interruttore Certezza acceso, mostra le due linee possibili, trasparenti.
+
 ## 2. Porta Santa Maria e Santa Maria sopra Porta
 
 **Le fonti divergono sulla posizione della porta.**
@@ -84,7 +107,7 @@ Nel gennaio 1216 Mazzingo Tegrimi dei Mazzinghi festeggia l'investitura a cavali
 
 1. **Ponte a cinque arcate** (fatto il 7 ottobre).
 2. **Porta Santa Maria:** mostrare le due posizioni e aggiornare la scheda (le fonti divergono).
-3. **Le mura del 1172–75:** costruirle sul tracciato del § 1, con le porte. Il lato sud resta da decidere con il medievista.
+3. **Le mura del 1172–75:** costruirle sul tracciato del § 1, con le porte (fatto il 12–17 ottobre; il lato sud resta da decidere con il medievista e il modello mostra le due ipotesi).
 4. **L'area Uberti:** case e torri al posto della futura piazza, con le chiese di Santa Cecilia e San Romolo.
 5. **Gli interni:** prima Santa Reparata, la più documentata; poi Santa Maria sopra Porta, la casa Amidei e la sala del castello di Campi, tutte e tre ipotesi dichiarate.
 
@@ -102,6 +125,11 @@ Nel gennaio 1216 Mazzingo Tegrimi dei Mazzinghi festeggia l'investitura a cavali
 34. Le Porte Santa Maria erano due, la carolingia o matildina e quella del 1172? Da quale entrò Buondelmonte il 10 febbraio?
 35. Il ponte ricostruito dopo il 1177 aveva davvero cinque arcate? Aveva botteghe?
 36. Nel 1216 la torre degli Amidei era già finita?
+51. In Oltrarno, nel 1216, le porte erano di legno o in muratura? E dove passava la chiusura fra San Niccolò e San Felice: dietro le case delle vie lungo il fiume, come nel modello?
+52. Via Maggio era fuori dalla cerchia, con una porta a ciascun capo (piazza San Felice e piazza de' Frescobaldi)?
+53. Quali borghi c'erano fuori dalle porte nel 1216, e quanto erano fitti di case e di torri?
+54. Che misure avevano nel 1216 le chiese che oggi hanno un edificio successivo (San Lorenzo del 1059, la Badia prima di Arnolfo, Santa Trinita, San Pancrazio), e su quale lato avevano la facciata?
+55. Il fossato correva solo lungo via Verdi e via de' Benci? Era pieno d'acqua, e da dove veniva?
 
 ## Fonti consultate il 7 ottobre 2026
 

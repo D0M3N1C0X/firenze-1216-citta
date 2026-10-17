@@ -2,7 +2,7 @@ import {
   Color, CylinderGeometry, IcosahedronGeometry, InstancedMesh, LatheGeometry, Matrix4, MeshStandardMaterial, Quaternion, Vector2, Vector3
 } from 'three';
 import { dentroCerchia } from './fondale.js';
-import { distanzaFiume, quota } from './terreno.js';
+import { VICINO, distanzaFiume, quota } from './terreno.js';
 import { rng } from './rumore.js';
 
 /* =====================================================================
@@ -20,17 +20,29 @@ import { rng } from './rumore.js';
  * spazio libero attorno al castello; alberi sparsi lungo i campi, niente
  * fiume e niente mura della città.
  */
+/** Vero se (x, z) è a meno di r metri dalla spezzata. */
+function vicinoA(pts, x, z, r) {
+  for (let k = 0; k + 1 < pts.length; k++) {
+    const [ax, az] = pts[k], [bx, bz] = pts[k + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    if (Math.hypot(ax + t * dx - x, az + t * dz - z) < r) return true;
+  }
+  return false;
+}
+
 export function creaVegetazione(scene, opz = {}) {
   const R = rng(1209);
   const ulivi = [], cipressi = [];
-  const tenta = opz.tentativi || 14000;
+  const tenta = opz.tentativi || 22000;
   const qT = opz.pianura?.quota || quota;
   for (let i = 0; i < tenta; i++) {
     // solo sul terreno a maglia fine: altrove gli alberi galleggerebbero
-    const x = R.tra(-785, 785), z = R.tra(-785, 785);
+    const m = VICINO.lato / 2 - 15, x = R.tra(VICINO.x - m, VICINO.x + m), z = R.tra(VICINO.z - m, VICINO.z + m);
     if (opz.pianura) {
       if (Math.hypot(x, z) < opz.pianura.libero || !R.vero(0.35)) continue;
     } else if (dentroCerchia(x, z) || distanzaFiume(x, z) < 10) continue;
+    // né sulle strade fuori porta né sulle case dei borghi (opz.evita: le strade)
+    if (opz.evita && opz.evita.some(s => vicinoA(s.punti, x, z, 26))) continue;
     const y = qT(x, z);
     // gli ulivi stanno sui colli; la piana resta a campi e orti
     const colle = y > 4;

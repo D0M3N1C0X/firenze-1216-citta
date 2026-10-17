@@ -154,9 +154,9 @@ export const PALIZZATA = [
   riva([760, 400]),
   [762, 440], [735, 462], [660, 466], [600, 446], [470, 432], [380, 414],
   [300, 342], [200, 268], [130, 222], [70, 196], [5, 196], [-60, 198],
-  [-120, 200], [-177, 222], [-242, 278], [-316, 326], [-392, 370],
-  [-426, 340],
-  [-414, 322], [-350, 170], [-282, 8],
+  [-120, 200], [-177, 222], [-242, 278], [-316, 326], [-384, 357],
+  [-397, 331],
+  [-414, 318], [-350, 170], [-282, 8],
   [-302, 32], [-345, 20], [-458, -27], [-481, -40], [-550, -66],
   [-563, -100],
   riva([-570, -130])
@@ -227,6 +227,76 @@ for (const p of PORTE) {
   const dove = incontro(p.via, linea, p.presso);
   if (dove) Object.assign(p, dove); else MURO_DESTRA.avvisi.push(`porta senza posto: ${p.nome} (${p.via})`);
 }
+
+/* ------------------------------------------------------------ il fossato */
+
+// La fonte lo attesta soltanto lungo via Verdi e via de' Benci: qui corre
+// fuori dal muro, a 6 m dall'asse, e si interrompe davanti alle porte, dove
+// la strada lo passa su un terrapieno. Larghezza e profondità: ipotesi.
+const piuVicino = (pts, q) => pts.reduce((m, p, i) => Math.hypot(p[0] - q[0], p[1] - q[1]) < Math.hypot(pts[m][0] - q[0], pts[m][1] - q[1]) ? i : m, 0);
+function fossato() {
+  const i0 = piuVicino(MURO, capo('Via Giuseppe Verdi', [739, -360])), i1 = piuVicino(MURO, [484.8, 64.9]);
+  const out = [];
+  for (let k = i0; k < i1; k++) {
+    const [ax, az] = MURO[k], [bx, bz] = MURO[k + 1], l = Math.hypot(bx - ax, bz - az);
+    if (l < 0.5) continue;
+    // fuori: l'opposto di dir (che guarda dentro la città)
+    const ox = (bz - az) / l * 6, oz = -(bx - ax) / l * 6;
+    const n = Math.ceil(l / 4);
+    for (let i = 0; i < n; i++) {
+      const a = [ax + (bx - ax) * i / n + ox, az + (bz - az) * i / n + oz], b = [ax + (bx - ax) * (i + 1) / n + ox, az + (bz - az) * (i + 1) / n + oz];
+      const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      if (PORTE.some(p => p.pos && Math.hypot(p.pos[0] - m[0], p.pos[1] - m[1]) < 10)) continue;
+      out.push([a, b]);
+    }
+  }
+  return out;
+}
+/** I tratti del fossato, [[x0, z0], [x1, z1]], fuori dal muro est. */
+export const FOSSATO = fossato();
+
+/* ------------------------------------------- il lato sud: due ipotesi */
+
+// Sulla riva destra, fra piazza dei Giudici e piazza Goldoni, il muro
+// poteva correre (A) lungo il fiume o (B) «a ridosso» di via Lambertesca,
+// borgo Santi Apostoli e via del Parione, cioè dietro le case del loro lato
+// verso l'Arno. Il modello le mostra entrambe, solo con l'interruttore
+// Certezza acceso, e non ne costruisce nessuna (PIANO.md, lacuna 33).
+function lungoRiva(da, a) {
+  // il tratto più corto del contorno del fiume fra le due rive
+  const i = piuVicino(FIUME, da), j = piuVicino(FIUME, a), n = FIUME.length;
+  const avanti = [], indietro = [];
+  for (let k = i; k !== j; k = (k + 1) % n) avanti.push(FIUME[k]);
+  for (let k = i; k !== j; k = (k - 1 + n) % n) indietro.push(FIUME[k]);
+  const lung = pts => pts.reduce((l, p, k) => k ? l + Math.hypot(p[0] - pts[k - 1][0], p[1] - pts[k - 1][1]) : 0, 0);
+  // i due vertici estremi possono stare oltre i punti cercati: si tengono quelli in mezzo
+  return [da, ...(lung(avanti) < lung(indietro) ? avanti : indietro).slice(1), a];
+}
+function dietro(nomi, verso, d) {
+  // le vie, nell'ordine, spostate di d metri verso il fiume
+  const pts = [];
+  for (const [nome, da, a] of nomi) {
+    const c = lungoLeVie([nome], da, a) || [da, a];
+    for (let k = 0; k < c.length; k++) {
+      const p = c[k], q = c[Math.min(k + 1, c.length - 1)], r = c[Math.max(k - 1, 0)];
+      const tx = q[0] - r[0], tz = q[1] - r[1], l = Math.hypot(tx, tz) || 1;
+      let nx = -tz / l, nz = tx / l;
+      if ((verso[0] - p[0]) * nx + (verso[1] - p[1]) * nz < 0) { nx = -nx; nz = -nz; }
+      pts.push([+(p[0] + nx * d).toFixed(1), +(p[1] + nz * d).toFixed(1)]);
+    }
+  }
+  return pts;
+}
+export const IPOTESI_SUD = {
+  fiume: [MURO.at(-1), ...lungoRiva(riva(MURO.at(-1)), riva(MURO[0])).map(p => [+p[0].toFixed(1), +p[1].toFixed(1)])],
+  vie: [MURO.at(-1),
+    ...dietro([
+      ['Via Lambertesca', capo('Via Lambertesca', [174, -37]), capo('Via Lambertesca', [38, -82])],
+      ['Borgo Santi Apostoli', capo('Borgo Santi Apostoli', [37, -79]), capo('Borgo Santi Apostoli', [-158, -179])],
+      ['Via del Parione', capo('Via del Parione', [-168, -224]), capo('Via del Parione', [-421, -308])]
+    ], [0, 60], 12),
+    MURO[0]]
+};
 
 /** Avvisi della costruzione del tracciato (li stampa la verifica). */
 export const AVVISI = MURO_DESTRA.avvisi;

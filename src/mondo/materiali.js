@@ -1,5 +1,5 @@
 import {
-  Color, DataTexture, LinearFilter, LinearMipmapLinearFilter, MeshStandardMaterial,
+  Color, DataTexture, DoubleSide, LinearFilter, LinearMipmapLinearFilter, MeshStandardMaterial,
   NoColorSpace, RGBAFormat, RepeatWrapping, SRGBColorSpace, TextureLoader, UnsignedByteType
 } from 'three';
 import { GENERATORI } from './texture-gen.js';
@@ -205,6 +205,9 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
   MAT.tela = new MeshStandardMaterial({ color: 0xc9b98f, roughness: 0.85, metalness: 0, vertexColors: true });
   MAT.scuro = new MeshStandardMaterial({ color: 0x0d0b09, roughness: 1, metalness: 0, vertexColors: true });
   MAT.marmoVerde = new MeshStandardMaterial({ color: 0x2f4a3c, roughness: 0.4, metalness: 0, vertexColors: true });
+  // l'acqua ferma del fossato, e le pareti trasparenti delle due ipotesi del lato sud (mura.js)
+  MAT.fosso = new MeshStandardMaterial({ color: 0x3b4636, roughness: 0.12, metalness: 0.05, vertexColors: true });
+  MAT.muroIncerto = new MeshStandardMaterial({ color: 0xa8323e, roughness: 0.8, metalness: 0, transparent: true, opacity: 0.42, depthWrite: false, side: DoubleSide, vertexColors: true });
   return MAT;
 }
 

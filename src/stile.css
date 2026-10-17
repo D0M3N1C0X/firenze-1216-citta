@@ -130,6 +130,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #elenco li button { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid #ddd0bb; padding: 10px 2px; font-size: 15px; display: flex; gap: 8px; align-items: center; }
 #elenco li button:hover { background: #ebe1cf; }
 #elenco i { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 10px; }
+#elenco li.gruppo summary { cursor: pointer; padding: 12px 2px; font-size: 15px; font-weight: 600; border-bottom: 1px solid #ddd0bb; }
+#elenco li.gruppo ul { padding-left: 12px; }
 
 @media (max-width: 900px) {
   #barra button, #barra label { padding: 7px 9px; }

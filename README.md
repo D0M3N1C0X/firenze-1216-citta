@@ -6,7 +6,7 @@ La Firenze della mattina di Pasqua del 1216, da percorrere a piedi. È la sezion
 
 Serve un computer o un tablet con una buona scheda grafica: il modello è pensato per l'hardware di fascia alta e la prima apertura richiede qualche decina di secondi.
 
-**Prototipo** (ottobre 2026): il capo del Ponte Vecchio, con circa 480 metri di città intorno, il percorso fino a Santa Reparata e il resto come fondale; texture fotografiche e persone animate. Due giornate: **il 10 febbraio**, la promessa rotta, e **la mattina di Pasqua**, il delitto. Il **racconto** porta di scena in scena del gioco, ciascuna nel suo luogo. Il convito di gennaio 1216 è un luogo a parte, il castello dei Mazzinghi a Campi: ci si arriva dalle scene del primo atto o con `?luogo=campi`. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
+**Prototipo** (ottobre 2026): tutta la città dentro la cerchia del 1172–75, casa per casa, con le mura, le porte e i borghi fuori porta; texture fotografiche e persone animate. Due giornate: **il 10 febbraio**, la promessa rotta, e **la mattina di Pasqua**, il delitto. Il **racconto** porta di scena in scena del gioco, ciascuna nel suo luogo. Il convito di gennaio 1216 è un luogo a parte, il castello dei Mazzinghi a Campi: ci si arriva dalle scene del primo atto o con `?luogo=campi`. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
 
 ## Dal gioco alla città
 
@@ -45,7 +45,7 @@ Dopo ogni modifica a strade, luoghi o scene: `npm run verifica` controlla che og
 - **Le case sono generate dal programma.** Solo le chiese e le torri con un nome hanno la pianta di un edificio vero.
 - **Il delitto non c'è.** Il modello mostra il luogo, non l'uccisione.
 - **Il racconto viene da un copione in bozza**, non ancora rivisto da un medievista.
-- **Il tracciato della cerchia è provvisorio**: per questo il muro si vede solo da lontano.
+- **Il muro della cerchia è ricostruito sulle vie di oggi**, che ne conservano il tracciato; altezze, merli e torri di porta sono ipotesi. Sul lato sud, verso l'Arno, non sappiamo dove corresse: accendi «Certezza» per vedere le due possibilità.
 
 ## Struttura
 

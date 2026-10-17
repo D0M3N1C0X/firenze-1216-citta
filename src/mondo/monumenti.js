@@ -2,8 +2,8 @@ import {
   CapsuleGeometry, ConeGeometry, CylinderGeometry, ExtrudeGeometry, Float32BufferAttribute, BufferGeometry,
   Matrix4, Shape, Vector3
 } from 'three';
-import { IMPRONTE } from '../dati/osm.js';
-import { PORTE as PORTE_CERCHIA, TRACCIATO } from '../dati/cerchia.js';
+import { IMPRONTE, STRADE } from '../dati/osm.js';
+import { dentroTracciato } from '../dati/cerchia.js';
 import { falda, matriceLotto, muro, piramide, scatola, tamponamento, timpano, uvMetri } from './cantiere.js';
 import { torre } from './edifici.js';
 import { MONUMENTO, PIAZZA, PONTE, STRADA } from './griglia.js';
@@ -215,11 +215,21 @@ export const SMSP = { impronta: [[-7.5, -182.5], [10.5, -182.5], [10.5, -171.5],
 function chiesa(cant, griglia, imp, opz) {
   const R = rng(opz.seme || 7);
   const LIV = opz.livello;
-  const O = rettangoloMinimo(imp);
+  const O = { ...rettangoloMinimo(imp) };
   // asse lungo: facciata dal lato più vicino a «verso»
   let ux = O.ux, uz = O.uz;
   const fx = O.cx - ux * O.a, fz = O.cz - uz * O.a, bx = O.cx + ux * O.a, bz = O.cz + uz * O.a;
   if (Math.hypot(bx - opz.verso[0], bz - opz.verso[1]) < Math.hypot(fx - opz.verso[0], fz - opz.verso[1])) { ux = -ux; uz = -uz; }
+  // un'impronta di oggi più grande della chiesa del 1216 (San Lorenzo, con
+  // chiostro e cappelle): opz.misure = [lunghezza, larghezza] massime, con la
+  // facciata dov'è; la griglia segna solo il rettangolo ridotto
+  if (opz.misure) {
+    const [lu, la] = opz.misure, f0 = [O.cx - ux * O.a, O.cz - uz * O.a];
+    O.a = Math.min(O.a, lu / 2); O.b = Math.min(O.b, la / 2);
+    O.cx = f0[0] + ux * O.a; O.cz = f0[1] + uz * O.a;
+    const vx = -O.uz, vz = O.ux;
+    imp = [[1, 1], [1, -1], [-1, -1], [-1, 1]].map(([s, t]) => [O.cx + O.ux * O.a * s + vx * O.b * t, O.cz + O.uz * O.a * s + vz * O.b * t]);
+  }
   const lungo = 2 * O.a, largo = 2 * O.b;
   // lotto: fronte = facciata; x lungo la facciata, z verso l'abside
   const nx = ux, nz = uz;
@@ -316,7 +326,8 @@ function chiesa(cant, griglia, imp, opz) {
 }
 
 /* ===================================================== PORTA SANTA MARIA */
-function porta(cant, griglia, [x, z], dir) {
+// La stessa torre di porta serve alle porte della cerchia (mura.js).
+export function porta(cant, griglia, [x, z], dir) {
   const LIV = 'ipotesi';
   const W = 9.5, D = 7, H = 17;
   const nx = dir[0], nz = dir[1], tx = nz, tz = -nx;
@@ -348,31 +359,6 @@ function porta(cant, griglia, [x, z], dir) {
   }
   griglia.rettangolo(x, z, tx, tz, W / 2, D / 2, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
   griglia.rettangolo(x, z, tx, tz, 2.0, D / 2 + 0.5, (i, j) => { griglia.c[j * griglia.n + i] = STRADA; });
-}
-
-/* ================================================ PORTE DELLA CERCHIA */
-// Una porta del 1172–75 con un tratto di muro per parte, lungo il perimetro
-// provvisorio (dati/cerchia.js). Tutto di livello «ipotesi».
-function portaDellaCerchia(cant, griglia, p) {
-  porta(cant, griglia, p.pos, p.dir);
-  // il lato del perimetro più vicino dà la direzione del muro
-  let best = null;
-  for (let i = 0; i < TRACCIATO.length; i++) {
-    const a = TRACCIATO[i], b = TRACCIATO[(i + 1) % TRACCIATO.length];
-    const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz;
-    const t = Math.max(0, Math.min(1, ((p.pos[0] - a[0]) * dx + (p.pos[1] - a[1]) * dz) / l2));
-    const d = Math.hypot(a[0] + t * dx - p.pos[0], a[1] + t * dz - p.pos[1]);
-    if (!best || d < best.d) best = { d, ux: dx / Math.sqrt(l2), uz: dz / Math.sqrt(l2) };
-  }
-  const { ux, uz } = best, H = 10, SP = 2.2, LIV = 'ipotesi', tinta = [0.9, 0.88, 0.83];
-  for (const lato of [-1, 1]) {
-    // da 5 m a 20 m dal centro della porta
-    const cx = p.pos[0] + ux * lato * 12.5, cz = p.pos[1] + uz * lato * 12.5;
-    const M = new Matrix4().makeRotationY(Math.atan2(-uz, ux)).setPosition(cx, quota(cx, cz), cz);
-    cant.aggiungi(scatola(-7.5, -1.5, -SP / 2, 7.5, H, SP / 2), 'pietrame', LIV, M, tinta);
-    for (let m = -7.2; m < 7; m += 1.6) cant.aggiungi(scatola(m, H, -SP / 2, m + 0.9, H + 1.1, -SP / 2 + 0.6), 'conci', LIV, M, tinta);
-    griglia.rettangolo(cx, cz, ux, uz, 7.5, SP / 2 + 0.2, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
-  }
 }
 
 /* ============================================== PIAZZA DI SAN GIOVANNI
@@ -591,13 +577,38 @@ export function costruisciMonumenti(cant, griglia) {
     ['Chiesa di San Jacopo Soprarno', { verso: [-205, 20], livello: 'ipotesi', altezza: 10, vela: true, seme: 11 }],
     ['Basilica di Santa Trinita', { verso: [-235, -215], livello: 'ipotesi', altezza: 13, seme: 13 }]
   ];
+  // dal 13 ottobre 2026, con la città fino alle mura: le chiese che esistevano
+  // nel 1216, sull'impronta di oggi (che è quasi sempre di un rifacimento
+  // successivo: per questo la forma è «ipotesi»). La facciata guarda la
+  // piazza o la strada su cui si apre oggi [da verificare per ciascuna].
+  const centro = nome => {
+    const pts = STRADE.filter(s => s.nome === nome).flatMap(s => s.punti);
+    return pts.length ? [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length] : null;
+  };
+  chiese.push(
+    // San Lorenzo: l'impronta di OSM comprende chiostro e cappelle; la basilica del 1059 era più piccola di quella di oggi [misure: ipotesi]
+    ['Basilica di San Lorenzo', { verso: centro('Piazza di San Lorenzo') || [140, -735], livello: 'ipotesi', altezza: 16, navate: 3, seme: 19, misure: [62, 24] }],
+    ['Chiesa di Santa Maria Maggiore', { verso: centro('Piazza di Santa Maria Maggiore') || [-27, -540], livello: 'ipotesi', altezza: 12, seme: 23 }],
+    ['Chiesa dei Santi Michele e Gaetano', { verso: centro('Piazza degli Antinori') || [-160, -466], livello: 'ipotesi', altezza: 12, seme: 29 }],
+    ['ex Chiesa di San Pancrazio', { verso: centro('Piazza di San Pancrazio') || [-270, -370], livello: 'ipotesi', altezza: 12, seme: 31 }],
+    ['Badia Fiorentina', { verso: [372, -255], livello: 'ipotesi', altezza: 13, seme: 37 }],
+    ['Ex chiesa di San Procolo', { verso: [440, -288], livello: 'ipotesi', altezza: 9, vela: true, seme: 41 }],
+    ['Chiesa di Santa Maria in Campo', { verso: centro('Piazza di Santa Maria in Campo') || [400, -440], livello: 'ipotesi', altezza: 8, vela: true, seme: 43 }],
+    ['Chiesa di San Remigio', { verso: centro('Piazza di San Remigio') || [390, -19], livello: 'ipotesi', altezza: 11, seme: 47 }],
+    ['Chiesa dei Santi Simone e Giuda', { verso: centro('Piazza San Simone') || [576, -200], livello: 'ipotesi', altezza: 10, vela: true, seme: 53 }],
+    ["Chiesa di Santa Margherita in Santa Maria de' Ricci", { verso: [260, -400], livello: 'ipotesi', altezza: 9, vela: true, seme: 59 }],
+    ['Santa Margherita dei Cerchi', { verso: centro('Via Santa Margherita') || [295, -340], livello: 'ipotesi', altezza: 8, vela: true, seme: 61 }],
+    ['Chiesa di Santa Lucia dei Magnoli', { verso: [281, 322], livello: 'ipotesi', altezza: 10, vela: true, seme: 67 }],
+    ['Chiesa di San Niccolò Oltrarno', { verso: [629, 430], livello: 'ipotesi', altezza: 11, seme: 71 }],
+    // fuori dalla palizzata, nel borgo oltre la porta di Piazza
+    ['Chiesa di San Felice in Piazza', { verso: centro('Piazza San Felice') || [-425, 340], livello: 'ipotesi', altezza: 11, vela: true, seme: 73 }]
+  );
   for (const [nome, opz] of chiese) { const p = imp(nome); if (p) chiesa(cant, griglia, p, opz); }
 
   // Santa Maria sopra Porta (oggi San Biagio, in piazza di Parte Guelfa): pianta ipotetica
   chiesa(cant, griglia, SMSP.impronta, { verso: SMSP.verso, livello: 'ipotesi', altezza: 10, vela: true, seme: 17, modello: 'chiesa' });
 
   porta(cant, griglia, [84.4, -197], [0, 1]);
-  for (const p of PORTE_CERCHIA) portaDellaCerchia(cant, griglia, p);
   battistero(cant, griglia, BATTISTERO ? [BATTISTERO.x, BATTISTERO.z] : [128, -542]);
   santaReparata(cant, griglia);
   mercatoVecchio(cant);
@@ -606,7 +617,7 @@ export function costruisciMonumenti(cant, griglia) {
   const torriNote = [];
   for (const t of IMPRONTE.filter(i => i.tipo === 'torre')) {
     const O = rettangoloMinimo(t.punti);
-    if (Math.hypot(O.cx, O.cz) > 500) continue;
+    if (!dentroTracciato(O.cx, O.cz)) continue;
     const R = rng(t.id % 100000);
     const amidei = t.nome === 'Torre degli Amidei';
     const nx = -O.uz, nz = O.ux;               // fronte su un lato lungo

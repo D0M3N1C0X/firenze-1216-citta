@@ -1,89 +1,48 @@
-import { Matrix4 } from 'three';
-import { falda, piramide, scatola } from './cantiere.js';
-import { distanzaFiume, quota } from './terreno.js';
-import { rng } from './rumore.js';
+import { PORTE, TRACCIATO, dentroTracciato } from '../dati/cerchia.js';
+import { costruisciLotti, lottizza } from './edifici.js';
 
 /* =====================================================================
-   IL FONDALE
+   FUORI LE MURA: I BORGHI
 
-   Oltre l'area costruita casa per casa (circa 480 metri dal ponte, più il
-   corridoio verso Santa Reparata) la città non si percorre ancora: si vede
-   soltanto, sopra i tetti e in fondo alle strade. Qui la generazione è
-   del tutto schematica: blocchi di case e torri dentro un perimetro che
-   approssima la cerchia del 1172–1175, e il muro della cerchia lungo lo
-   stesso perimetro, solo dove la città non è costruita casa per casa.
+   Fino al 12 ottobre 2026 qui c'era il «fondale»: blocchi schematici di
+   case dentro un perimetro disegnato a mano, oltre l'area costruita casa per
+   casa. Dal 13 ottobre la città è costruita casa per casa fino alle mura
+   (dati/cerchia.js), e fuori restano i borghi.
 
-   IL PERIMETRO È UN'IPOTESI GROSSOLANA (dati/cerchia.js): il tracciato
-   della cerchia va ricostruito sulle fonti (PIANO.md).
+   La fonte dice che fuori dalle mura c'erano borghi, con numerose torri
+   private (Wikipedia, «Mura di Firenze» [da verificare]). Dove fossero, nel
+   1216, non lo sappiamo: il modello li mette lungo le strade che escono
+   dalle porte, fitti vicino alla porta e sempre più radi, per circa 200 m.
+   Dopo, orti e campi. Livello: ipotesi.
    ===================================================================== */
 
-import { TRACCIATO as CERCHIA } from '../dati/cerchia.js';
-export { CERCHIA };
+export const CERCHIA = TRACCIATO;
+export const dentroCerchia = dentroTracciato;
 
-const LIBERI = [[128, -542, 34], [191, -562, 42]];     // Battistero e Santa Reparata
-
-export const dentroCerchia = (x, z) => dentro(x, z, CERCHIA);
-
-function dentro(x, z, p) {
-  let ok = false;
-  for (let i = 0, j = p.length - 1; i < p.length; j = i++)
-    if ((p[i][1] > z) !== (p[j][1] > z) && x < (p[j][0] - p[i][0]) * (z - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) ok = !ok;
-  return ok;
+function distanzaSpezzata(x, z, pts) {
+  let best = Infinity;
+  for (let k = 0; k + 1 < pts.length; k++) {
+    const [ax, az] = pts[k], [bx, bz] = pts[k + 1], dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz || 1;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+    best = Math.min(best, Math.hypot(ax + t * dx - x, az + t * dz - z));
+  }
+  return best;
 }
 
-/** costruito(x, z): vero dove la città è già costruita casa per casa (edifici.js, areaCostruita). */
-export function costruisciFondale(cant, costruito = (x, z) => Math.hypot(x, z) < 405) {
-  const R = rng(1175);
-  const LIV = 'ipotesi';
-  const passo = 13;
-  let n = 0;
-  for (let gx = -560; gx <= 660; gx += passo) for (let gz = -920; gz <= 340; gz += passo) {
-    const x = gx + R.tra(-3, 3), z = gz + R.tra(-3, 3);
-    if (costruito(x, z) || !dentro(x, z, CERCHIA)) continue;
-    if (LIBERI.some(([lx, lz, r]) => Math.hypot(x - lx, z - lz) < r)) continue;
-    if (distanzaFiume(x, z) < 4 || R.vero(0.16)) continue;     // le strade e qualche orto
-    const y = quota(x, z);
-    if (y > 9) continue;
-    const ang = R.tra(-0.06, 0.06) + (R.vero(0.5) ? Math.PI / 2 : 0);
-    const M = new Matrix4().makeRotationY(ang).setPosition(x, y, z);
-    if (R.vero(0.025)) {
-      // le torri del fondale: meno e più basse di quanto l'occhio si aspetti,
-      // o la città diventa una selva di grattacieli
-      const W = R.tra(5.5, 8), H = R.tra(20, 38);
-      cant.aggiungi(scatola(-W / 2, -1, -W / 2, W / 2, H, W / 2), 'conci', LIV, M, [R.tra(0.82, 0.98), 0.92, 0.86], false);
-      const g = piramide(W, W, H, W * 0.3, 0.4); cant.aggiungi(g, 'coppi', LIV, M, [1, 1, 1], false);
-    } else {
-      const W = R.tra(7, 11.5), D = R.tra(9, 12), H = R.tra(9, 15);
-      const mat = R.vero(0.55) ? 'intonaco' : R.vero(0.6) ? 'pietrame' : 'conci';
-      const tinta = mat === 'intonaco' ? [1, R.tra(0.88, 0.98), R.tra(0.78, 0.92)] : [R.tra(0.9, 1.02), 0.95, 0.92];
-      cant.aggiungi(scatola(-W / 2, -1, -D / 2, W / 2, H, D / 2), mat, LIV, M, tinta, false);
-      const p = 0.4, c = H + D / 2 * p;
-      cant.aggiungi(falda(-W / 2 - 0.3, W / 2 + 0.3, H - 0.8 * p, -D / 2 - 0.8, c, 0), 'coppi', LIV, M, [1, 1, 1], false);
-      cant.aggiungi(falda(-W / 2 - 0.3, W / 2 + 0.3, H - 0.8 * p, D / 2 + 0.8, c, 0), 'coppi', LIV, M, [1, 1, 1], false);
-    }
-    n++;
-  }
-  murodelFondale(cant, costruito);
-  return n;
-}
-
-/**
- * Il muro della cerchia lungo il perimetro, a tratti di 8 m, saltando
- * l'area costruita casa per casa. Altezza, spessore e merli: ipotesi.
- */
-function murodelFondale(cant, costruito) {
-  const LIV = 'ipotesi', H = 10, SP = 2.2, PASSO = 8;
-  const tinta = [0.9, 0.88, 0.83];
-  for (let i = 0; i < CERCHIA.length; i++) {
-    const [ax, az] = CERCHIA[i], [bx, bz] = CERCHIA[(i + 1) % CERCHIA.length];
-    const L = Math.hypot(bx - ax, bz - az), ang = Math.atan2(-(bz - az), bx - ax);
-    for (let s = 0; s < L; s += PASSO) {
-      const l = Math.min(PASSO, L - s), x = ax + (bx - ax) * (s + l / 2) / L, z = az + (bz - az) * (s + l / 2) / L;
-      if (costruito(x, z) || distanzaFiume(x, z) < 3) continue;
-      const M = new Matrix4().makeRotationY(ang).setPosition(x, quota(x, z), z);
-      cant.aggiungi(scatola(-l / 2 - 0.05, -1.5, -SP / 2, l / 2 + 0.05, H, SP / 2), 'pietrame', LIV, M, tinta, false);
-      for (let m = -l / 2 + 0.3; m < l / 2 - 0.5; m += 1.6)
-        cant.aggiungi(scatola(m, H, -SP / 2, m + 0.9, H + 1.1, -SP / 2 + 0.6), 'conci', LIV, M, tinta, false);
-    }
-  }
+/** Le case dei borghi lungo le strade fuori porta (strade con fuori: true). Dopo il muro. */
+export function costruisciBorghi(cant, griglia, strade) {
+  const fuori = strade.filter(s => s.fuori);
+  if (!fuori.length) return [];
+  const porte = PORTE.filter(p => p.pos);
+  const daPorta = (x, z) => Math.min(...porte.map(p => Math.hypot(p.pos[0] - x, p.pos[1] - z)));
+  const xs = fuori.flatMap(s => s.punti.map(p => p[0])), zs = fuori.flatMap(s => s.punti.map(p => p[1]));
+  const lotti = lottizza(griglia, fuori, {
+    dentro: (x, z) => !dentroTracciato(x, z) && fuori.some(s => distanzaSpezzata(x, z, s.punti) < 22),
+    riquadro: [Math.min(...xs) - 30, Math.min(...zs) - 30, Math.max(...xs) + 30, Math.max(...zs) + 30],
+    riempimento: 0,
+    radi: (x, z) => 0.12 + 0.6 * Math.min(1, daPorta(x, z) / 220),
+    seme0: 50000
+  });
+  costruisciLotti(cant, lotti);
+  return lotti;
 }

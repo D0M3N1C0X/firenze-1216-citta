@@ -15,6 +15,8 @@
    Annali di Storia di Firenze, I (2006), pp. 9–36.
    ===================================================================== */
 
+import { PORTE } from './cerchia.js';
+
 export const LUOGHI = [
   {
     id: 'capo-ponte',
@@ -236,15 +238,16 @@ export const LUOGHI = [
   {
     id: 'cerchia',
     nome: 'La cerchia del 1172–1175',
-    pos: [-334, 286], raggio: 14,
-    luogo: { livello: 'dedotto', nota: 'la cerchia è certa, il tracciato no: nel modello è disegnato a mano (dati/cerchia.js)' },
-    forma: { livello: 'ipotesi', nota: 'porta, muro, altezze e merli sono ricostruiti' },
-    testo: 'Tra il 1172 e il 1175 il Comune costruì una cerchia molto più ampia di quella del 1078: per la prima volta comprendeva l\'Oltrarno, e con lei la città si divise in sei sestieri. Nel 1216 è il muro che chiude Firenze. Il tracciato si legge ancora nella forma delle strade, ma i resti sono rarissimi. Nel modello il muro si vede soltanto da lontano: dove la città si percorre a piedi non è disegnato, per non costruirci sopra un\'ipotesi. C\'è solo questa porta, sulla strada per San Felice e per Roma.',
+    // in piazza dei Giudici, dove finisce il tratto di muro sicuro e comincia la domanda del lato sud
+    pos: [246, 58], raggio: 26,
+    luogo: { livello: 'dedotto', nota: 'il tracciato si legge nelle vie di oggi: via dei Fossi, del Giglio, de\' Pucci, Verdi, de\' Benci, dei Vagellai e altre (dati/cerchia.js)' },
+    forma: { livello: 'ipotesi', nota: 'altezza, spessore e merli del muro non li conosciamo; in Oltrarno la palizzata è disegnata a mano' },
+    testo: 'Tra il 1172 e il 1175 il Comune costruì in fretta, in pietre di fiume e materiali di recupero, una cerchia molto più ampia di quella del 1078: per la prima volta comprendeva l\'Oltrarno. Nel 1216 è il muro che chiude Firenze. Le mura non ci sono più, ma molte strade di oggi corrono dove correvano il muro e il fosso: per questo il modello costruisce il muro sull\'asse di quelle vie. Qui, in piazza dei Giudici, c\'era la postierla d\'Altafronte e qui finisce il tratto sicuro. Più a ovest non sappiamo se il muro corresse lungo il fiume o dietro le case di via Lambertesca e di borgo Santi Apostoli: nel secondo caso la torre degli Amidei e Santo Stefano sarebbero rimaste fuori. Il modello non sceglie: accendi «Certezza» e vedrai le due linee possibili, trasparenti. In Oltrarno il muro non c\'era: chiudevano le case, con le pareti verso fuori senza aperture, e una palizzata.',
     fonti: [
-      'Date e sestieri: sintesi consultate in rete il 2 ottobre 2026 [da verificare: Sznura 1975; Fanelli 1973; Davidsohn]',
+      'Wikipedia, «Mura di Firenze», consultata il 7 e il 12 ottobre 2026, che rimanda a Davidsohn, Storia di Firenze (1968), pp. 789–790, a E. Scampoli, Firenze, archeologia di una città (2010), p. 233, e a Bargellini-Guarnieri, Le strade di Firenze [da verificare su quelle opere]',
       'Date di inizio: 1172 o 1173, le fonti divergono [da verificare]',
-      'Sei porte e quattro postierle [da verificare]',
-      'Porta di San Pier Gattolino: attestata per la cerchia duecentesca d\'Oltrarno [da verificare: se esisteva nel 1216 e dove stava]'
+      'Il lato sud sulla riva destra: lungo via dei Vagellai e dei Saponai, «a ridosso» di via Lambertesca, borgo Santi Apostoli e via del Parione (stessa fonte); PIANO.md, lacuna 33',
+      'Il recinto di Santo Spirito è «dopo il 1260»: per questo via Maggio resta fuori (stessa fonte)'
     ]
   },
   {
@@ -275,4 +278,31 @@ export const LUOGHI = [
       'Tavole su cavalletti, tovaglie, un piatto e una coppa ogni due commensali (Trecento): edatlas, «Vita quotidiana: mobili e suppellettili nelle case del \'300»'
     ]
   }
-];
+].concat(schedePorte());
+
+/**
+ * Una scheda per ogni porta e postierla della cerchia (dati/cerchia.js),
+ * tranne quella d'Altafronte, che sta nella scheda della cerchia. Stanno
+ * nell'elenco dei luoghi in un gruppo a parte («porte»).
+ */
+function schedePorte() {
+  const FONTE = 'Wikipedia, «Mura di Firenze», consultata il 12 ottobre 2026, che rimanda a Bargellini-Guarnieri, Le strade di Firenze [da verificare]';
+  const VIA = { 'Piazza dei Pitti': 'la strada davanti a palazzo Pitti, all\'ingresso di piazza San Felice', 'Piazza Mentana': 'piazza Mentana', 'Via di San Niccolò': 'via di San Niccolò, all\'incrocio con via del Giardino Serristori', 'Borgo San Frediano': 'il fondo di via di Santo Spirito' };
+  const FOSSO = new Set(['porta-san-piero', 'porta-ghibellina', 'porta-san-simone', 'porta-dei-buoi']);
+  return PORTE.filter(p => p.pos && p.id !== 'postierla-altafronte').map(p => {
+    const dove = VIA[p.via] || p.via.replace(/^Via /, 'via ').replace(/^Borgo /, 'borgo ').replace(/^Corso /, 'corso ').replace(/^Piazza /, 'piazza ');
+    const oltrarno = p.lato === 'oltrarno';
+    const testo = oltrarno
+      ? `In Oltrarno, nel 1216, non c'era un vero muro: lo chiudevano le case, con le pareti verso fuori senza aperture, e una palizzata fatta in fretta. La fonte ricorda qui una porta, dove oggi è ${dove}. La porta di legno che vedi è un'ipotesi, come la palizzata.`
+      : p.tipo === 'porta'
+        ? `Una delle porte della cerchia del 1172–75, dove oggi è ${dove}. Da qui la strada usciva verso i borghi e la campagna.${FOSSO.has(p.id) ? ' Davanti al muro correva un fossato: si passava su un terrapieno.' : ''} La torre che vedi è un'ipotesi: ha la stessa forma data a Porta Santa Maria.`
+        : `Una postierla: un passaggio stretto nel muro, per chi andava a piedi, dove oggi è ${dove}. Il varco ad arco che vedi è un'ipotesi.`;
+    return {
+      id: p.id, gruppo: 'porte', nome: p.nome, pos: p.pos, raggio: 12,
+      luogo: { livello: oltrarno ? 'ipotesi' : 'dedotto', nota: oltrarno ? `la fonte nomina la porta e la via; il punto è dove la via incontra la palizzata disegnata a mano` : `la fonte la mette in ${dove}; il punto è dove la via incontra il muro, ricostruito sull'asse delle vie di oggi` },
+      forma: { livello: 'ipotesi', nota: oltrarno ? 'porta di legno nella palizzata' : p.tipo === 'porta' ? 'torre di porta, come Porta Santa Maria' : 'varco ad arco nel muro' },
+      testo,
+      fonti: [FONTE]
+    };
+  });
+}

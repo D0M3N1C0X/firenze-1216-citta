@@ -51,7 +51,7 @@ export const GIORNATE = {
     rondini: false,             // in Toscana arrivano tra marzo e aprile [da verificare]
     foschia: 1.35,              // mattina d'inverno sull'Arno: scelta d'atmosfera, non un dato
     campane: 'ore',             // solo i rintocchi delle ore canoniche
-    gente: 190,
+    gente: 280,                 // 190 fino al 13 ottobre 2026, quando la città è arrivata alle mura
     ora: 7.6,
     // dove la gente si ferma: al mercato e davanti alle botteghe
     gruppi: [[62, -360, 4], [80, -372, 3], [48, -348, 3], [70, -195, 3], [35, -70, 2], [-60, 110, 2], [15, -38, 2], [272, -340, 2]]
@@ -67,7 +67,7 @@ export const GIORNATE = {
     rondini: true,
     foschia: 1,
     campane: 'festa',
-    gente: 150,
+    gente: 220,                 // 150 fino al 13 ottobre 2026
     ora: 8.5,
     // dove la gente si ferma a parlare: davanti alle chiese, ai capi del ponte, al mercato
     gruppi: [[15, -38, 3], [47, -54, 4], [-114, -121, 3], [70, -200, 4], [-70, 140, 3], [-52, 86, 2], [-40, -112, 2], [60, -72, 2], [160, -528, 4],

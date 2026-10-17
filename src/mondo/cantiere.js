@@ -89,6 +89,8 @@ export class Cantiere {
       mesh.castShadow = ombra === '1';
       mesh.receiveShadow = true;
       mesh.userData = { mat, livello, variante };
+      // la variante «certezza» si vede solo con l'interruttore acceso
+      if (variante === 'certezza') mesh.visible = false;
       scene.add(mesh);
       this.mesh.push(mesh);
     }
@@ -112,12 +114,16 @@ export class Cantiere {
   /** Mostra i pezzi della giornata: festa (botteghe chiuse) o feriale. */
   giornata(g) {
     const v = g.festa ? 'festa' : 'feriale';
-    for (const m of this.mesh) if (m.userData.variante) m.visible = m.userData.variante === v;
+    for (const m of this.mesh) if (m.userData.variante && m.userData.variante !== 'certezza') m.visible = m.userData.variante === v;
   }
 
   /** Interruttore «Certezza»: colora per livello, o torna ai materiali veri. */
   certezza(acceso) {
-    for (const m of this.mesh) m.material = acceso ? MAT_CERTEZZA[m.userData.livello] : MAT[m.userData.mat];
+    for (const m of this.mesh) {
+      // ciò che esiste solo per la certezza (le ipotesi da confrontare) tiene il suo materiale
+      if (m.userData.variante === 'certezza') { m.visible = acceso; continue; }
+      m.material = acceso ? MAT_CERTEZZA[m.userData.livello] : MAT[m.userData.mat];
+    }
   }
 }
 

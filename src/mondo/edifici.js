@@ -474,25 +474,29 @@ function distanzaSpezzata(x, z, pts) {
 
 /**
  * L'area dove la città è costruita casa per casa: un cerchio intorno al capo
- * del ponte più i corridoi (dati/strade-1216.js, CORRIDOI).
+ * del ponte più i corridoi. Serviva fino al 12 ottobre 2026; ora la città
+ * si costruisce dentro la cerchia (dati/cerchia.js, dentroTracciato).
  */
 export function areaCostruita(raggio, corridoi = []) {
   return (x, z) => Math.hypot(x, z) <= raggio || corridoi.some(c => distanzaSpezzata(x, z, c.punti) <= c.larghezza);
 }
 
+/**
+ * opz.dentro(x, z): dove si costruisce; opz.riquadro: [x0, z0, x1, z1], il
+ * rettangolo da campionare; opz.riempimento: quanti tentativi per gli isolati;
+ * opz.radi(x, z): probabilità di lasciare un vuoto lungo la strada (borghi);
+ * opz.seme0: da dove partono i semi delle case, perché non si ripetano.
+ */
 export function lottizza(griglia, strade, opz = {}) {
   const R = rng(1216);
   const lotti = [];
-  const raggio = opz.raggio || 400;
-  const corridoi = opz.corridoi || [];
-  const dentro = areaCostruita(raggio, corridoi);
-  // il riquadro da campionare comprende anche i corridoi
-  let xMin = -raggio, xMax = raggio, zMin = -raggio, zMax = raggio;
-  for (const c of corridoi) for (const [x, z] of c.punti) {
+  const dentro = opz.dentro || areaCostruita(opz.raggio || 400, opz.corridoi || []);
+  let [xMin, zMin, xMax, zMax] = opz.riquadro || [-(opz.raggio || 400), -(opz.raggio || 400), opz.raggio || 400, opz.raggio || 400];
+  for (const c of opz.corridoi || []) for (const [x, z] of c.punti) {
     xMin = Math.min(xMin, x - c.larghezza); xMax = Math.max(xMax, x + c.larghezza);
     zMin = Math.min(zMin, z - c.larghezza); zMax = Math.max(zMax, z + c.larghezza);
   }
-  let seme = 1;
+  let seme = opz.seme0 || 1;
 
   const prova = (px, pz, nx, nz, W, D, extra) => {
     // (px,pz) = centro del fronte; il lotto va verso (nx,nz)
@@ -525,6 +529,8 @@ export function lottizza(griglia, strade, opz = {}) {
           if (s0 + W > L - 0.4) break;
           const off = s.larghezza / 2 + R.tra(0.05, 0.35);
           const cx = ax + tx * (s0 + W / 2) + nx * off, cz = az + tz * (s0 + W / 2) + nz * off;
+          // nei borghi le case si diradano (opz.radi: la probabilità di un vuoto)
+          if (opz.radi && R.vero(opz.radi(cx, cz))) { s0 += R.tra(3, 9); continue; }
           const D = torreQui ? W * R.tra(0.95, 1.2) : R.tra(9, 16);
           let ok = prova(cx, cz, nx, nz, W, D, { tipo: torreQui ? 'torre' : 'casa' })
             || (!torreQui && prova(cx, cz, nx, nz, W, D * 0.55, { tipo: 'casa' }));
@@ -537,7 +543,7 @@ export function lottizza(griglia, strade, opz = {}) {
   // 2. lungo le rive: il fronte sull'acqua diventa il retro della casa
   const passoRiva = 2;
   const vist = new Set();
-  for (let x = -raggio; x < raggio; x += passoRiva) for (let z = -raggio; z < raggio; z += passoRiva) {
+  for (let x = xMin; x < xMax; x += passoRiva) for (let z = zMin; z < zMax; z += passoRiva) {
     const d = distanzaFiume(x, z);
     if (d < 0.5 || d > 2.5) continue;
     const key = Math.round(x / 7) + ',' + Math.round(z / 7);
@@ -554,14 +560,26 @@ export function lottizza(griglia, strade, opz = {}) {
   }
 
   // 3. riempimento degli isolati
-  const segmenti = [];
-  for (const s of strade) if (!s.area) for (let k = 0; k + 1 < s.punti.length; k++) segmenti.push([s.punti[k], s.punti[k + 1]]);
+  // i tratti di strada in secchi di 30 m: la strada più vicina entro 60 m
+  // si cerca nei secchi intorno, non in tutta la città
+  const SECCHIO = 30, secchi = new Map();
+  const chiave = (i, j) => i * 100003 + j;
+  for (const s of strade) if (!s.area) for (let k = 0; k + 1 < s.punti.length; k++) {
+    const a = s.punti[k], b = s.punti[k + 1];
+    const i0 = Math.floor((Math.min(a[0], b[0]) - 60) / SECCHIO), i1 = Math.floor((Math.max(a[0], b[0]) + 60) / SECCHIO);
+    const j0 = Math.floor((Math.min(a[1], b[1]) - 60) / SECCHIO), j1 = Math.floor((Math.max(a[1], b[1]) + 60) / SECCHIO);
+    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+      const c = chiave(i, j);
+      if (!secchi.has(c)) secchi.set(c, []);
+      secchi.get(c).push([a, b]);
+    }
+  }
   for (let tent = 0; tent < (opz.riempimento || 9000); tent++) {
     const x = R.tra(xMin, xMax), z = R.tra(zMin, zMax);
     if (!dentro(x, z) || griglia.get(x, z) !== LIBERO) continue;
     // orienta come la strada più vicina
     let best = 1e9, tx = 1, tz = 0;
-    for (const [a, b] of segmenti) {
+    for (const [a, b] of secchi.get(chiave(Math.floor(x / SECCHIO), Math.floor(z / SECCHIO))) || []) {
       const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz || 1;
       const t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2));
       const d = Math.hypot(a[0] + t * dx - x, a[1] + t * dz - z);
@@ -584,7 +602,7 @@ export function lottizza(griglia, strade, opz = {}) {
  * sarebbero un'affermazione precisa senza fonte, e qualcuno negli spazi
  * liberi chiusi tra le case, i cortili e gli orti. Livello «ipotesi».
  */
-export function pozziNeiCortili(cant, griglia, dentro, quanti = 40) {
+export function pozziNeiCortili(cant, griglia, dentro, quanti = 40, riquadro = [griglia.min + 20, griglia.min + 20, griglia.max - 20, griglia.max - 20]) {
   const R = rng(1179);
   const libero = (x, z, r) => {
     for (let dx = -r; dx <= r; dx += 0.5) for (let dz = -r; dz <= r; dz += 0.5) if (griglia.get(x + dx, z + dz) !== LIBERO) return false;
@@ -596,7 +614,7 @@ export function pozziNeiCortili(cant, griglia, dentro, quanti = 40) {
     return false;
   });
   const candidati = [];
-  for (let x = griglia.min + 20; x < griglia.max - 20; x += 3) for (let z = griglia.min + 20; z < griglia.max - 20; z += 3)
+  for (let x = riquadro[0]; x < riquadro[2]; x += 3) for (let z = riquadro[1]; z < riquadro[3]; z += 3)
     if (dentro(x, z) && libero(x, z, 1.5) && chiuso(x, z)) candidati.push([x, z]);
   for (let i = candidati.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [candidati[i], candidati[j]] = [candidati[j], candidati[i]]; }
   const presi = [];

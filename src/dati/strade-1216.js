@@ -214,9 +214,3 @@ export function strade1216(tutte) {
   return out;
 }
 
-// PROVVISORIO (12/10/2026): main.js, verifica e fondale usano ancora il raggio
-// e i corridoi; vanno sostituiti con dentroTracciato (dati/cerchia.js).
-export const CORRIDOI = [
-  { punti: [[150, -400], [155, -470], [150, -515], [135, -560], [245, -547]], larghezza: 55 }
-];
-export const RAGGIO_CITTA = 480;

@@ -8,7 +8,8 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
 
 import { FIUME, STRADE } from './dati/osm.js';
-import { CORRIDOI, RAGGIO_CITTA, strade1216 } from './dati/strade-1216.js';
+import { strade1216 } from './dati/strade-1216.js';
+import { TRACCIATO, dentroTracciato } from './dati/cerchia.js';
 import { LUOGHI } from './dati/luoghi.js';
 import { GIORNATA_PREDEFINITA, GIORNATE } from './dati/giornate.js';
 import { SCENE } from './dati/scene.js';
@@ -21,11 +22,12 @@ import { MONDO, mondoDi } from './mondo/dove.js';
 import { preparaCampo } from './mondo/fiume.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from './mondo/griglia.js';
 import { Cantiere } from './mondo/cantiere.js';
-import { areaCostruita, costruisciLotti, lottizza, pozziNeiCortili } from './mondo/edifici.js';
+import { costruisciLotti, lottizza, pozziNeiCortili } from './mondo/edifici.js';
 import { KIT, caricaKit } from './mondo/kit.js';
 import { caricaModelli } from './mondo/modelli.js';
 import { PONTE_ASSE, costruisciMonumenti, quotaPavimento, sulPonte } from './mondo/monumenti.js';
-import { costruisciFondale } from './mondo/fondale.js';
+import { costruisciBorghi } from './mondo/fondale.js';
+import { costruisciMura, costruisciPalizzata, ipotesiLatoSud } from './mondo/mura.js';
 import { creaVegetazione } from './mondo/vegetazione.js';
 import { Abitanti } from './mondo/abitanti.js';
 import { caricaAnimali, caricaFigure } from './mondo/figure.js';
@@ -44,6 +46,9 @@ const params = new URLSearchParams(location.search);
 // cede il passo al browser perché aggiorni il messaggio. Un MessageChannel
 // e non un setTimeout: i timer di una scheda in background vengono
 // rallentati fino a fermare la costruzione, i messaggi no.
+/** Il rettangolo che contiene la cerchia: dove la lottizzazione cerca posto. */
+const RIQUADRO_CERCHIA = [Math.min(...TRACCIATO.map(p => p[0])), Math.min(...TRACCIATO.map(p => p[1])), Math.max(...TRACCIATO.map(p => p[0])), Math.max(...TRACCIATO.map(p => p[1]))];
+
 const pausa = () => new Promise(r => { const c = new MessageChannel(); c.port1.onmessage = () => r(); c.port2.postMessage(0); });
 
 // a Campi la schermata d'avvio parla del convito, non della mattina di Pasqua
@@ -133,14 +138,16 @@ async function costruisci() {
   const cielo = new Cielo(renderer, scene);
 
   await passo('Il letto dell\'Arno e le colline…');
+  // le strade del 1216 servono già qui: gli alberi non crescono sulle strade fuori porta
+  const strade = strade1216(STRADE);
   creaTerreno(scene);
-  creaVegetazione(scene);
+  creaVegetazione(scene, { evita: strade.filter(s => s.fuori) });
   const acqua = creaAcqua(scene, cielo.dir);
 
   await passo('Le strade del 1216…');
-  const griglia = new Griglia();
+  // da −1100 a 1100 m: la cerchia del 1172–75 e i borghi fuori porta
+  const griglia = new Griglia(-1100, 1100);
   griglia.poligono(FIUME, C_FIUME);
-  const strade = strade1216(STRADE);
   for (const s of strade) {
     if (s.area) griglia.poligono(s.punti, PIAZZA, false);
     else griglia.spezzata(s.punti, s.larghezza, STRADA, false);
@@ -150,12 +157,17 @@ async function costruisci() {
   const cantiere = new Cantiere();
   const monumenti = costruisciMonumenti(cantiere, griglia);
 
+  await passo('Le mura, le porte, il fossato…');
+  costruisciMura(cantiere, griglia);
+  ipotesiLatoSud(cantiere);
+
   await passo('Le case, una per una…');
-  // la città casa per casa: 480 m dal capo del ponte, più il corridoio verso Santa Reparata
-  const lotti = lottizza(griglia, strade, { raggio: RAGGIO_CITTA, corridoi: CORRIDOI, riempimento: 15000 });
+  // la città casa per casa fino alle mura (dati/cerchia.js); fuori, i borghi
+  const lotti = lottizza(griglia, strade.filter(s => !s.fuori), { dentro: dentroTracciato, riquadro: RIQUADRO_CERCHIA, riempimento: 28000 });
   costruisciLotti(cantiere, lotti);
-  const pozzi = KIT.pezzi ? pozziNeiCortili(cantiere, griglia, areaCostruita(RAGGIO_CITTA, CORRIDOI)) : [];
-  costruisciFondale(cantiere, areaCostruita(RAGGIO_CITTA + 5, CORRIDOI.map(c => ({ ...c, larghezza: c.larghezza + 5 }))));
+  const borghi = costruisciBorghi(cantiere, griglia, strade);
+  costruisciPalizzata(cantiere, griglia);
+  const pozzi = KIT.pezzi ? pozziNeiCortili(cantiere, griglia, dentroTracciato, 60, RIQUADRO_CERCHIA) : [];
 
   await passo('Muro su muro…');
   cantiere.costruisci(scene);
@@ -177,7 +189,7 @@ async function costruisci() {
   impostaComposizione();
   await passo('');
   console.info(tempi.join(' · '));
-  console.info(`città pronta in ${((performance.now() - t0) / 1000).toFixed(1)} s · lotti ${lotti.length} · oggetti ${cantiere.mesh.length}` +
+  console.info(`città pronta in ${((performance.now() - t0) / 1000).toFixed(1)} s · lotti ${lotti.length} · borghi ${borghi.length} · oggetti ${cantiere.mesh.length}` +
     (KIT.pezzi ? ` · kit ${(cantiere.triangoliKit / 1e6).toFixed(1)} M triangoli · pozzi ${pozzi.length}` : ' · senza kit'));
   ui.pronto();
   if (params.has('subito')) entra();
@@ -229,7 +241,7 @@ function creaAbitanti() {
     numeroAnimali: Math.round(+(params.get('gente') || giornata.gente) * (giornata.festa ? 0.04 : 0.09)),
     numeroCavalieri: Math.round(+(params.get('gente') || giornata.gente) * (giornata.festa ? 0.025 : 0.035)),
     numero: +(params.get('gente') || giornata.gente),
-    raggio: RAGGIO_CITTA,
+    raggio: 5000,             // tutta la città, fino ai borghi: le strade sono già solo quelle
     extra: [{ punti: [PONTE_ASSE.A, PONTE_ASSE.B], larghezza: 5.5 }],
     gruppi: giornata.gruppi
   });
