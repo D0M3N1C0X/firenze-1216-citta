@@ -1,19 +1,29 @@
 :root {
   --carta: #f3ece0;
   --inchiostro: #2b241c;
-  --vetro: rgba(24, 20, 16, 0.72);
-  --vetro-chiaro: rgba(36, 30, 24, 0.55);
+  --vetro: rgba(24, 20, 16, 0.74);
   --testo: #f1ebe0;
   --tenue: #c8bca9;
   --accento: #d9a441;
+  --scuro: #3d2f1f;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --zoom: 1;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #14110e; color: var(--testo); font-family: var(--sans); }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #14110e; color: var(--testo); font-family: var(--sans); -webkit-text-size-adjust: 100%; }
 #app, #app canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--accento); outline-offset: 2px; }
 [hidden] { display: none !important; }
+svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* testo più grande (Impostazioni): ingrandisce pannelli e pulsanti, non la città */
+.testo-grande { --zoom: 1.25; }
+#avvio .carta, #barra, #testata, #vicino, #avviso, #legenda, .destra, .sinistra { zoom: var(--zoom); }
+
+#dissolvenza { position: fixed; inset: 0; background: #0d0b09; opacity: 0; pointer-events: none; transition: opacity 0.28s ease; z-index: 5; }
+#dissolvenza.su { opacity: 1; }
 
 /* ------------------------------------------------------------ avvio */
 #avvio {
@@ -22,122 +32,195 @@ button { font: inherit; color: inherit; cursor: pointer; }
   z-index: 10;
 }
 #avvio .carta {
-  max-width: 620px; width: 100%; padding: 32px 34px 26px; border-radius: 6px;
+  max-width: 640px; width: 100%; padding: 34px 36px 24px; border-radius: 14px;
   background: var(--carta); color: var(--inchiostro); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-  max-height: calc(100vh - 32px); overflow: auto;
+  max-height: calc((100vh - 32px) / var(--zoom)); overflow: auto;
 }
 #avvio .sopra { margin: 0 0 6px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #7b6a52; }
-#avvio h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(26px, 4.4vw, 36px); line-height: 1.12; margin: 0 0 6px; }
-#avvio .data { font-family: var(--serif); font-style: italic; margin: 0 0 18px; color: #5d4d39; }
+#avvio h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(28px, 4.6vw, 38px); line-height: 1.1; margin: 0 0 6px; }
+#avvio .data { font-family: var(--serif); font-style: italic; margin: 0 0 14px; color: #5d4d39; font-size: 17px; }
+#avvio .intro { font-size: 18px; line-height: 1.45; margin: 0 0 18px; }
 #avvio p { line-height: 1.5; }
-#avvio details { margin: 4px 0 12px; }
-#avvio summary { cursor: pointer; font-weight: 600; }
+#avvio details { margin: 14px 0 8px; font-size: 15px; }
+#avvio summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 #avvio ul { padding-left: 20px; margin: 8px 0 0; line-height: 1.45; }
-#progresso { font-size: 14px; color: #6b5a42; min-height: 1.5em; margin: 14px 0 10px; }
-#entra {
-  border: 0; border-radius: 4px; padding: 12px 28px; font-size: 17px; font-weight: 600;
-  background: #3d2f1f; color: #f6efe2;
+#avvio-scena { margin: 0 0 14px; padding: 10px 14px; border-left: 4px solid #b0802a; background: #ece2cf; font-size: 16px; border-radius: 4px; }
+
+.caricamento { margin: 0 0 16px; }
+.traccia { height: 10px; border-radius: 5px; background: #e1d6c3; overflow: hidden; }
+#riempimento { height: 100%; width: 0; border-radius: 5px; background: linear-gradient(90deg, #b0802a, var(--accento)); transition: width 0.4s ease; }
+#progresso { font-size: 16px; color: var(--inchiostro); margin: 8px 0 0; min-height: 1.5em; font-weight: 600; }
+#fase { font-size: 14px; color: #7b6a52; margin: 2px 0 0; font-style: italic; min-height: 1.4em; }
+.caricamento.pronto .traccia { display: none; }
+
+.scelte-avvio { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grande {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 64px; padding: 12px 18px; border-radius: 12px; font-size: 19px; font-weight: 600;
+  border: 2px solid var(--scuro); background: transparent; color: var(--scuro);
 }
-#entra:disabled { opacity: 0.45; cursor: progress; }
-#entra:not(:disabled):hover { background: #574330; }
-.comandi { font-size: 12.5px; color: #6b5a42; margin: 16px 0 0; }
-.comandi span { font-weight: 600; color: #3d2f1f; }
-.crediti { font-size: 11.5px; color: #7b6a52; margin: 10px 0 0; line-height: 1.45; }
+.grande small { font-size: 13.5px; font-weight: 400; opacity: 0.8; }
+.grande.primario { background: var(--scuro); color: #f6efe2; }
+.grande:hover { background: #ebe1cf; }
+.grande.primario:hover { background: #574330; }
+.grande[aria-busy="true"] { opacity: 0.7; cursor: progress; }
+.come { font-size: 15px; color: #5d4d39; margin: 14px 0 0; text-align: center; }
+.crediti { font-size: 12px; color: #7b6a52; margin: 10px 0 0; line-height: 1.45; }
 .crediti a { color: inherit; }
+.errore { background: #f6d9c9; border-left: 4px solid #b4532a; padding: 12px 14px; border-radius: 4px; font-size: 16px; }
 
 /* ------------------------------------------------------- interfaccia */
 #testata {
-  position: fixed; top: 14px; left: 16px; padding: 8px 14px; border-radius: 4px;
-  background: var(--vetro); font-family: var(--serif); font-size: 15px; display: flex; gap: 14px;
-  backdrop-filter: blur(6px);
+  position: fixed; top: 14px; left: 16px; padding: 9px 15px; border-radius: 10px;
+  background: var(--vetro); font-family: var(--serif); font-size: 16px; display: flex; gap: 14px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 #ora { color: var(--tenue); font-style: italic; }
 #vicino {
-  position: fixed; left: 16px; bottom: var(--sopra-barra, 76px); max-width: min(460px, calc(100vw - 32px));
-  padding: 10px 14px; border-radius: 4px; background: var(--vetro); backdrop-filter: blur(6px); font-size: 14px;
+  position: fixed; left: 16px; bottom: var(--sopra-barra, 86px); max-width: min(460px, calc(100vw - 32px));
+  padding: 12px 14px; border-radius: 12px; background: var(--vetro); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  font-size: 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
 }
-#vicino b { font-family: var(--serif); font-size: 17px; font-weight: 600; }
-#vicino .tasto { color: var(--accento); }
+#vicino b { font-family: var(--serif); font-size: 18px; font-weight: 600; flex: 1 1 100%; }
+#vicino .leggi { margin: 0; }
+#avviso {
+  position: fixed; left: 50%; transform: translateX(-50%); top: 70px; max-width: min(520px, calc(100vw - 32px));
+  padding: 12px 18px; border-radius: 12px; background: var(--carta); color: var(--inchiostro); font-size: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); z-index: 6; text-align: center;
+}
+
 #barra {
-  position: fixed; left: 50%; transform: translateX(-50%); bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px;
-  padding: 6px; border-radius: 6px; background: var(--vetro); backdrop-filter: blur(6px);
-  /* max-content: con left: 50% la larghezza «adatta al contenuto» si fermerebbe a metà
-     schermo, e sui tablet la barra andrebbe a capo finendo sotto la scheda */
-  width: max-content; max-width: calc(100vw - 32px); justify-content: center;
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: max(14px, env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 7px; border-radius: 16px; background: var(--vetro); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  /* max-content: con left: 50% la larghezza «adatta al contenuto» si fermerebbe a metà schermo */
+  width: max-content; max-width: calc((100vw - 24px) / var(--zoom)); justify-content: center;
 }
 #barra button, #barra label {
-  background: transparent; border: 1px solid rgba(241, 235, 224, 0.18); border-radius: 4px; padding: 7px 12px; font-size: 14px;
+  min-height: 46px; background: transparent; border: 1px solid rgba(241, 235, 224, 0.16); border-radius: 11px; padding: 6px 13px; font-size: 15px;
   display: flex; align-items: center; gap: 8px;
 }
+#barra button:hover { background: rgba(241, 235, 224, 0.1); }
 #barra button[aria-pressed="true"] { background: var(--accento); color: #1d160d; border-color: var(--accento); }
-#barra input[type=range] { width: 130px; accent-color: var(--accento); }
+#barra input[type=range] { width: 120px; accent-color: var(--accento); height: 28px; }
 
 #legenda {
-  position: fixed; right: 16px; top: 14px; padding: 10px 14px; border-radius: 4px; background: var(--vetro);
-  font-size: 13px; max-width: 290px; backdrop-filter: blur(6px);
+  position: fixed; right: 16px; top: 14px; padding: 12px 15px; border-radius: 12px; background: var(--vetro);
+  font-size: 14px; max-width: 300px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
-#legenda div { display: flex; gap: 8px; align-items: flex-start; margin: 4px 0; }
-#legenda i { flex: 0 0 14px; height: 14px; border-radius: 2px; margin-top: 2px; }
+#legenda div { display: flex; gap: 8px; align-items: flex-start; margin: 5px 0; }
+#legenda i { flex: 0 0 16px; height: 16px; border-radius: 3px; margin-top: 2px; }
 #legenda small { color: var(--tenue); display: block; }
 
-#scheda, #elenco {
-  position: fixed; right: 16px; top: 14px; bottom: var(--sopra-barra, 76px); width: min(400px, calc(100vw - 32px)); overflow: auto;
-  padding: 22px 22px 18px; border-radius: 6px; background: var(--carta); color: var(--inchiostro);
+/* i pannelli di carta: a destra schede, elenco, aiuto e impostazioni; a sinistra racconto e visita */
+.destra, .sinistra {
+  position: fixed; top: 14px; bottom: var(--sopra-barra, 86px); overflow: auto;
+  border-radius: 14px; background: var(--carta); color: var(--inchiostro);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-  z-index: 3;          /* la scheda aperta dal racconto gli sta sopra, anche sugli schermi stretti */
 }
-.chiudi { position: absolute; top: 6px; right: 10px; border: 0; background: transparent; font-size: 26px; color: #6b5a42; }
-#scheda h2, #elenco h2 { font-family: var(--serif); font-size: 24px; margin: 0 26px 10px 0; line-height: 1.15; }
-#scheda p { line-height: 1.5; font-size: 15px; }
-.livelli { display: grid; gap: 6px; margin: 12px 0; font-size: 13px; }
+.destra { right: 16px; width: min(420px, calc(100vw - 32px)); padding: 22px 22px 18px; z-index: 3; }
+.sinistra { left: 16px; top: 72px; width: min(440px, calc(100vw - 32px)); padding: 18px 22px 16px; font-size: 16px; line-height: 1.5; z-index: 2; }
+.chiudi { position: absolute; top: 6px; right: 8px; width: 44px; height: 44px; border: 0; background: transparent; font-size: 28px; color: #6b5a42; border-radius: 22px; }
+.chiudi:hover { background: #ebe1cf; }
+.destra h2 { font-family: var(--serif); font-size: 25px; margin: 0 40px 12px 0; line-height: 1.15; }
+#scheda p { line-height: 1.55; font-size: 16px; }
+.livelli { display: grid; gap: 6px; margin: 12px 0; font-size: 14px; }
 .livello { display: grid; grid-template-columns: 74px 1fr; gap: 8px; align-items: start; }
-.livello b { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b5a42; padding-top: 2px; }
-.badge { display: inline-block; padding: 1px 7px; border-radius: 3px; color: #fff; font-size: 12px; font-weight: 600; margin-right: 6px; }
-.fonti { font-size: 13px; color: #4b3e2e; padding-left: 18px; }
+.livello b { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b5a42; padding-top: 2px; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 4px; color: #fff; font-size: 12.5px; font-weight: 600; margin-right: 6px; }
+.fonti { font-size: 14px; color: #4b3e2e; padding-left: 18px; }
 .fonti li { margin: 4px 0; }
 .verifica { background: #f1d9a6; padding: 0 3px; border-radius: 2px; }
-#avvio-scena { margin: 0 0 6px; padding: 8px 12px; border-left: 3px solid #b0802a; background: #ece2cf; font-size: 15px; }
-
-/* ---------------------------------------------------------- racconto */
-#racconto {
-  position: fixed; left: 16px; top: 70px; bottom: var(--sopra-barra, 76px); width: min(430px, calc(100vw - 32px)); overflow: auto;
-  padding: 18px 22px 16px; border-radius: 6px; background: var(--carta); color: var(--inchiostro);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45); font-size: 15px; line-height: 1.5; z-index: 2;
+.leggi {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; margin: 4px 0 6px; border-radius: 10px;
+  border: 1px solid #cbbba0; background: #f8f2e6; color: var(--scuro); font-size: 15px; font-weight: 600;
 }
-#racconto .sopra { margin: 0 26px 4px 0; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b6a52; }
-#racconto h2 { font-family: var(--serif); font-size: 23px; line-height: 1.15; margin: 0 26px 8px 0; }
-#racconto h3 { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #6b5a42; margin: 16px 0 4px; }
+.leggi:hover { background: #ebe1cf; }
+#vicino .leggi { background: rgba(241, 235, 224, 0.12); border-color: rgba(241, 235, 224, 0.3); color: var(--testo); }
+
+/* --------------------------------------------- aiuto e impostazioni */
+.aiuti { list-style: none; padding: 0; margin: 0 0 18px; }
+.aiuti li { padding: 10px 0; border-bottom: 1px solid #ddd0bb; font-size: 16px; line-height: 1.45; }
+.aiuti b { display: block; font-family: var(--serif); font-size: 18px; margin-bottom: 2px; }
+#aiuto .grande { width: 100%; }
+.riga { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #ddd0bb; font-size: 16px; }
+.riga small { display: block; font-size: 13px; color: #6b5a42; }
+.segmenti { display: flex; background: #e6dccb; border-radius: 10px; padding: 3px; }
+.segmenti button { min-height: 40px; border: 0; background: transparent; border-radius: 8px; padding: 6px 12px; font-size: 15px; color: var(--scuro); }
+.segmenti button[aria-pressed="true"] { background: #fffaf0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); font-weight: 600; }
+.segmenti button:disabled { opacity: 0.45; cursor: default; }
+.nota { font-size: 14px; color: #6b5a42; margin: 6px 0 0; }
+.interruttore input { appearance: none; -webkit-appearance: none; width: 51px; height: 31px; border-radius: 16px; background: #cfc4b1; position: relative; cursor: pointer; flex: 0 0 51px; transition: background 0.2s; }
+.interruttore input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); transition: left 0.2s; }
+.interruttore input:checked { background: #5c9a4f; }
+.interruttore input:checked::after { left: 22px; }
+
+/* ------------------------------------------------- racconto e visita */
+.sinistra .sopra { margin: 0 40px 4px 0; font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b6a52; }
+.sinistra h2 { font-family: var(--serif); font-size: 24px; line-height: 1.15; margin: 0 40px 10px 0; }
+.sinistra h3 { font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #6b5a42; margin: 16px 0 4px; }
+.sinistra p { margin: 0 0 10px; }
+#visita p { font-size: 17px; line-height: 1.55; }
+#visita .punti { display: flex; gap: 5px; margin: 4px 0 12px; }
+#visita .punti i { width: 9px; height: 9px; border-radius: 50%; background: #d8cbb4; }
+#visita .punti i.fatto { background: #b0802a; }
+#visita .punti i.qui { background: var(--scuro); transform: scale(1.25); }
 #racconto .dove { font-family: var(--serif); font-style: italic; color: #5d4d39; margin: 0 0 10px; }
-#racconto p { margin: 0 0 10px; }
 #racconto .rami { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 10px; }
-#racconto .rami button { border: 1px solid #cbbba0; background: transparent; border-radius: 3px; padding: 4px 9px; font-size: 13px; }
-#racconto .rami button[aria-selected="true"] { background: #3d2f1f; color: #f6efe2; border-color: #3d2f1f; }
-#racconto .nella-citta { background: #ece2cf; padding: 8px 10px; border-radius: 3px; font-size: 14px; }
+#racconto .rami button { min-height: 40px; border: 1px solid #cbbba0; background: transparent; border-radius: 8px; padding: 4px 10px; font-size: 14px; }
+#racconto .rami button[aria-selected="true"] { background: var(--scuro); color: #f6efe2; border-color: var(--scuro); }
+#racconto .nella-citta { background: #ece2cf; padding: 8px 10px; border-radius: 6px; font-size: 15px; }
 #racconto ul { margin: 0; padding-left: 18px; }
 #racconto .note { list-style: none; padding: 0; }
-#racconto .note li { margin: 6px 0; font-size: 14px; }
+#racconto .note li { margin: 6px 0; font-size: 15px; }
 #racconto .note .chi { color: #6b5a42; }
-#racconto details { margin: 10px 0 0; font-size: 14px; }
-#racconto summary { cursor: pointer; font-weight: 600; }
+#racconto details { margin: 10px 0 0; font-size: 15px; }
+#racconto summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
 #racconto details p { margin: 6px 0 0; }
-#racconto .passi { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 0; padding-top: 12px; border-top: 1px solid #ddd0bb; }
-#racconto .passi button { border: 1px solid #cbbba0; background: #f8f2e6; border-radius: 4px; padding: 6px 11px; font-size: 14px; }
-#racconto .passi button:last-child { margin-left: auto; background: #3d2f1f; color: #f6efe2; border-color: #3d2f1f; }
-#racconto .passi button:disabled { opacity: 0.4; cursor: default; }
+.passi { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 12px 0 2px; border-top: 1px solid #ddd0bb;
+  position: sticky; bottom: -16px; background: var(--carta); }   /* Indietro e Avanti sempre a portata di dito */
+.passi button { min-height: 46px; border: 1px solid #cbbba0; background: #f8f2e6; border-radius: 10px; padding: 8px 14px; font-size: 16px; }
+.passi button:last-child { margin-left: auto; background: var(--scuro); color: #f6efe2; border-color: var(--scuro); font-weight: 600; }
+.passi button:disabled { opacity: 0.4; cursor: default; }
 #racconto .fine { font-style: italic; color: #5d4d39; margin-top: 12px; }
 
-#elenco ul { list-style: none; padding: 0; margin: 0; }
-#elenco li button { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid #ddd0bb; padding: 10px 2px; font-size: 15px; display: flex; gap: 8px; align-items: center; }
+#elenco ul { list-style: none; padding: 0; margin: 8px 0 0; }
+#elenco li button { width: 100%; min-height: 48px; text-align: left; background: transparent; border: 0; border-bottom: 1px solid #ddd0bb; padding: 10px 4px; font-size: 16px; display: flex; gap: 10px; align-items: center; }
 #elenco li button:hover { background: #ebe1cf; }
-#elenco i { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 10px; }
-#elenco li.gruppo summary { cursor: pointer; padding: 12px 2px; font-size: 15px; font-weight: 600; border-bottom: 1px solid #ddd0bb; }
+#elenco i { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 12px; }
+#elenco li.gruppo summary { cursor: pointer; padding: 14px 4px; font-size: 16px; font-weight: 600; border-bottom: 1px solid #ddd0bb; }
 #elenco li.gruppo ul { padding-left: 12px; }
 
-@media (max-width: 900px) {
-  #barra button, #barra label { padding: 7px 9px; }
-  #barra input[type=range] { width: 100px; }
-}
+/* sugli schermi medi la barra va su due righe ma tiene le parole; solo sul telefono restano le icone */
 @media (max-width: 640px) {
-  #testata { font-size: 13px; flex-direction: column; gap: 0; }
-  #scheda, #elenco, #racconto { left: 16px; right: 16px; width: auto; top: 70px; }
+  #barra .testo { display: none; }
+  #barra button, #barra label { padding: 6px 11px; }
+  #avvio .carta { padding: 24px 20px 18px; }
+  .scelte-avvio { grid-template-columns: 1fr; }
+  #testata { font-size: 14px; flex-direction: column; gap: 0; }
+  .destra, .sinistra { left: 12px; right: 12px; width: auto; top: 72px; }
+  #barra input[type=range] { width: 90px; }
+}
+/* telefoni e schermi bassi: racconto e visita stanno in basso, a metà altezza,
+   e lasciano vedere la città che descrivono */
+@media (max-width: 640px), (max-height: 560px) {
+  .sinistra { top: auto; bottom: var(--sopra-barra, 86px); max-height: 50vh; left: 12px; right: 12px; width: auto; padding: 14px 16px 12px; }
+  .sinistra h2 { font-size: 20px; }
+  #visita p { font-size: 15.5px; }
+  #visita .punti { margin: 2px 0 8px; }
+}
+/* schermi bassi (un portatile con la finestra piccola, un telefono in orizzontale):
+   le due scelte grandi devono restare visibili senza scorrere */
+@media (max-height: 700px) {
+  #avvio .carta { padding: 20px 26px 16px; }
+  #avvio .sopra { display: none; }
+  #avvio h1 { font-size: clamp(24px, 3.6vw, 30px); }
+  #avvio .data { font-size: 15px; margin-bottom: 8px; }
+  #avvio .intro { font-size: 16px; margin-bottom: 12px; }
+  .caricamento { margin-bottom: 10px; }
+  #fase { display: none; }
+  .grande { min-height: 54px; padding: 8px 14px; font-size: 17px; }
+  .come { margin-top: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #dissolvenza, #riempimento, .interruttore input, .interruttore input::after { transition: none; }
 }

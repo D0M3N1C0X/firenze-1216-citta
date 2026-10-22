@@ -23,21 +23,27 @@ Poi aprire http://localhost:5216. Serve una scheda video di fascia alta: il mode
 
 ## Comandi
 
+Pensati per chiunque, anche senza tastiera e anche su iPad. All'ingresso si sceglie tra **Visita guidata** (dieci tappe, dalla casa di Buondelmonte alle mura) ed **Esplora da solo**; si può scegliere anche mentre la città si prepara, e una barra dice quanto manca.
+
 | | |
 |---|---|
-| **WASD / frecce** | cammina (Maiusc: svelto) |
-| **mouse** | guarda (clic per agganciarlo, Esc per liberarlo) |
-| **tablet** | metà sinistra dello schermo per camminare, metà destra per guardare |
-| **F** | volo sopra i tetti (Spazio e C per salire e scendere) |
-| **C** | certezza: colora ogni cosa secondo quanto ne sappiamo |
-| **I** | scheda del luogo vicino, con le fonti |
-| **R** | il racconto: le scene del gioco, nei loro luoghi |
-| **Giorno** | passa dal 10 febbraio a Pasqua e ritorno |
+| **tocca o clicca la strada** | ci vai a piedi, girando gli angoli da solo; un anello dorato segna dove stai andando |
+| **trascina** | guardati intorno (con il dito o con il mouse) |
+| **Dall'alto** (F) | vista sopra i tetti; tocca un punto della città per volarci sopra |
+| **Che cosa è certo** (C) | colora ogni cosa secondo quanto ne sappiamo |
+| **Racconto** (R) | le scene del gioco, nei loro luoghi |
+| **Vai a…** | l'elenco dei luoghi, con la scheda e le fonti; da qui si ricomincia la visita |
+| **Aiuto** | come si usa, in parole semplici |
+| **Impostazioni** | giornata (10 febbraio o Pasqua), immagini più belle o più leggere, testo più grande, movimento ridotto |
+| **WASD / frecce** | cammina con la tastiera (Maiusc: svelto; Q ed E: girati) |
+| **I** | scheda del luogo vicino |
 | **M** | silenzia i suoni |
+
+Le impostazioni restano sul dispositivo. Se nei primi secondi la città va a scatti, le immagini si alleggeriscono da sole, e lo si dice.
 
 Parametri: `?scena=IV3` (apre su una scena), `?luogo=campi` (apre il castello del convito invece della città), `?racconto` (apre il racconto dall'inizio), `?giorno=febbraio`, `?ora=7.5` (ora solare), `?gente=300`, `?da=x,z,direzione`.
 
-Dopo ogni modifica a strade, luoghi o scene: `npm run verifica` controlla che ogni luogo si raggiunga a piedi e che ogni scena abbia un punto di vista percorribile. Se cambia il copione del gioco: `npm run copione` (solo dal repository completo del progetto).
+Dopo ogni modifica a strade, luoghi, scene o tappe della visita: `npm run verifica` controlla che ogni luogo si raggiunga a piedi e che ogni scena e ogni tappa abbiano un punto di vista percorribile. Se cambia il copione del gioco: `npm run copione` (solo dal repository completo del progetto).
 
 ## Che cosa NON è
 

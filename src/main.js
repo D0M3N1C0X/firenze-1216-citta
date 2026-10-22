@@ -37,6 +37,7 @@ import { alba, formatoOra, oraCanonica } from './mondo/sole.js';
 import { Controlli } from './controlli.js';
 import { Interfaccia } from './ui/interfaccia.js';
 import { Racconto } from './ui/racconto.js';
+import { Visita } from './ui/visita.js';
 
 /* =====================================================================
    FIRENZE 1216 — LA CITTÀ  ·  prototipo v0.3: dal capo del Ponte Vecchio a Santa Reparata
@@ -64,6 +65,12 @@ if (MONDO === 'campi') {
     '<li><b>Gli invitati non hanno un volto.</b> Chi sia ciascuno non lo diciamo: lo racconta il gioco, con le fonti.</li>';
 }
 
+// senza WebGL la città non si può disegnare: lo si dice subito, in parole semplici
+if (!document.createElement('canvas').getContext('webgl2')) {
+  document.querySelector('.caricamento').innerHTML = '<p class="errore"><b>Questo browser non riesce a disegnare la città in 3D.</b><br>Prova con Safari, Chrome o Firefox aggiornati, o su un altro computer.</p>';
+  document.querySelector('.scelte-avvio').hidden = true;
+  throw new Error('WebGL 2 non disponibile');
+}
 const renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: params.has('cattura') });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
@@ -85,7 +92,8 @@ if (scenaIniziale?.vista && mondoDi(scenaIniziale) !== MONDO) {
 }
 let giornata = GIORNATE[params.get('giorno')] || GIORNATE[scenaIniziale?.giornata] || GIORNATE[MONDO === 'campi' ? 'gennaio' : GIORNATA_PREDEFINITA];
 let ora = +(params.get('ora') || scenaIniziale?.ora || giornata.ora);
-let qualita = 'alta';
+let qualita = 'alta';         // dalle impostazioni ricordate, sotto
+let movimentoRidotto = false;
 let mondo = null;
 let modelli = null;          // le figure di Blender, caricate una volta sola
 let animali = null;          // cavalli, muli e asini di Blender
@@ -93,30 +101,72 @@ let certezzaAccesa = false;
 
 const ui = new Interfaccia({
   entra,
-  certezza: on => { certezzaAccesa = on; mondo.cantiere.certezza(on); mondo.abitanti.visibili(!on); },
-  giorno: () => { if (MONDO === 'citta') impostaGiornata(giornata.id === 'pasqua' ? 'febbraio' : 'pasqua'); },
+  visita: () => apriVisita(),
+  certezza: on => impostaCertezza(on),
+  giorno: id => { if (MONDO === 'citta' && id !== giornata.id) impostaGiornata(id); },
   volo: on => mondo.controlli.impostaVolo(on),
   inVolo: () => mondo?.controlli.volo,
   ora: h => { ora = h; impostaOra(); },
   vai: l => vaiA(l),
-  qualita: cambiaQualita,
-  racconto: () => racconto.alterna()
+  qualita: v => { if (v !== qualita) cambiaQualita(); },
+  racconto: () => { visita.chiudi(false); racconto.alterna(); },
+  movimentoRidotto: on => { movimentoRidotto = on; if (mondo) mondo.controlli.movimentoRidotto = on; }
 });
+qualita = ui.qualitaRicordata === 'media' ? 'media' : 'alta';
+renderer.setPixelRatio(qualita === 'alta' ? Math.min(devicePixelRatio, 2) : 1);
+ui.applicaPreferenze();
 const racconto = new Racconto({
   vai: s => vaiScena(s),
   scheda: l => ui.apri(l),
   aperto: on => ui.statoRacconto(on)
 });
+// la visita guidata (dati/visita.js): a ogni tappa la città porta nel punto di vista
+let certezzaDallaVisita = false;
+const visita = new Visita({
+  vai: t => vaiTappa(t),
+  scheda: l => ui.apri(l),
+  aperta: (on, finita) => {
+    if (on) return;
+    if (certezzaDallaVisita) { certezzaDallaVisita = false; impostaCertezza(false); }
+    if (finita) {
+      collocaVista(mondo.controlli, { x: 20, z: -46, verso: [9, -27] });
+      ui.avviso('Ora esplora da solo: tocca la strada dove vuoi andare, trascina per guardarti intorno.', 7000);
+    }
+  }
+});
 if (scenaIniziale) ui.scenaIniziale(`Dal gioco: scena ${scenaIniziale.id}, «${COPIONE[scenaIniziale.id].titolo}»`);
+
+// quanto pesa ogni fase sul tempo di caricamento (misure del 22/10/2026 su questo Mac):
+// servono alla barra dell'avvio, che così avanza più o meno con il tempo vero
+const PESI = {
+  'Impasto la calce e cuocio i coppi…': 0.22, 'Il cielo del mattino…': 0.002, 'Il letto dell\'Arno e le colline…': 0.09,
+  'Le strade del 1216…': 0.005, 'Il ponte, le chiese, le torri…': 0.015, 'Le mura, le porte, il fossato…': 0.003,
+  'Le case, una per una…': 0.50, 'Muro su muro…': 0.145, 'La gente esce di casa…': 0.02
+};
+const PESI_CAMPI = { 'Impasto la calce e cuocio i coppi…': 0.55, 'Il cielo di gennaio…': 0.05, 'La piana di Campi…': 0.15, 'Il castello dei Mazzinghi…': 0.1, 'Gli invitati prendono posto…': 0.15 };
+const tempiCaricamento = [];
+/** L'ultima durata del caricamento su questo dispositivo, per dire quanto manca (o la salva). */
+function ricordaDurata(s) {
+  const k = 'citta.durata.' + MONDO;
+  try { if (s) localStorage.setItem(k, s.toFixed(1)); else return +localStorage.getItem(k) || 0; } catch (e) { return 0; }
+}
+const opzComandi = () => ({ scene, avviso: t => ui.avviso(t), gesto: () => ui.nascondiAvviso() });
 
 async function costruisci() {
   const t0 = performance.now();
-  let tf = t0, fase = '';
-  const tempi = [];
+  let tf = t0, fase = '', fatto = 0;
+  const pesi = MONDO === 'campi' ? PESI_CAMPI : PESI;
+  const durata = ricordaDurata() || (MONDO === 'campi' ? 25 : 40);
+  const mostra = f => {
+    const passati = (performance.now() - t0) / 1000;
+    // all'inizio conta di più la durata dell'ultima volta; da metà in poi il passo di adesso
+    const totale = f > 0.5 ? passati / f : Math.max(durata, passati / Math.max(f, 0.05));
+    ui.caricamento(f, fase, Math.max(0, totale - passati));
+  };
   const passo = async msg => {
     const t = performance.now();
-    if (fase) tempi.push(`${fase} ${((t - tf) / 1000).toFixed(1)}s`);
-    tf = t; fase = msg; ui.progresso(msg); await pausa();
+    if (fase) { tempiCaricamento.push(`${fase} ${((t - tf) / 1000).toFixed(1)}s`); fatto += pesi[fase] || 0; }
+    tf = t; fase = msg; mostra(fatto); await pausa();
   };
   await passo('Impasto la calce e cuocio i coppi…');
   // le figure si caricano mentre si fa il resto; se mancano si usano quelle generate
@@ -128,7 +178,7 @@ async function costruisci() {
   const monumentiBlender = params.has('senzamodelli') ? null : caricaModelli().catch(e => { console.warn('monumenti di Blender non caricati:', e); return null; });
   await Promise.all([
     kit, monumentiBlender,
-    creaMateriali('alta', (k, n) => ui.progresso(`Impasto la calce e cuocio i coppi… ${k}/${n}`)),
+    creaMateriali('alta', (k, n) => mostra(fatto + pesi[fase] * k / n)),
     MONDO === 'citta' ? preparaCampo() : null
   ]);
   impostaAnisotropia(renderer.capabilities.getMaxAnisotropy());
@@ -165,8 +215,13 @@ async function costruisci() {
   await passo('Le case, una per una…');
   // la città casa per casa fino alle mura (dati/cerchia.js); fuori, i borghi
   const lotti = lottizza(griglia, strade.filter(s => !s.fuori), { dentro: dentroTracciato, riquadro: RIQUADRO_CERCHIA, riempimento: 28000 });
-  costruisciLotti(cantiere, lotti);
+  // a blocchi, ridando la mano al browser: così la pagina non si blocca e la barra avanza
+  for (let i = 0; i < lotti.length; i += 250) {
+    costruisciLotti(cantiere, lotti.slice(i, i + 250));
+    mostra(fatto + pesi[fase] * 0.72 * Math.min(1, (i + 250) / lotti.length)); await pausa();
+  }
   const borghi = costruisciBorghi(cantiere, griglia, strade);
+  mostra(fatto + pesi[fase] * 0.86); await pausa();
   costruisciPalizzata(cantiere, griglia);
   const pozzi = KIT.pezzi ? pozziNeiCortili(cantiere, griglia, dentroTracciato, 60, RIQUADRO_CERCHIA) : [];
 
@@ -178,7 +233,7 @@ async function costruisci() {
   const quotaIn = (x, z) => sulPonte(x, z) ?? quotaPavimento(x, z) ?? quota(x, z);
   modelli = params.has('manichini') ? null : await figure;
   animali = modelli ? await bestie : null;
-  const controlli = new Controlli(camera, renderer.domElement, griglia, quotaIn);
+  const controlli = new Controlli(camera, renderer.domElement, griglia, quotaIn, opzComandi());
   const partenza = params.get('da');
   if (partenza) { const [x, z, y] = partenza.split(',').map(Number); controlli.colloca(x, z, y || 0, 0); }
   else if (scenaIniziale?.vista) collocaVista(controlli, scenaIniziale.vista);
@@ -188,8 +243,11 @@ async function costruisci() {
   mondo.abitanti = creaAbitanti();
   impostaGiornata(giornata.id, { ora });
   impostaComposizione();
+  if (qualita !== 'alta') cielo.dimensioneOmbre(2048, 80);
+  controlli.movimentoRidotto = movimentoRidotto;
   await passo('');
-  console.info(tempi.join(' · '));
+  ricordaDurata((performance.now() - t0) / 1000);
+  console.info(tempiCaricamento.join(' · '));
   console.info(`città pronta in ${((performance.now() - t0) / 1000).toFixed(1)} s · lotti ${lotti.length} · borghi ${borghi.length} · oggetti ${cantiere.mesh.length}` +
     (KIT.pezzi ? ` · kit ${(cantiere.triangoliKit / 1e6).toFixed(1)} M triangoli · pozzi ${pozzi.length}` : ' · senza kit'));
   ui.pronto();
@@ -214,13 +272,16 @@ async function costruisciCampiMondo(passo, figure, bestie, t0) {
   await passo('Gli invitati prendono posto…');
   modelli = params.has('manichini') ? null : await figure;
   animali = modelli ? await bestie : null;
-  const controlli = new Controlli(camera, renderer.domElement, griglia, campi.quotaIn);
+  const controlli = new Controlli(camera, renderer.domElement, griglia, campi.quotaIn, opzComandi());
   collocaVista(controlli, scenaIniziale?.vista || campi.partenza);
   mondo = { cielo, acqua: null, griglia, cantiere, monumenti: null, lotti: [], strade: [], controlli, quotaIn: campi.quotaIn, suoni: new Suoni(), campi };
   mondo.abitanti = creaAbitanti();
   impostaGiornata(giornata.id, { ora });
   impostaComposizione();
+  if (qualita !== 'alta') cielo.dimensioneOmbre(2048, 80);
+  controlli.movimentoRidotto = movimentoRidotto;
   await passo('');
+  ricordaDurata((performance.now() - t0) / 1000);
   console.info(`Campi pronto in ${((performance.now() - t0) / 1000).toFixed(1)} s · oggetti ${cantiere.mesh.length}`);
   ui.pronto();
   if (params.has('subito')) entra();
@@ -320,7 +381,7 @@ function collocaVista(c, v) {
     c.pitch = -Math.atan2(v.y - 2, Math.hypot(v.verso[0] - v.x, v.verso[1] - v.z));
   } else {
     c.impostaVolo(false);
-    c.colloca(v.x, v.z, yaw, 0.04);
+    c.colloca(v.x, v.z, yaw, v.pitch ?? 0.04);
   }
   ui.statoVolo(c.volo);
 }
@@ -340,12 +401,36 @@ function vaiScena(s) {
   if (s.vista && mondo) collocaVista(mondo.controlli, s.vista);
 }
 
-function entra() {
+function entra(modo) {
   ui.mostra();
   mondo.controlli.attivo = true;
   mondo.suoni.avvia(camera);
   if (scenaIniziale || params.has('racconto')) racconto.apri(scenaIniziale?.id);
-  if (!matchMedia('(pointer: coarse)').matches && !params.has('subito')) renderer.domElement.requestPointerLock?.();
+  else if (modo === 'visita' && MONDO === 'citta') apriVisita();
+  else if (!params.has('subito')) ui.avviso('Tocca la strada dove vuoi andare. Trascina per guardarti intorno.', 7000);
+}
+
+function impostaCertezza(on) {
+  certezzaAccesa = on;
+  ui.statoCertezza(on);
+  mondo.cantiere.certezza(on); mondo.abitanti.visibili(!on);
+}
+
+function apriVisita() {
+  racconto.chiudi();
+  visita.apri(0);
+}
+
+/** Una tappa della visita: si va nel punto di vista, con una breve dissolvenza. */
+async function vaiTappa(t) {
+  const sfuma = !movimentoRidotto && mondo;
+  const velo = document.getElementById('dissolvenza');
+  if (sfuma) { velo.classList.add('su'); await new Promise(r => setTimeout(r, 280)); }
+  if (MONDO === 'citta' && giornata.id !== 'pasqua') impostaGiornata('pasqua');
+  collocaVista(mondo.controlli, t.vista);
+  if (t.certezza && !certezzaAccesa) { certezzaDallaVisita = true; impostaCertezza(true); }
+  if (!t.certezza && certezzaDallaVisita) { certezzaDallaVisita = false; impostaCertezza(false); }
+  if (sfuma) { mondo.controlli.aggiorna(0.016); velo.classList.remove('su'); }
 }
 
 function vaiA(l) {
@@ -353,7 +438,6 @@ function vaiA(l) {
   // si guarda il luogo da qualche metro, da un punto dove si può stare
   for (let r = 8; r < 40; r += 2) for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
     const x = l.pos[0] + Math.cos(a) * r, z = l.pos[1] + Math.sin(a) * r;
-    if (Math.abs(x) > 620 || Math.abs(z) > 620) continue;
     if (mondo.griglia.percorribile(x, z)) {
       const yaw = Math.atan2(-(l.pos[0] - x), -(l.pos[1] - z));
       if (c.volo) { c.pos.set(x, c.pos.y, z); c.yaw = yaw; }
@@ -365,14 +449,31 @@ function vaiA(l) {
 }
 
 /* ------------------------------------------------------------- ciclo */
+// Nei primi secondi dentro la città si contano i fotogrammi: se va a scatti e
+// nessuno ha scelto la qualità, si alleggeriscono le immagini e lo si dice.
+const scioltezza = { t: 0, n: 0, fatto: false };
+function controllaScioltezza(vero) {
+  if (scioltezza.fatto) return;
+  scioltezza.t += vero; scioltezza.n++;
+  if (scioltezza.t < 4) return;
+  scioltezza.fatto = true;
+  const fps = scioltezza.n / scioltezza.t;
+  if (fps < 12 && qualita === 'alta' && !ui.qualitaScelta) {
+    cambiaQualita();
+    ui.segna('#seg-qualita', 'media');
+    ui.avviso('Questo computer fa fatica: ho alleggerito le immagini. Puoi cambiarlo in Impostazioni.', 7000);
+  }
+}
+
 const orologio = new Clock();
 let tHud = 0;
 function ciclo() {
   requestAnimationFrame(ciclo);
-  const dt = Math.min(0.05, orologio.getDelta());
+  const vero = orologio.getDelta(), dt = Math.min(0.05, vero);
   if (mondo) {
     const c = mondo.controlli;
-    c.aggiorna(dt);
+    c.aggiorna(dt, Math.min(vero, 0.5));
+    if (c.attivo) controllaScioltezza(vero);
     mondo.cielo.segui(camera.position);
     if (mondo.acqua) mondo.acqua.material.uniforms.time.value += dt * 0.55;
     mondo.abitanti.aggiorna(dt, camera.position);
@@ -386,7 +487,7 @@ function ciclo() {
         const d = Math.hypot(camera.position.x - l.pos[0], camera.position.z - l.pos[1]);
         if (d < l.raggio && d < bd) { bd = d; best = l; }
       }
-      ui.luogoVicino(c.attivo && !racconto.aperto ? best : null);
+      ui.luogoVicino(c.attivo && !racconto.aperto && !visita.aperta ? best : null);
     }
     composer.render(dt);
   }
@@ -395,7 +496,7 @@ function ciclo() {
 // per le verifiche dalla console: ?debug
 if (params.has('debug')) window.citta = {
   renderer, scene, camera, get mondo() { return mondo; }, get composer() { return composer; }, get giornata() { return giornata; }, impostaGiornata, racconto, vaiScena,
-  get figure() { return modelli; }, get animali() { return animali; },
+  get figure() { return modelli; }, get animali() { return animali; }, tempi: tempiCaricamento, visita, ui,
   /** Salva un fotogramma a piena risoluzione (solo con il server di sviluppo). */
   async cattura(nome = 'cattura') {
     composer.render(0.016);
@@ -411,5 +512,5 @@ if (params.has('debug')) window.citta = {
   }
 };
 
-costruisci().catch(e => { console.error(e); ui.progresso('Errore: ' + e.message); });
+costruisci().catch(e => { console.error(e); ui.errore('Ricarica la pagina; se succede ancora, prova con un altro browser. (Dettaglio tecnico: ' + e.message + ')'); });
 ciclo();

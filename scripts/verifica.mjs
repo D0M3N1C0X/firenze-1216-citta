@@ -18,6 +18,7 @@ import { LUOGHI } from '../src/dati/luoghi.js';
 import { GIORNATE } from '../src/dati/giornate.js';
 import { SCENE, TIPI_NOTA } from '../src/dati/scene.js';
 import { COPIONE } from '../src/dati/copione.js';
+import { TAPPE } from '../src/dati/visita.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from '../src/mondo/griglia.js';
 import { Cantiere } from '../src/mondo/cantiere.js';
 import { costruisciMonumenti } from '../src/mondo/monumenti.js';
@@ -119,8 +120,15 @@ for (const s of SCENE) {
   if (s.luogo && ids.has(s.luogo) && (LUOGHI.find(l => l.id === s.luogo).mondo || 'citta') !== (s.mondo || 'citta')) errori.push(`scena ${s.id}: il luogo è in un altro mondo`);
 }
 
+// la visita guidata: ogni tappa in un luogo che esiste, da un punto dove si può stare
+TAPPE.forEach((t, k) => {
+  if (t.luogo && !ids.has(t.luogo)) errori.push(`visita, tappa ${k + 1}: luogo «${t.luogo}» inesistente`);
+  if (!t.vista.volo && !griglia.percorribile(t.vista.x, t.vista.z)) errori.push(`visita, tappa ${k + 1}: la vista (${t.vista.x}, ${t.vista.z}) non è percorribile`);
+  else if (!t.vista.volo && !aPiedi(t.vista.x, t.vista.z)) errori.push(`visita, tappa ${k + 1}: la vista non si raggiunge a piedi dall'ingresso`);
+});
+
 if (errori.length) {
   console.error(errori.map(e => '✗ ' + e).join('\n'));
   process.exit(1);
 }
-console.log(`✓ ${LUOGHI.length} luoghi raggiungibili, ${SCENE.length} scene coerenti`);
+console.log(`✓ ${LUOGHI.length} luoghi raggiungibili, ${SCENE.length} scene coerenti, ${TAPPE.length} tappe della visita`);
