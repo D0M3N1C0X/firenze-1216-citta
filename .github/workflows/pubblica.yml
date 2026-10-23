@@ -19,6 +19,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # la città resta percorribile (README): un controllo a sé, che segnala senza fermare la pubblicazione
+  verifica:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run verifica
+
   costruisci:
     runs-on: ubuntu-latest
     steps:
