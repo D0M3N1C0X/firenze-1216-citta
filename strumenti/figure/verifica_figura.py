@@ -2,7 +2,9 @@
 import bpy, os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import figure as fg
-OUT = '/private/tmp/claude-501/-Users-domenicoperroni/717308de-80cd-40e2-89ef-034c91c18b2f/scratchpad/verifica'
+# le immagini di controllo restano fuori dal repository (.catture/ è ignorata); VERIFICA_OUT per cambiare cartella
+OUT = os.environ.get('VERIFICA_OUT') or os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '.catture', 'verifica')
+os.makedirs(OUT, exist_ok=True)
 numeri = [int(x) for x in sys.argv[sys.argv.index('--') + 1:]] if '--' in sys.argv else [0]
 for n in numeri:
     rig, info = fg.crea(fg.VARIANTI[n])

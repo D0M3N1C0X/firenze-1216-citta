@@ -7,7 +7,8 @@ from bl_ext.user_default.mpfb.services.humanservice import HumanService
 from bl_ext.user_default.mpfb.services.locationservice import LocationService
 
 clip = sys.argv[sys.argv.index('--') + 1] if '--' in sys.argv else 'cammina'
-OUT = '/private/tmp/claude-501/-Users-domenicoperroni/717308de-80cd-40e2-89ef-034c91c18b2f/scratchpad/verifica'
+# le immagini di controllo restano fuori dal repository (.catture/ è ignorata); VERIFICA_OUT per cambiare cartella
+OUT = os.environ.get('VERIFICA_OUT') or os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '.catture', 'verifica')
 os.makedirs(OUT, exist_ok=True)
 mv.pulisci()
 corpo = HumanService.create_human()
