@@ -1,0 +1,463 @@
+<!-- Copia di docs/domande-esperto.html del progetto (repository privato): si aggiornano insieme. Pubblicata il 28 ottobre 2026 per il messaggio ai medievisti. -->
+<title>Firenze 1216, domande aperte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<style>
+/* Impaginato da dossier di lavoro: indice a sinistra sugli schermi larghi,
+   una colonna di lettura; i tre colori della certezza della città. */
+:root {
+  --carta: #f2f3f0;
+  --foglio: #fbfbf9;
+  --inchiostro: #22252a;
+  --tenue: #5b6067;
+  --linea: #d7dad4;
+  --accento: #2e5f9f;
+  --documentato: #3f7fd0;
+  --dedotto: #b06f12;
+  --ipotesi: #85827a;
+  --f-titolo: "Archivo Narrow", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-testo: "Literata", Georgia, "Times New Roman", serif;
+  --f-dati: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --carta: #15171a; --foglio: #1c1f23; --inchiostro: #e6e7e3; --tenue: #a2a6ab; --linea: #2d3136;
+    --accento: #86aee8; --documentato: #6ea2e6; --dedotto: #e2a04a; --ipotesi: #aaa79f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --carta: #15171a; --foglio: #1c1f23; --inchiostro: #e6e7e3; --tenue: #a2a6ab; --linea: #2d3136;
+  --accento: #86aee8; --documentato: #6ea2e6; --dedotto: #e2a04a; --ipotesi: #aaa79f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--carta); color: var(--inchiostro); font: 400 1.0625rem/1.62 var(--f-testo); }
+.pagina { max-width: 72rem; margin: 0 auto; padding-inline: 1rem; padding-block: 2.5rem 4rem;
+  display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; }
+@media (max-width: 860px) { .pagina { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding-block: 1.5rem 3rem; } }
+
+header.testata { grid-column: 1 / -1; display: grid; gap: 0.6rem; max-width: 46rem; }
+.occhiello { font: 600 0.78rem/1.3 var(--f-titolo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accento); }
+h1 { font: 700 clamp(2rem, 5vw, 3.1rem)/1.05 var(--f-titolo); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.sottotitolo { margin: 0; color: var(--tenue); font-size: 1.05rem; }
+.meta { font: 400 0.82rem/1.5 var(--f-dati); color: var(--tenue); margin: 0; }
+
+nav.indice { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; display: grid; gap: 1.2rem;
+  font: 500 0.95rem/1.35 var(--f-titolo); }
+nav.indice ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+nav.indice a { color: var(--inchiostro); text-decoration: none; display: grid; grid-template-columns: 2.4rem 1fr; gap: 0.4rem; }
+nav.indice a:hover, nav.indice a:focus-visible { color: var(--accento); }
+nav.indice .n { font: 400 0.8rem/1.5 var(--f-dati); color: var(--tenue); }
+nav.indice .gruppo { font: 600 0.74rem/1.3 var(--f-titolo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tenue); margin-bottom: 0.2rem; }
+@media (max-width: 860px) { nav.indice { position: static; } nav.indice .domande { display: none; } }
+
+main { min-width: 0; display: grid; gap: 3rem; }
+section.intro { display: grid; gap: 1rem; max-width: 40rem; }
+section.intro p { margin: 0; }
+h2 { font: 700 1.55rem/1.15 var(--f-titolo); margin: 0; text-wrap: balance; }
+h3 { font: 600 1.18rem/1.25 var(--f-titolo); margin: 0; text-wrap: balance; }
+
+.livelli { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem; margin: 0; padding: 0; list-style: none; }
+@media (max-width: 620px) { .livelli { grid-template-columns: minmax(0, 1fr); } }
+.livelli li { background: var(--foglio); border: 1px solid var(--linea); border-radius: 6px; padding: 0.8rem 0.9rem; display: grid; gap: 0.25rem; font-size: 0.93rem; line-height: 1.45; }
+.livelli b { font: 600 0.95rem/1.2 var(--f-titolo); display: flex; align-items: center; gap: 0.45rem; }
+.pallino { width: 0.7rem; height: 0.7rem; border-radius: 50%; flex: none; }
+
+.gruppo-domande { display: grid; gap: 1.6rem; }
+.gruppo-domande > header { display: grid; gap: 0.4rem; max-width: 40rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--inchiostro); }
+.gruppo-domande > header p { margin: 0; color: var(--tenue); }
+
+article.domanda { display: grid; grid-template-columns: 3.6rem minmax(0, 1fr); gap: 0 1rem; max-width: 46rem; scroll-margin-top: 1.5rem; }
+article.domanda .num { font: 500 0.95rem/1.7 var(--f-dati); color: var(--accento); }
+article.domanda .corpo { display: grid; gap: 0.55rem; min-width: 0; }
+article.domanda p { margin: 0; }
+article.domanda dl { margin: 0.2rem 0 0; display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 0.35rem 1rem; font-size: 0.93rem; line-height: 1.5; }
+article.domanda dt { font: 600 0.74rem/1.9 var(--f-titolo); letter-spacing: 0.07em; text-transform: uppercase; color: var(--tenue); }
+article.domanda dd { margin: 0; min-width: 0; }
+@media (max-width: 620px) {
+  article.domanda { grid-template-columns: minmax(0, 1fr); }
+  article.domanda dl { grid-template-columns: minmax(0, 1fr); gap: 0 0; }
+  article.domanda dd { margin-bottom: 0.4rem; }
+}
+.rif { font: 400 0.82rem/1.5 var(--f-dati); color: var(--tenue); }
+.diverge { font: 600 0.72rem/1 var(--f-titolo); letter-spacing: 0.07em; text-transform: uppercase; color: var(--dedotto);
+  border: 1px solid currentColor; border-radius: 3px; padding: 0.18rem 0.35rem; display: inline-block; vertical-align: 0.1em; margin-left: 0.3rem; }
+a { color: var(--accento); text-underline-offset: 0.15em; }
+a:focus-visible { outline: 2px solid var(--accento); outline-offset: 2px; border-radius: 2px; }
+em.verif { font-style: normal; font-family: var(--f-dati); font-size: 0.85em; color: var(--dedotto); }
+
+footer.chiusa { display: grid; gap: 0.6rem; max-width: 40rem; color: var(--tenue); font-size: 0.93rem; border-top: 1px solid var(--linea); padding-top: 1.2rem; }
+footer.chiusa p { margin: 0; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="pagina">
+  <header class="testata">
+    <span class="occhiello">Cosa fatta capo ha · domande per un medievista</span>
+    <h1>Firenze 1216, domande aperte</h1>
+    <p class="sottotitolo">Quarantanove domande nate scrivendo un gioco per le scuole e ricostruendo in 3D la città del 1216. Sono in ordine di urgenza, con quello che abbiamo già trovato.</p>
+    <p class="meta">Domenico Perroni · versione del 22 ottobre 2026</p>
+  </header>
+
+  <nav class="indice" aria-label="Indice">
+    <div>
+      <div class="gruppo">Le parti</div>
+      <ol>
+        <li><a href="#progetto"><span class="n">—</span><span>Il progetto e il metodo</span></a></li>
+        <li><a href="#gioco"><span class="n">1–15</span><span>Per il racconto</span></a></li>
+        <li><a href="#luoghi"><span class="n">16–22</span><span>I luoghi delle scene</span></a></li>
+        <li><a href="#citta"><span class="n">23–39</span><span>L'aspetto della città</span></a></li>
+        <li><a href="#mura"><span class="n">40–49</span><span>Le mura, gli interni, Campi e i mestieri</span></a></li>
+      </ol>
+    </div>
+    <div class="domande">
+      <div class="gruppo">Le più urgenti</div>
+      <ol>
+        <li><a href="#d8"><span class="n">8</span><span>Mercoledì o giovedì?</span></a></li>
+        <li><a href="#d16"><span class="n">16</span><span>Quale Porta Santa Maria</span></a></li>
+        <li><a href="#d17"><span class="n">17</span><span>Il lato della pietra di Marte</span></a></li>
+        <li><a href="#d18"><span class="n">18</span><span>Il lato sud della cerchia</span></a></li>
+        <li><a href="#d19"><span class="n">19</span><span>Le case delle famiglie</span></a></li>
+        <li><a href="#d5"><span class="n">5</span><span>Guelfi e ghibellini nel 1216</span></a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main>
+    <section class="intro" id="progetto">
+      <h2>Il progetto e il metodo</h2>
+      <p><i>Cosa fatta capo ha</i> è un gioco di media education per le scuole medie e superiori sull'uccisione di Buondelmonte dei Buondelmonti, la mattina di Pasqua del 1216. Chi gioca è un giovane notaio che raccoglie le versioni dei fatti e impara a distinguere chi ha visto, chi riferisce, chi ha un interesse. Accanto al gioco c'è una ricostruzione della città, da percorrere a piedi: <a href="https://d0m3n1c0x.github.io/firenze-1216-citta/" target="_blank" rel="noopener">la città del 1216 è già online</a>, con l'avviso che non è stata validata.</p>
+      <p>Ogni cosa che si vede o si legge porta accanto la sua fonte. Quando una fonte manca lo diciamo, e quando le fonti non sono d'accordo lo diciamo lo stesso. Gli edifici della città sono colorati, a richiesta, secondo tre livelli:</p>
+      <ul class="livelli">
+        <li><b><span class="pallino" style="background: var(--documentato)"></span>Documentato</b>esistenza e posizione attestate da fonti o da strutture superstiti datate</li>
+        <li><b><span class="pallino" style="background: var(--dedotto)"></span>Dedotto</b>ricavato da indizi: strutture non datate, cartografia successiva, confronti con città vicine</li>
+        <li><b><span class="pallino" style="background: var(--ipotesi)"></span>Ipotesi</b>ricostruzione plausibile, senza un riscontro specifico</li>
+      </ul>
+      <p>Abbiamo lavorato solo su fonti aperte: E. Faini, «Il convito del 1216», <i>Annali di Storia di Firenze</i> 1 (2006); le cronache nelle edizioni che Faini cita; le voci enciclopediche e le guide, segnate <em class="verif">[da verificare]</em> quando sono la nostra unica fonte. Ci basta anche una risposta breve, oppure solo un titolo da leggere.</p>
+    </section>
+
+    <section class="gruppo-domande" id="gioco" aria-labelledby="t-gioco">
+      <header>
+        <h2 id="t-gioco">Per il racconto</h2>
+        <p>Senza queste risposte il copione rischia di dire cose false. Sono le prime da guardare.</p>
+      </header>
+
+      <article class="domanda" id="d1"><div class="num">1</div><div class="corpo">
+        <h3>Il protagonista è plausibile?</h3>
+        <p>Un giovane notaio immaginario, allievo di Sanzanome: come si formava, e che cosa faceva concretamente un notaio fiorentino nel 1216 (imbreviature, rogiti, presenza ai consigli)?</p>
+        <dl><dt>Sappiamo</dt><dd>Sanzanome, giudice e notaio, scrisse i <i>Gesta Florentinorum</i> (ed. Hartwig, 1875).</dd>
+        <dt>Dove serve</dt><dd>In tutto il gioco: è il punto di vista.</dd></dl>
+        <span class="rif">dossier storico, n. 1</span></div></article>
+
+      <article class="domanda" id="d2"><div class="num">2</div><div class="corpo">
+        <h3>Il notaio negli sponsali</h3>
+        <p>Che ruolo aveva un notaio nel «giurare la donna» e negli accordi di matrimonio, nel 1216?</p>
+        <dl><dt>Sappiamo</dt><dd>Il giuramento del 10 febbraio è raccontato dallo pseudo-Brunetto (ed. Schiaffini 1954, p. 118; Faini pp. 14–16).</dd>
+        <dt>Dove serve</dt><dd>Atto II, il giuramento mancato.</dd></dl>
+        <span class="rif">dossier storico, n. 11</span></div></article>
+
+      <article class="domanda" id="d3"><div class="num">3</div><div class="corpo">
+        <h3>Sanzanome fuori Firenze</h3>
+        <p>L'incarico per l'accordo con Bologna lo portò davvero fuori Firenze? In che giorni?</p>
+        <dl><dt>Sappiamo</dt><dd>Nel febbraio 1216 il consiglio generale lo incarica di rappresentare Firenze in una convenzione con il comune di Bologna (Santini, <i>Documenti</i>, pp. 179–182; Faini p. 27). La data esatta e lo stile di datazione sono <em class="verif">[da verificare]</em>.</dd>
+        <dt>Dove serve</dt><dd>Atto II: il maestro parte e affida le nozze all'allievo.</dd></dl>
+        <span class="rif">dossier storico, n. 12</span></div></article>
+
+      <article class="domanda" id="d4"><div class="num">4</div><div class="corpo">
+        <h3>Chi era Sanzanome</h3>
+        <p>L'identificazione dell'autore dei <i>Gesta</i> con il giudice-notaio, e l'ipotesi di una parentela con i Mangiatroie: si possono usare nel gioco? Con quale cautela?</p>
+        <span class="rif">dossier storico, n. 4</span></div></article>
+
+      <article class="domanda" id="d5"><div class="num">5</div><div class="corpo">
+        <h3>«Guelfi» e «ghibellini» nel 1216</h3>
+        <p>Le due etichette sono già attestate a Firenze nel 1216? Se no, nei dialoghi del 1216 vanno evitate e usate solo nell'epilogo.</p>
+        <dl><dt>Sappiamo</dt><dd>Il gioco non dice che il delitto «causò» le fazioni: presenta questa idea come la tesi dei cronisti trecenteschi (Faini pp. 23–29).</dd>
+        <dt>Dove serve</dt><dd>In tutti i dialoghi.</dd></dl>
+        <span class="rif">dossier storico, n. 3</span></div></article>
+
+      <article class="domanda" id="d6"><div class="num">6</div><div class="corpo">
+        <h3>Latino scritto, volgare parlato</h3>
+        <p>Cronache e atti sono in latino, il parlato in volgare. Come rendere le due lingue senza anacronismi? Per esempio, la pagina di cronaca in latino con la traduzione accanto.</p>
+        <span class="rif">dossier storico, n. 2</span></div></article>
+
+      <article class="domanda" id="d7"><div class="num">7</div><div class="corpo">
+        <h3>La data del convito</h3>
+        <p>Si può stringere la data?</p>
+        <dl><dt>Sappiamo</dt><dd>Lo pseudo-Brunetto la data «1215» in stile fiorentino. Faini la colloca «ai primi dell'anno», cioè tra il 1° gennaio e il 9 febbraio 1216 nel nostro computo (p. 16, n. 37).</dd></dl>
+        <span class="rif">dossier storico, n. 6</span></div></article>
+
+      <article class="domanda" id="d8"><div class="num">8</div><div class="corpo">
+        <h3>Il 10 febbraio 1216 era mercoledì o giovedì? <span class="diverge">le fonti divergono</span></h3>
+        <p>Il «giovedì» della cronaca è un errore del cronista, o di chi lo ha ricalcolato con un calendario perpetuo senza tenere conto del bisestile?</p>
+        <dl><dt>Sappiamo</dt><dd>Lo pseudo-Brunetto scrive «giovedì die X di febraio» (Faini p. 14), e Faini lo accetta per il 1216, sul calendario perpetuo di Cappelli (p. 16, n. 37). Ma il 1216 era bisestile: dalla Pasqua, il 10 aprile, il 10 febbraio è 60 giorni prima e cade di mercoledì. Contando 59 giorni, come in un anno comune, viene giovedì.</dd>
+        <dt>Dove serve</dt><dd>Il copione dice giovedì; la città, per ora, scrive solo «10 febbraio».</dd></dl>
+        <span class="rif">dossier storico, n. 18 · piano della città, n. 25</span></div></article>
+
+      <article class="domanda" id="d9"><div class="num">9</div><div class="corpo">
+        <h3>Il nome del podestà <span class="diverge">le fonti divergono</span></h3>
+        <p>Gherardo o Currado Orlandi? Esiste un elenco dei podestà fondato sugli atti?</p>
+        <dl><dt>Sappiamo</dt><dd>Villani scrive «messere Gherardo Orlandi» (Faini p. 10), lo pseudo-Brunetto «messer Currado Orlandi» (Faini p. 13).</dd></dl>
+        <span class="rif">dossier storico, n. 7</span></div></article>
+
+      <article class="domanda" id="d10"><div class="num">10</div><div class="corpo">
+        <h3>Il Comune davanti alla vendetta</h3>
+        <p>Come reagiva il Comune a una vendetta tra casate, nel 1216? Gli statuti del 1322–1325 non si possono proiettare all'indietro: che cosa si sa del primo Duecento?</p>
+        <span class="rif">dossier storico, n. 13</span></div></article>
+
+      <article class="domanda" id="d11"><div class="num">11</div><div class="corpo">
+        <h3>La ghirlanda e il «tutto bianco»</h3>
+        <p>Le fonti vestono Buondelmonte in modo diverso. La differenza ha un valore simbolico noto: lo sposo, la Pasqua?</p>
+        <span class="rif">dossier storico, n. 17</span></div></article>
+
+      <article class="domanda" id="d12"><div class="num">12</div><div class="corpo">
+        <h3>L'obituario di Santa Reparata</h3>
+        <p>Che forma aveva, e chi poteva consultarlo?</p>
+        <dl><dt>Sappiamo</dt><dd>La data del 10 aprile 1216 viene da lì (Faini p. 16, n. 38).</dd>
+        <dt>Dove serve</dt><dd>Scena IV4, il corteo e il registro.</dd></dl>
+        <span class="rif">dossier storico, n. 15</span></div></article>
+
+      <article class="domanda" id="d13"><div class="num">13</div><div class="corpo">
+        <h3>I nomi inventati</h3>
+        <p>Cilia, Giunta, Bartolo, Neri: sono nomi plausibili nella Firenze del 1216?</p>
+        <span class="rif">dossier storico, n. 16</span></div></article>
+
+      <article class="domanda" id="d14"><div class="num">14</div><div class="corpo">
+        <h3>La violenza davanti a ragazzi di 11–12 anni</h3>
+        <p>Fin dove mostrare l'uccisione? La nostra proposta: fuori scena, raccontata solo attraverso le fonti e la miniatura del Villani Chigi.</p>
+        <span class="rif">dossier storico, n. 8</span></div></article>
+
+      <article class="domanda" id="d15"><div class="num">15</div><div class="corpo">
+        <h3>Persone vere, dialoghi inventati</h3>
+        <p>Nel gioco parlano persone esistite, con parole nostre. Quali convenzioni bisogna dichiarare?</p>
+        <span class="rif">dossier storico, n. 9</span></div></article>
+    </section>
+
+    <section class="gruppo-domande" id="luoghi" aria-labelledby="t-luoghi">
+      <header>
+        <h2 id="t-luoghi">I luoghi delle scene</h2>
+        <p>Il gioco e la città mettono le scene in punti precisi. Qui la posizione decide che cosa si vede.</p>
+      </header>
+
+      <article class="domanda" id="d16"><div class="num">16</div><div class="corpo">
+        <h3>Quale Porta Santa Maria? <span class="diverge">le fonti divergono</span></h3>
+        <p>Le porte con quel nome erano due, una nella cinta più antica (carolingia o matildina) e una nella cerchia del 1172–75? Da quale entrò Buondelmonte il 10 febbraio?</p>
+        <dl><dt>Sappiamo</dt><dd>Le fonti la mettono all'altezza di via Vacchereccia, oppure all'incrocio con borgo Santi Apostoli e via Lambertesca (Bargellini e Guarnieri, tramite Wikipedia, «Via Por Santa Maria») <em class="verif">[da verificare]</em>. La città mostra la prima.</dd>
+        <dt>Dove serve</dt><dd>Atto II, l'arrivo di Buondelmonte.</dd></dl>
+        <span class="rif">piano della città, n. 20 · dossier topografico, n. 34</span></div></article>
+
+      <article class="domanda" id="d17"><div class="num">17</div><div class="corpo">
+        <h3>Da che lato del ponte stava la pietra di Marte? <span class="diverge">le fonti divergono</span></h3>
+        <p>E che cosa raffigurava: una statua equestre tardoromana? Quanto era alta, e su che cosa poggiava?</p>
+        <dl><dt>Sappiamo</dt><dd>Villani la mette dal lato della città, su un pilastro: Buondelmonte fu ucciso «a piè del ponte Vecchio dal lato di qua, apunto a piè del pilastro ov'era la 'nsegna di Mars» (VI, 38; Faini p. 11). F. Vossilla, «Storia d'una fontana», <i>Mitteilungen des Kunsthistorischen Institutes in Florenz</i> 38 (1994), riprende Cinelli: una statua equestre tardoromana «più o meno» tra via de' Bardi e via de' Guicciardini, cioè in Oltrarno. Lo abbiamo letto solo di seconda mano <em class="verif">[da verificare]</em>. Dante la dice «pietra scema»: mutila.</dd>
+        <dt>Dove serve</dt><dd>Atto IV, l'omicidio «appiè di Marzo».</dd></dl>
+        <span class="rif">piano della città, n. 19 · monumenti, n. 42</span></div></article>
+
+      <article class="domanda" id="d18"><div class="num">18</div><div class="corpo">
+        <h3>Il lato sud della cerchia</h3>
+        <p>Sulla riva destra, la cerchia del 1172–75 correva lungo il fiume o lungo Lambertesca e Borgo Santi Apostoli? Santo Stefano al Ponte e le case degli Amidei erano dentro o fuori?</p>
+        <dl><dt>Sappiamo</dt><dd>Le sintesi dicono che il muro correva lungo via dei Vagellai e via dei Saponai, «a ridosso» di via Lambertesca, borgo Santi Apostoli e via del Parione (Wikipedia, «Mura di Firenze», da Bargellini e Guarnieri) <em class="verif">[da verificare]</em>. Sulla pianta di oggi via dei Vagellai e via dei Saponai stanno 80–90 m dentro la riva: almeno a est, quindi, il muro non correva sull'acqua. Ma le postierle d'Arno e d'Altafronte stavano proprio sul fiume. La città costruisce il tratto lungo Vagellai e Saponai e, più a ovest, mostra le due linee possibili, trasparenti, solo quando si accende «Che cosa è certo».</dd>
+        <dt>Dove serve</dt><dd>Atto IV: l'agguato al capo del ponte avvenne dentro o fuori le mura?</dd></dl>
+        <span class="rif">dossier topografico, n. 33</span></div></article>
+
+      <article class="domanda" id="d19"><div class="num">19</div><div class="corpo">
+        <h3>Dove abitavano le famiglie</h3>
+        <p>I Donati (la torre presso il Corso?), gli Uberti (l'area della futura piazza della Signoria), i Lamberti (via dei Lamberti o via Lambertesca?), i Fifanti (la torre d'Oltrarno che porta il loro nome?), gli Amidei («da Santo Stefano») e i Buondelmonti (popolo di San Felice in Piazza).</p>
+        <dl><dt>Sappiamo</dt><dd>Per gli Amidei, Villani: «in casa gli Amidei da Santo Stefano» (VI, 38; Faini p. 11). Per gli altri, solo toponimi di oggi.</dd>
+        <dt>Dove serve</dt><dd>Atti II e IV, e le case da visitare in città.</dd></dl>
+        <span class="rif">piano della città, n. 26 · dossier storico, n. 14</span></div></article>
+
+      <article class="domanda" id="d20"><div class="num">20</div><div class="corpo">
+        <h3>Santa Maria sopra Porta prima della ricostruzione</h3>
+        <p>Dove stava esattamente nel 1216, e come era orientata?</p>
+        <dl><dt>Sappiamo</dt><dd>È documentata dal 1038. Fu rifatta nella seconda metà del Duecento: è l'attuale San Biagio, in piazza di Parte Guelfa. Secondo Bargellini e Guarnieri la ricostruzione «probabilmente» la spostò e la girò; prima stava più vicina a via Por Santa Maria <em class="verif">[da verificare]</em>.</dd>
+        <dt>Dove serve</dt><dd>Atto III, il consiglio in cui Mosca dice «cosa fatta capo ha».</dd></dl>
+        <span class="rif">monumenti, n. 43</span></div></article>
+
+      <article class="domanda" id="d21"><div class="num">21</div><div class="corpo">
+        <h3>La torre degli Amidei nel 1216</h3>
+        <p>Era già finita? Quanto era alta prima che, nel Duecento, la abbassassero di «alcuni piani»?</p>
+        <dl><dt>Sappiamo</dt><dd>Eretta «nei primi decenni del XIII secolo», documentata dal dicembre 1241; distrutta nel 1944 e ricostruita sulle fotografie (Wikipedia, «Torre degli Amidei», da E. Pieri 1992).</dd></dl>
+        <span class="rif">dossier topografico, n. 36</span></div></article>
+
+      <article class="domanda" id="d22"><div class="num">22</div><div class="corpo">
+        <h3>Il corteo funebre</h3>
+        <p>Per quali strade passò? Le fonti dicono solo «per tutta Firenze».</p>
+        <span class="rif">piano della città, n. 32</span></div></article>
+    </section>
+
+    <section class="gruppo-domande" id="citta" aria-labelledby="t-citta">
+      <header>
+        <h2 id="t-citta">L'aspetto della città</h2>
+        <p>Domande per la ricostruzione in 3D: case, strade, ponte, dettagli. Nessuna cambia il racconto, ma tutte cambiano quello che uno studente vede.</p>
+      </header>
+
+      <article class="domanda" id="d23"><div class="num">23</div><div class="corpo">
+        <h3>Una pianta di riferimento</h3>
+        <p>Esiste una pianta affidabile della Firenze del 1216, o uno studio che ne ricostruisca il tessuto? Oggi lavoriamo a ritroso da OpenStreetMap, togliendo ciò che è più tardo.</p>
+        <span class="rif">dossier storico, n. 5</span></div></article>
+
+      <article class="domanda" id="d24"><div class="num">24</div><div class="corpo">
+        <h3>Il ponte ricostruito dopo il 1177 <span class="diverge">le fonti divergono</span></h3>
+        <p>Cinque arcate o nove? Quanto era largo? C'erano botteghe prima del 1333?</p>
+        <dl><dt>Sappiamo</dt><dd>Cinque arcate secondo le fonti divulgative, nove con botteghe sporgenti secondo <i>Finestre sull'Arte</i>. Nel 1333 restarono in piedi due pile centrali (Villani). Da vedere: T. Flanigan, <i>The Ponte Vecchio</i> (Brepols, 2024).</dd></dl>
+        <span class="rif">piano della città, n. 18 · dossier topografico, n. 35 · monumenti, n. 45</span></div></article>
+
+      <article class="domanda" id="d25"><div class="num">25</div><div class="corpo">
+        <h3>Le rive</h3>
+        <p>Com'erano i tratti che oggi sono lungarni? C'erano mulini o pescaie vicino al ponte?</p>
+        <span class="rif">piano della città, n. 21</span></div></article>
+
+      <article class="domanda" id="d26"><div class="num">26</div><div class="corpo">
+        <h3>Le torri</h3>
+        <p>Quante erano nel 1216? Quanto alte prima della mozzatura del Primo Popolo, intorno al 1250, a 50 braccia? Come finivano in cima, con un tetto o con i merli?</p>
+        <span class="rif">piano della città, n. 22</span></div></article>
+
+      <article class="domanda" id="d27"><div class="num">27</div><div class="corpo">
+        <h3>Pietra e legno</h3>
+        <p>In che proporzione le case erano di pietra e di legno? Quanto erano diffusi gli sporti sulla strada?</p>
+        <dl><dt>Sappiamo</dt><dd>Niente di preciso. Oggi la città mette il piano terra sempre in pietra e, in circa un terzo delle case, i piani alti di tavole su un'intelaiatura di travi: è un'ipotesi.</dd></dl>
+        <span class="rif">piano della città, n. 23</span></div></article>
+
+      <article class="domanda" id="d28"><div class="num">28</div><div class="corpo">
+        <h3>Le vesti</h3>
+        <p>Colori e fogge per ceto, a Firenze, nel 1216. Il colore dell'abito vallombrosano. Chi portava il mantello.</p>
+        <span class="rif">piano della città, n. 24</span></div></article>
+
+      <article class="domanda" id="d29"><div class="num">29</div><div class="corpo">
+        <h3>Il Mercato Vecchio</h3>
+        <p>Forma, misure, chiese intorno e disposizione dei banchi, prima dello sventramento del 1885–1895.</p>
+        <span class="rif">piano della città, n. 27</span></div></article>
+
+      <article class="domanda" id="d30"><div class="num">30</div><div class="corpo">
+        <h3>Santa Reparata e la piazza di San Giovanni</h3>
+        <p>La pianta e le misure della cattedrale secondo gli scavi del 1965–1974; quanto si estendevano la piazza e il cimitero nel 1216.</p>
+        <dl><dt>Sappiamo</dt><dd>Circa 58,5 × 25–26 m, tre navate con sette coppie di pilastri, cripta, portico (Wikipedia, «Santa Reparata»; da vedere F. Toker, <i>On Holy Ground</i>, 2009).</dd>
+        <dt>Dove serve</dt><dd>Scene IV2c e IV4, e l'interno da visitare.</dd></dl>
+        <span class="rif">piano della città, n. 28</span></div></article>
+
+      <article class="domanda" id="d31"><div class="num">31</div><div class="corpo">
+        <h3>La cerchia del 1172–75</h3>
+        <p>Il tracciato, le porte, la data d'inizio (1172 o 1173), l'altezza e lo spessore del muro.</p>
+        <dl><dt>Sappiamo</dt><dd>Dal 17 ottobre la città costruisce il muro sull'asse delle vie che le sintesi nominano: via dei Fossi, del Giglio e del Canto de' Nelli a ovest; dei Gori, de' Pucci, Bufalini e Sant'Egidio a nord; Verdi e de' Benci a est. Mette diciannove porte e postierle, ciascuna sulla via che le sintesi indicano: per esempio Porta di Balla in via dei Servi, Porta Ghibellina in via Ghibellina (Wikipedia, «Mura di Firenze») <em class="verif">[da verificare: Davidsohn; Bargellini e Guarnieri]</em>. Altezza (10 m), spessore e merli sono ipotesi.</dd></dl>
+        <span class="rif">piano della città, n. 29 · dati/cerchia.js</span></div></article>
+
+      <article class="domanda" id="d32"><div class="num">32</div><div class="corpo">
+        <h3>Com'erano le porte della cerchia</h3>
+        <p>C'è qualche raffigurazione o descrizione negli atti? Nessuna è sopravvissuta, e le porte trecentesche di oggi sono di un'altra cerchia e molto più alte.</p>
+        <dl><dt>Sappiamo</dt><dd>Niente. La città mostra una torre di porta di 9,5 × 7 m, alta 17, con il fornice a tutto sesto: un'ipotesi.</dd></dl>
+        <span class="rif">monumenti, n. 44</span></div></article>
+
+      <article class="domanda" id="d33"><div class="num">33</div><div class="corpo">
+        <h3>Due strade</h3>
+        <p>Il tracciato della strada da via de' Guicciardini a San Felice prima di piazza Pitti; e il nome, nel 1216, della strada che oggi è via dei Calzaiuoli.</p>
+        <span class="rif">piano della città, n. 31</span></div></article>
+
+      <article class="domanda" id="d34"><div class="num">34</div><div class="corpo">
+        <h3>Le botteghe aperte</h3>
+        <p>Che forma avevano il banco e gli sportelli nel Duecento fiorentino? Oggi la città abbassa lo sportello basso a banco e alza quello alto a tettoia.</p>
+        <span class="rif">piano della città, n. 30</span></div></article>
+
+      <article class="domanda" id="d35"><div class="num">35</div><div class="corpo">
+        <h3>L'arco nel 1216</h3>
+        <p>Nell'edilizia civile fiorentina l'arco era ancora a tutto sesto, o già acuto? Le finestre architravate delle case-torri pisane valgono come modello anche per Firenze?</p>
+        <dl><dt>Sappiamo</dt><dd>Il portale «a doppio arco» della torre della Castagna; a Pisa, architravi su mensole e archi di scarico dalla metà del XII secolo (Treccani, «Pisa», da Redi 1991).</dd></dl>
+        <span class="rif">kit edilizio, n. 37</span></div></article>
+
+      <article class="domanda" id="d36"><div class="num">36</div><div class="corpo">
+        <h3>Che cosa chiudeva le finestre</h3>
+        <p>Vetro, tela, carta, o soli scuri? Che cosa dicono gli inventari e la pittura più vicina al 1216?</p>
+        <span class="rif">kit edilizio, n. 38</span></div></article>
+
+      <article class="domanda" id="d37"><div class="num">37</div><div class="corpo">
+        <h3>I pozzi</h3>
+        <p>C'erano pozzi pubblici nelle piazze nel 1216? Dove?</p>
+        <dl><dt>Sappiamo</dt><dd>Solo una notizia generica: la città beveva da «innumerevoli pozzi» (<i>L'Ingegneria civile</i>, 1883). Per prudenza la ricostruzione li mette nei cortili e non nelle piazze.</dd></dl>
+        <span class="rif">kit edilizio, n. 39</span></div></article>
+
+      <article class="domanda" id="d38"><div class="num">38</div><div class="corpo">
+        <h3>Gli anelli di ferro alle facciate</h3>
+        <p>J. Superti (<i>I cavalli di Firenze</i>, 2014) li data dal tardo Duecento: c'è qualcosa di più antico? Da vedere A. M. Adorisio, <i>Per uso e per decoro</i> (1996).</p>
+        <span class="rif">kit edilizio, n. 40</span></div></article>
+
+      <article class="domanda" id="d39"><div class="num">39</div><div class="corpo">
+        <h3>Le scale esterne</h3>
+        <p>A Firenze c'erano scale esterne, come i profferli del Lazio? Non abbiamo trovato né esempi né norme, e per ora la città non ne mostra.</p>
+        <span class="rif">kit edilizio, n. 41</span></div></article>
+    </section>
+
+    <section class="gruppo-domande" id="mura" aria-labelledby="t-mura">
+      <header>
+        <h2 id="t-mura">Le mura, gli interni, Campi e i mestieri</h2>
+        <p>Domande nate dopo il 9 ottobre, costruendo la città fino alle mura, gli interni da visitare e il castello del convito.</p>
+      </header>
+
+      <article class="domanda" id="d40"><div class="num">40</div><div class="corpo">
+        <h3>La chiusura dell'Oltrarno</h3>
+        <p>Nel 1216 le porte d'Oltrarno erano di legno o in muratura? E dove passava la chiusura fra San Niccolò e San Felice: dietro le case delle vie lungo il fiume?</p>
+        <dl><dt>Sappiamo</dt><dd>Le sintesi dicono che in Oltrarno non c'era un vero muro: chiudevano le case, con le pareti verso l'esterno senza aperture, e una palizzata fatta in fretta. Nominano Porta Vecchia (via di San Niccolò), Porta di Santa Lucia dei Magnoli (piazza de' Mozzi), Porta di Piazza (piazza San Felice), una porta in piazza de' Frescobaldi e Porta di San Jacopo (in fondo a via di Santo Spirito) <em class="verif">[da verificare]</em>. La città disegna la palizzata a mano: è un'ipotesi.</dd></dl>
+        <span class="rif">dossier topografico, n. 51</span></div></article>
+
+      <article class="domanda" id="d41"><div class="num">41</div><div class="corpo">
+        <h3>Via Maggio fuori dalle mura?</h3>
+        <p>Via Maggio restava fuori, con una porta a ciascun capo, in piazza San Felice e in piazza de' Frescobaldi?</p>
+        <dl><dt>Sappiamo</dt><dd>Lo deduciamo da due cose: le sintesi mettono una porta a ciascuno dei due capi, e il recinto di Santo Spirito, più a ovest, sarebbe «dopo il 1260». La città lo mostra così.</dd></dl>
+        <span class="rif">dossier topografico, n. 52</span></div></article>
+
+      <article class="domanda" id="d42"><div class="num">42</div><div class="corpo">
+        <h3>I borghi fuori porta</h3>
+        <p>Quali borghi c'erano fuori dalle porte nel 1216, e quanto erano fitti di case e di torri?</p>
+        <dl><dt>Sappiamo</dt><dd>Le sintesi parlano di «numerose torri private fuori dalle mura, nei borghi», senza dire quali. La città mette case lungo le strade che escono dalle porte, per un tratto: un'ipotesi.</dd></dl>
+        <span class="rif">dossier topografico, n. 53</span></div></article>
+
+      <article class="domanda" id="d43"><div class="num">43</div><div class="corpo">
+        <h3>Le chiese che oggi hanno un edificio successivo</h3>
+        <p>Che misure avevano nel 1216 San Lorenzo (quella consacrata nel 1059), la Badia prima di Arnolfo, Santa Trinita e San Pancrazio? Su quale lato avevano la facciata?</p>
+        <dl><dt>Sappiamo</dt><dd>Niente di preciso: la città usa la pianta degli edifici di oggi, segnata come ipotesi.</dd></dl>
+        <span class="rif">dossier topografico, n. 54</span></div></article>
+
+      <article class="domanda" id="d44"><div class="num">44</div><div class="corpo">
+        <h3>Il fossato</h3>
+        <p>Il fossato correva solo lungo via Verdi e via de' Benci? Era pieno d'acqua, e da dove veniva?</p>
+        <dl><dt>Sappiamo</dt><dd>Le sintesi lo attestano solo su quel tratto; il nome di via dei Fossi fa pensare che ce ne fosse uno anche a ovest <em class="verif">[da verificare]</em>.</dd></dl>
+        <span class="rif">dossier topografico, n. 55</span></div></article>
+
+      <article class="domanda" id="d45"><div class="num">45</div><div class="corpo">
+        <h3>Santa Reparata e il Battistero in alzato</h3>
+        <p>Quanto erano alte la navata e le navatelle di Santa Reparata, com'era la facciata, quale campanile era in piedi? Nel Battistero, l'attico e il tetto a piramide erano già finiti nel 1216?</p>
+        <dl><dt>Sappiamo</dt><dd>La pianta di Santa Reparata viene dagli scavi; l'alzato è un'ipotesi. Il Battistero è in piedi, ma non sappiamo che cosa sia stato rifatto dopo il 1216.</dd></dl>
+        <span class="rif">monumenti, n. 46–47</span></div></article>
+
+      <article class="domanda" id="d46"><div class="num">46</div><div class="corpo">
+        <h3>Il castello dei Mazzinghi a Campi</h3>
+        <p>Com'era il castello del convito? Dove stava la sala? Esistono descrizioni o rilievi di prima della Rocca Strozzi?</p>
+        <dl><dt>Sappiamo</dt><dd>Che il convito fu «nella terra di Campi» (pseudo-Brunetto; Faini p. 13) e che il castello dei Mazzinghi fu distrutto nel 1260. La Rocca di oggi è del Trecento. La città ricostruisce recinto, cassero e sala sul tipo dei castelli del contado: un'ipotesi.</dd>
+        <dt>Dove serve</dt><dd>Atto I, il convito.</dd></dl>
+        <span class="rif">monumenti, n. 48</span></div></article>
+
+      <article class="domanda" id="d47"><div class="num">47</div><div class="corpo">
+        <h3>Il convito: chi sedeva a tavola</h3>
+        <p>C'erano donne a tavola? Come si disponevano le tavole? Che cosa si mangiava alla festa per l'investitura di un cavaliere, nel 1216?</p>
+        <dl><dt>Sappiamo</dt><dd>La cronaca dice che la rissa scoppiò «quando furono levate le tavole». Per l'apparecchiatura usiamo notizie del Trecento: un tagliere e una coppa ogni due commensali, tovaglie su assi e cavalletti. Gli invitati non hanno un volto: nessun personaggio storico è riconoscibile.</dd>
+        <dt>Dove serve</dt><dd>Atto I, il convito.</dd></dl>
+        <span class="rif">monumenti, n. 49</span></div></article>
+
+      <article class="domanda" id="d48"><div class="num">48</div><div class="corpo">
+        <h3>Dentro una torre di famiglia</h3>
+        <p>Che cosa c'era al piano terra di una torre nel 1216? Dove si cucinava, dove si dormiva?</p>
+        <dl><dt>Sappiamo</dt><dd>Niente di specifico per Firenze. Nella torre degli Amidei la città mette al piano terra un deposito: armi, cassoni, botti, una scala a pioli verso il solaio. È un'ipotesi.</dd></dl>
+        <span class="rif">monumenti, n. 50</span></div></article>
+
+      <article class="domanda" id="d49"><div class="num">49</div><div class="corpo">
+        <h3>Dove stavano i mestieri</h3>
+        <p>Nel 1216 dove tenevano la tavola i cambiatori? I mercanti di Calimala vendevano nei fondaci o su banchi in strada? Come erano disposti i banchi del Mercato Vecchio (beccai, pescivendoli, ortolani, fornai)? E dove lavoravano i fabbri?</p>
+        <dl><dt>Sappiamo</dt><dd>Che la via di Calimala porta il nome dell'arte dei mercanti di panni, e che il nome «bancherius» indicava chi cambiava seduto dietro un banco. Il resto la città lo mostra come ipotesi: i cambiatori sul lato del mercato verso Calimala, i banchi del cibo a file, la fucina vicino a Porta Santa Maria.</dd>
+        <dt>Dove serve</dt><dd>Atto II, il 10 febbraio: la città nei giorni di lavoro.</dd></dl>
+        <span class="rif">kit edilizio, n. 56–59</span></div></article>
+    </section>
+
+    <footer class="chiusa">
+      <p>I numeri tra parentesi in fondo a ogni domanda rimandano ai documenti di lavoro del progetto: il dossier storico del gioco, il piano e il dossier topografico della città, le fonti del kit edilizio e dei monumenti. Dentro ci sono i link alle fonti.</p>
+      <p>Una domanda che non riguarda il medievista resta fuori da questa pagina: i diritti sulle miniature del codice Chigi L VIII 296, che chiederemo alla Biblioteca Apostolica Vaticana.</p>
+    </footer>
+  </main>
+</div>

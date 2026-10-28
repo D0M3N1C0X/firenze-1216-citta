@@ -535,35 +535,6 @@ function santaReparata(cant, griglia) {
 // Banchi con le tende, solo nei giorni feriali (dati/giornate.js). Quanti
 // fossero e come fossero disposti non lo sappiamo: è un'ipotesi d'insieme.
 // I banchi non fermano chi cammina: la griglia è la stessa in ogni giornata.
-const TELE = [[0.86, 0.82, 0.72], [0.74, 0.5, 0.36], [0.5, 0.56, 0.68], [0.82, 0.74, 0.56], [0.62, 0.66, 0.5]];
-function mercatoVecchio(cant) {
-  const R = rng(1885), LIV = 'ipotesi';
-  cant.inVariante('feriale', () => {
-    for (let x = 38; x <= 90; x += 6.5) for (let z = -388; z <= -342; z += 7) {
-      const px = x + R.tra(-0.8, 0.8), pz = z + R.tra(-0.8, 0.8);
-      // lasciano libero il passaggio lungo Calimala e il decumano
-      if (Math.abs(px - 86) < 3.5 || Math.abs(pz + 366) < 3.5 || R.vero(0.15)) continue;
-      const M = new Matrix4().makeRotationY(R.vero(0.5) ? 0 : Math.PI / 2).setPosition(px, quota(px, pz), pz);
-      const W = R.tra(1.8, 2.6), D = R.tra(0.8, 1.0), h = 0.85;
-      cant.aggiungi(scatola(-W / 2, h - 0.06, -D / 2, W / 2, h, D / 2), 'legno', LIV, M, [0.9, 0.86, 0.8]);
-      for (const sx of [-1, 1]) cant.aggiungi(scatola(sx * (W / 2 - 0.25) - 0.04, 0, -D / 2 + 0.05, sx * (W / 2 - 0.25) + 0.04, h - 0.06, D / 2 - 0.05), 'legnoScuro', LIV, M, [1, 1, 1], false);
-      // la tenda su quattro pali
-      const hT = R.tra(2.1, 2.4), tinta = R.scegli(TELE);
-      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]])
-        cant.aggiungi(scatola(sx * W / 2 - 0.03, 0, sz * (D / 2 + 0.3) - 0.03, sx * W / 2 + 0.03, hT, sz * (D / 2 + 0.3) + 0.03), 'legnoScuro', LIV, M, [1, 1, 1], false);
-      const tenda = scatola(-W / 2 - 0.15, 0, -D / 2 - 0.45, W / 2 + 0.15, 0.03, D / 2 + 0.45);
-      tenda.applyMatrix4(new Matrix4().makeRotationX(R.tra(-0.12, 0.12)));
-      tenda.translate(0, hT, 0);
-      cant.aggiungi(tenda, 'intonaco', LIV, M, tinta);
-      // la merce
-      for (let k = 0, n = R.intero(2, 5); k < n; k++) {
-        const w = R.tra(0.25, 0.5), xx = -W / 2 + 0.15 + k * (W - 0.3) / n;
-        cant.aggiungi(scatola(xx, h, -D / 2 + 0.1, xx + w, h + R.tra(0.1, 0.3), -D / 2 + 0.1 + R.tra(0.25, 0.5)), 'intonaco', LIV, M, R.scegli([[0.55, 0.42, 0.28], [0.7, 0.62, 0.4], [0.45, 0.5, 0.3], [0.62, 0.3, 0.2]]), false);
-      }
-    }
-  });
-}
-
 /* =============================================================== TUTTO */
 export function costruisciMonumenti(cant, griglia) {
   const info = ponte(cant, griglia);
@@ -611,7 +582,7 @@ export function costruisciMonumenti(cant, griglia) {
   porta(cant, griglia, [84.4, -197], [0, 1]);
   battistero(cant, griglia, BATTISTERO ? [BATTISTERO.x, BATTISTERO.z] : [128, -542]);
   santaReparata(cant, griglia);
-  mercatoVecchio(cant);
+  // i banchi del Mercato Vecchio: mondo/mestieri.js (28 ottobre 2026)
 
   // le torri con un nome: impronta reale, alzato ipotetico
   const torriNote = [];

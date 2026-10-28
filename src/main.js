@@ -30,6 +30,7 @@ import { PONTE_ASSE, costruisciMonumenti, quotaPavimento, sulPonte } from './mon
 import { costruisciBorghi } from './mondo/fondale.js';
 import { costruisciMura, costruisciPalizzata, ipotesiLatoSud } from './mondo/mura.js';
 import { creaVegetazione } from './mondo/vegetazione.js';
+import { costruisciMestieri, figureDeiMestieri, grigliaDeiMestieri, suoniDeiMestieri } from './mondo/mestieri.js';
 import { Abitanti } from './mondo/abitanti.js';
 import { caricaAnimali, caricaFigure } from './mondo/figure.js';
 import { Suoni } from './mondo/suoni.js';
@@ -225,6 +226,10 @@ async function costruisci() {
   costruisciPalizzata(cantiere, griglia);
   const pozzi = KIT.pezzi ? pozziNeiCortili(cantiere, griglia, dentroTracciato, 60, RIQUADRO_CERCHIA) : [];
 
+  // i mestieri dei giorni di lavoro: banchi, botteghe allestite, chi vende e chi compra
+  const mestieri = costruisciMestieri(cantiere, griglia, lotti, strade);
+  console.info(`mestieri: ${mestieri.panni} botteghe di panni, ${mestieri.figure} figure ai banchi`);
+
   await passo('Muro su muro…');
   cantiere.costruisci(scene);
 
@@ -239,7 +244,7 @@ async function costruisci() {
   else if (scenaIniziale?.vista) collocaVista(controlli, scenaIniziale.vista);
   else controlli.colloca(20, -46, 2.62, -0.02);
 
-  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni() };
+  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri };
   mondo.abitanti = creaAbitanti();
   impostaGiornata(giornata.id, { ora });
   impostaComposizione();
@@ -306,8 +311,10 @@ function creaAbitanti() {
     raggio: 5000,             // tutta la città, fino ai borghi: le strade sono già solo quelle
     extra: [{ punti: [PONTE_ASSE.A, PONTE_ASSE.B], larghezza: 5.5 }],
     gruppi: giornata.gruppi,
-    // in chiesa e nella torre degli Amidei (dati/interni.js)
-    fermi: figureNegliInterni(giornata)
+    // in chiesa e nella torre degli Amidei (dati/interni.js); ai banchi nei giorni di lavoro (mondo/mestieri.js)
+    fermi: [...figureNegliInterni(giornata), ...figureDeiMestieri(giornata).fermi],
+    seduti: figureDeiMestieri(giornata).seduti,
+    cavalliFermi: figureDeiMestieri(giornata).cavalliFermi
   });
 }
 
@@ -323,6 +330,7 @@ function impostaGiornata(id, opz = {}) {
   mondo.cielo.giornata(g);
   mondo.cantiere.giornata(g);
   mondo.suoni.giornata(g);
+  if (MONDO === 'citta') { grigliaDeiMestieri(mondo.griglia, g.festa); mondo.suoni.mestieri(suoniDeiMestieri(g)); }
   if (cambia) {
     mondo.abitanti.distruggi();
     mondo.abitanti = creaAbitanti();

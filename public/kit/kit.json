@@ -325,5 +325,105 @@
    "1480"
   ],
   "triangoli_lod1": 48
+ },
+ {
+  "nome": "banco_cambio",
+  "triangoli": 720,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 272
+ },
+ {
+  "nome": "pezze",
+  "triangoli": 204,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 12
+ },
+ {
+  "nome": "banco_panni",
+  "triangoli": 164,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 96
+ },
+ {
+  "nome": "banco_beccaio",
+  "triangoli": 840,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 320
+ },
+ {
+  "nome": "banco_pesce",
+  "triangoli": 1560,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 328
+ },
+ {
+  "nome": "banco_ortolano",
+  "triangoli": 1460,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 356
+ },
+ {
+  "nome": "banco_pane",
+  "triangoli": 1328,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 272
+ },
+ {
+  "nome": "fucina",
+  "triangoli": 902,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 258
+ },
+ {
+  "nome": "banco_notaio",
+  "triangoli": 210,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 176
+ },
+ {
+  "nome": "tenda_muro",
+  "triangoli": 36,
+  "tipo": "mestiere",
+  "livello": "ipotesi",
+  "fasi": [
+   "1216"
+  ],
+  "triangoli_lod1": 36
  }
 ]

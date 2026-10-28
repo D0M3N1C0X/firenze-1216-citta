@@ -46,7 +46,8 @@ export class Controlli {
     dom.style.cursor = 'grab';
     dom.addEventListener('pointerdown', e => {
       if (!this.attivo || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      dom.setPointerCapture?.(e.pointerId);
+      // alcuni browser rifiutano la cattura: il tocco deve funzionare lo stesso
+      try { dom.setPointerCapture?.(e.pointerId); } catch (err) { /* si va avanti senza */ }
       this.punt.set(e.pointerId, { x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, t: performance.now(), mosso: false, tipo: e.pointerType });
     });
     dom.addEventListener('pointermove', e => {
@@ -120,11 +121,16 @@ export class Controlli {
 
   tocca(cx, cy) {
     const p = this.puntoSotto(cx, cy);
-    if (!p) return;
+    if (!p) { this.opz.avviso?.('Lì non c\'è una strada: tocca un punto della strada, o la facciata di una casa per andarci davanti.'); return; }
     if (this.volo) { this.voloVerso = p; this.mostraSegno(p); return; }
     this.giraAuto = true;
     const c = trovaCammino(this.griglia, [this.pos.x, this.pos.z], p);
-    if (!c) { this.opz.avviso?.('Da qui non ci si arriva a piedi: tocca un punto più vicino, o usa «Vai a…».'); return; }
+    if (!c) {
+      const lontano = Math.hypot(p[0] - this.pos.x, p[1] - this.pos.z) > 250;
+      this.opz.avviso?.(lontano ? 'È lontano: per arrivarci prima usa «Vai a…» o «Dall\'alto».'
+        : 'Da qui a piedi non ci si arriva: forse è dietro un muro o dall\'altra parte del fiume.');
+      return;
+    }
     this.percorso = c.slice(1);
     this.mostraSegno(c.at(-1));
   }
@@ -168,7 +174,7 @@ export class Controlli {
     if (this.volo) {
       if (this.voloVerso) {
         const dx = this.voloVerso[0] - this.pos.x, dz = this.voloVerso[1] - this.pos.z, dist = Math.hypot(dx, dz);
-        const s = Math.min(dist, Math.max(15, dist * 1.4) * Math.min(vero, 0.25));
+        const s = Math.min(dist, Math.max(15, dist * 1.4) * Math.min(vero, 0.5));
         if (dist < 1) this.ferma(); else { this.pos.x += dx / dist * s; this.pos.z += dz / dist * s; }
       }
       this.pos.x += mx; this.pos.z += mz;
@@ -179,7 +185,8 @@ export class Controlli {
       const g = this.griglia, p = this.pos;
       let mosso = 0;
       if (this.percorso) {
-        let resto = (svelto ? 4.2 : PASSO_TOCCO) * Math.min(vero, 0.25);
+        // lungo un percorso già controllato si può avanzare anche di mezzo secondo per fotogramma
+        let resto = (svelto ? 4.2 : PASSO_TOCCO) * Math.min(vero, 0.5);
         while (resto > 0 && this.percorso.length) {
           const [tx, tz] = this.percorso[0], dx = tx - p.x, dz = tz - p.z, dist = Math.hypot(dx, dz);
           if (dist <= resto) { p.x = tx; p.z = tz; resto -= dist; mosso += dist; this.percorso.shift(); }

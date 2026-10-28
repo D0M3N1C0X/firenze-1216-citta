@@ -228,12 +228,46 @@ export const LUOGHI = [
     pos: [63, -365], raggio: 32,
     luogo: { livello: 'dedotto', nota: 'il mercato sul luogo del foro romano, dove oggi è piazza della Repubblica [da verificare: prima attestazione del nome]' },
     forma: { livello: 'ipotesi', nota: 'forma, misure e banchi ricostruiti: il quartiere fu demolito nel 1885–1895' },
-    testo: 'Il cuore commerciale della città, nel punto dove si incrociavano le strade della Firenze romana. Nei giorni feriali i banchi si riempiono di merce; a Pasqua la piazza è vuota. Alla fine dell\'Ottocento il quartiere fu demolito per aprire l\'attuale piazza della Repubblica: per ricostruirlo servono il catasto e le fotografie di prima dello sventramento.',
+    testo: 'Il cuore commerciale della città, nel punto dove si incrociavano le strade della Firenze romana. Nei giorni di lavoro, come il 10 febbraio, i banchi stanno a file: i beccai, il pesce, il pane, gli ortolani, e verso Calimala le tavole dei cambiatori; in un angolo un notaio scrive per chi glielo chiede. A Pasqua la piazza è vuota. Le file e i banchi sono un\'ipotesi del modello. Alla fine dell\'Ottocento il quartiere fu demolito per aprire l\'attuale piazza della Repubblica: per ricostruirlo servono il catasto e le fotografie di prima dello sventramento.',
     fonti: [
       'Sventramento del Mercato Vecchio, 1885–1895 [da verificare: date]',
       'Catasto generale toscano, progetto CASTORE della Regione Toscana [da verificare: licenza]',
-      'F. Sznura, L\'espansione urbana di Firenze nel Dugento, 1975 [da verificare]'
+      'F. Sznura, L\'espansione urbana di Firenze nel Dugento, 1975 [da verificare]',
+      'I banchi e le file dei mestieri: ipotesi (strumenti/kit/FONTI.md, § 7)'
     ]
+  },
+  {
+    id: 'cambiatori',
+    nome: 'I cambiatori',
+    pos: [77, -367], raggio: 12,
+    luogo: { livello: 'ipotesi', nota: 'sul lato del Mercato Vecchio verso Calimala: dove stessero nel 1216 non lo sappiamo (lacuna 56)' },
+    forma: { livello: 'ipotesi', nota: 'tavola coperta da un panno verde, bilancia, denari, registro: per analogia con le immagini di Due e Trecento' },
+    testo: 'In una città dove girano monete di zecche diverse, qualcuno deve cambiarle e pesarle. I cambiatori lavorano seduti dietro una tavola, con la bilancia e il registro: da «banco» viene la parola banchiere. Qui stanno in fila sul lato del mercato verso Calimala, la via dei mercanti di panni, che avevano bisogno di loro ogni giorno. Si vedono solo nei giorni di lavoro.',
+    fonti: [
+      'Il nome «bancherius» nei registri notarili genovesi del XII secolo: chi cambiava seduto dietro un banco o una tavola (meer.com, «Il bancherius nel basso medioevo») [da verificare su una fonte scientifica]',
+      'L\'Arte del Cambio a Firenze: data della prima attestazione [da verificare]'
+    ]
+  },
+  {
+    id: 'calimala',
+    nome: 'Le botteghe di Calimala',
+    pos: [86, -275], raggio: 28,
+    luogo: { livello: 'dedotto', nota: 'via Calimala porta il nome dell\'arte dei mercanti di panni' },
+    forma: { livello: 'ipotesi', nota: 'banchi davanti alle botteghe, con le pezze colorate e la canna per misurare (lacuna 57)' },
+    testo: 'I mercanti di Calimala comprano panni in Francia e nelle Fiandre, li fanno rifinire e tingere a Firenze e li rivendono: è l\'arte più ricca della città, e la via porta il suo nome. Nei giorni di lavoro le pezze stanno sul banco davanti alla bottega, e il mercante le misura con la canna, quattro braccia, circa 2,33 metri. I colori sono un\'ipotesi.',
+    fonti: [
+      'Arte di Calimala: mercanti e rifinitori di panni stranieri (Wikipedia, «Arte di Calimala») [da verificare: G. Filippi, L\'Arte dei Mercanti di Calimala in Firenze, 1889]',
+      'La canna di quattro braccia [da verificare: la misura nel 1216]'
+    ]
+  },
+  {
+    id: 'fucina',
+    nome: 'La fucina e il maniscalco',
+    pos: [81, -164], raggio: 10,
+    luogo: { livello: 'ipotesi', nota: 'su via Por Santa Maria, vicino alla porta, dove si ferma chi arriva a cavallo: un\'ipotesi del modello (lacuna 59)' },
+    forma: { livello: 'ipotesi', nota: 'tettoia, forgia con la cappa, mantice, incudine, tinozza' },
+    testo: 'Il fabbro batte il ferro all\'incudine accanto alla forgia; il garzone tiene pronta la tinozza per temprare. In strada un cavallo aspetta il maniscalco. Dove lavorassero i fabbri nel 1216 non lo sappiamo: qui stanno vicino alla porta perché chi arriva a cavallo ne ha bisogno. Si sentono da lontano, ma solo nei giorni di lavoro.',
+    fonti: ['Posto e forma: ipotesi del modello (strumenti/kit/FONTI.md, § 7)']
   },
   {
     id: 'cerchia',
@@ -258,6 +292,7 @@ export const LUOGHI = [
     forma: { livello: 'ipotesi', nota: 'una delle case generate di via delle Terme' },
     testo: 'Qui il gioco mette la casa del notaio che racconta la storia: in via delle Terme, a due passi da Santa Maria sopra Porta, dove si è tenuto il consiglio. È un\'invenzione dichiarata. Il notaio non è esistito, e la sua casa, con la bottega e il banco aperto sulla strada nei giorni di lavoro, è una qualsiasi delle case della via. Le scene che si svolgono qui, la sera del messaggio e il quaderno chiuso, sono inventate anche nel copione.',
     fonti: [
+      'Lo scrittoio davanti alla casa, nei giorni di lavoro: ipotesi (strumenti/kit/FONTI.md, § 7)',
       'Il copione del gioco, scene III3b e III3c: «invenzione» (storia/copione.md)',
       'Via delle Terme: tracciato medievale, dal nome delle terme romane [da verificare]'
     ]

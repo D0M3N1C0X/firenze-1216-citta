@@ -64,3 +64,34 @@ Domenico ha scelto «pietra in basso, legno in alto» (lacuna 23 del PIANO). Il 
 11. **08/10/2026 — Anacronismi dell'arredo di strada.** Esclusi dal 1216 portafiaccole e panche di via, perché le attestazioni note sono rinascimentali; esclusa ovunque la scala esterna, documentata nel Lazio. Ammessi gli anelli, ma come ipotesi, perché sono attestati dal tardo Duecento. Fonti nel § 2.
 12. **08/10/2026 — Pozzi.** Nessuno nelle piazze, per mancanza di fonti; nei cortili come ipotesi, dalla notizia generica degli «innumerevoli pozzi» (1883).
 13. **08/10/2026 — Portale a doppio arco.** Dalla torre della Castagna, dove è documentato, è esteso a tutte le torri e a circa due porte di casa su cinque: dedotto per analogia.
+14. **28/10/2026 — I mestieri.** Dieci pezzi nuovi, tutti «ipotesi» per la forma; i posti dei mestieri sono ipotesi motivate (§ 7). Lacune 56–59.
+
+## 7. I mestieri (28 ottobre 2026)
+
+Le botteghe e i banchi dei giorni di lavoro: li posa `src/mondo/mestieri.js`, solo il 10 febbraio (a Pasqua il mercato è vuoto e le botteghe sono chiuse). Le figure sono generiche, come in tutta la città.
+
+| Pezzo | Che cosa mostra | Livello | Motivo o fonte |
+|---|---|---|---|
+| Tavola del cambiatore | asse su cavalletti coperta da un panno verde, bilancia a due piatti, pile di denari, registro, cassetta; il cambiatore seduto dietro | ipotesi | i cambiatori lavoravano seduti dietro un banco o una tavola: il nome *bancherius* compare nei registri notarili genovesi del XII secolo ([meer.com](https://www.meer.com/it/27405-il-bancherius-nel-basso-medioevo)); il panno verde è un'ipotesi |
+| Pezze di panno | pile di stoffe piegate, in sei colori (scarlatto, azzurro, verde, bruno, greggio, paonazzo) | ipotesi | l'Arte di Calimala rifiniva e tingeva i panni importati dalla Francia e dalle Fiandre ([Wikipedia, «Arte di Calimala»](https://en.wikipedia.org/wiki/Arte_di_Calimala)); i colori sono un'ipotesi **[da verificare]** |
+| Banco del mercante di panni | asse su cavalletti, la canna per misurare, le forbici | ipotesi | la canna fiorentina di quattro braccia, circa 2,33 m **[da verificare: la misura nel 1216]** |
+| Banchi del beccaio, del pesce, dell'ortolano, del fornaio | ceppo e carne appesa; ceste e tinozza; cavoli, rape e sacchi; pani tondi e la pala | ipotesi | il Mercato Vecchio era il centro del commercio; le notizie sui banchi sono del Trecento (i beccai lodati da Antonio Pucci) **[da verificare per il Duecento]** |
+| Fucina | tettoia, forgia di pietra con la brace e la cappa, mantice, incudine sul ceppo, tinozza, ferri di cavallo | ipotesi | — |
+| Scrittoio del notaio | piano inclinato con la pergamena, calamaio di corno e penna, registri, sgabello | ipotesi | il notaio è il protagonista del gioco; la forma dello scrittoio viene dalle miniature di Due e Trecento **[da verificare]** |
+| Tenda contro la facciata | tela su due pali, sopra il banco davanti alla casa | ipotesi | — |
+
+**Dove sono, e perché.**
+
+- **Il mercato del cibo** sta al Mercato Vecchio, a file per mestiere: beccai a nord, poi pesce, pane, ortolani. Che lì ci fosse il mercato è dedotto (scheda «Il Mercato Vecchio»); le file sono un'ipotesi.
+- **I cambiatori** stanno in fila sul lato del mercato verso Calimala, la via dei mercanti di panni, che con il denaro lavoravano ogni giorno: ipotesi.
+- **I mercanti di panni** hanno il banco davanti alle botteghe di via Calimala: la via porta il nome della loro arte (dedotto); i banchi in strada sono un'ipotesi.
+- **La fucina e il maniscalco** stanno su via Por Santa Maria, vicino alla porta, dove si ferma chi arriva a cavallo: ipotesi.
+- **I notai** hanno lo scrittoio davanti alla casa del notaio del gioco e in un angolo del mercato: ipotesi.
+
+**Lacune** (seguono le 51–55 del dossier topografico):
+
+56. **I cambiatori nel 1216.** Dove tenevano la tavola: al Mercato Vecchio, al Mercato Nuovo, vicino a Orsanmichele? Da quando è attestata l'Arte del Cambio?
+57. **Le botteghe di Calimala.** Nel 1216 i panni si vendevano nei fondaci o su banchi in strada? Quali colori uscivano dalla rifinitura fiorentina?
+58. **Il Mercato Vecchio nel Duecento.** Come erano disposti i banchi di beccai, pescivendoli, ortolani e fornai? C'erano tettoie stabili?
+59. **I fabbri dentro le mura.** Dove lavoravano, e c'erano regole contro il fuoco?
+

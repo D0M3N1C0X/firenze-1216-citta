@@ -21,7 +21,9 @@ opening takes a few tens of seconds.
 
 **Prototype** (October 2026): the whole city inside the 1172–75 walls, house by house, with walls, gates and the
 suburbs outside them; photographic textures and animated people. Two days: **10 February**, the broken promise, and
-**Easter morning**, the murder. The **story mode** leads from scene to scene of the game, each in its place. The
+**Easter morning**, the murder. On 10 February the city is at work: food stalls in the Old Market, money
+changers at their tables, cloth merchants in via Calimala, a smithy near the Santa Maria gate, notaries at their
+desks, each with its own sound; on Easter morning the market is empty. The **story mode** leads from scene to scene of the game, each in its place. The
 January 1216 banquet is a separate place, the Mazzinghi castle at Campi. The full plan, with phases, sources, calendar
 and risks, is in [PIANO.md](PIANO.md).
 

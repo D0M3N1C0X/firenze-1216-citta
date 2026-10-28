@@ -160,6 +160,8 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 .sinistra h3 { font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #6b5a42; margin: 16px 0 4px; }
 .sinistra p { margin: 0 0 10px; }
 #visita p { font-size: 17px; line-height: 1.55; }
+/* la visita è alta quanto il suo testo: lascia vedere la città che descrive */
+#visita { bottom: auto; max-height: calc(100vh - 72px - var(--sopra-barra, 86px)); }
 #visita .punti { display: flex; gap: 5px; margin: 4px 0 12px; }
 #visita .punti i { width: 9px; height: 9px; border-radius: 50%; background: #d8cbb4; }
 #visita .punti i.fatto { background: #b0802a; }
@@ -205,6 +207,7 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 @media (max-width: 640px), (max-height: 560px) {
   .sinistra { top: auto; bottom: var(--sopra-barra, 86px); max-height: 50vh; left: 12px; right: 12px; width: auto; padding: 14px 16px 12px; }
   .sinistra h2 { font-size: 20px; }
+  #visita { top: auto; bottom: var(--sopra-barra, 86px); max-height: 50vh; }
   #visita p { font-size: 15.5px; }
   #visita .punti { margin: 2px 0 8px; }
 }

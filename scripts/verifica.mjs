@@ -29,6 +29,7 @@ import { readFileSync } from 'node:fs';
 import { lottizza } from '../src/mondo/edifici.js';
 import { costruisciMura, costruisciPalizzata } from '../src/mondo/mura.js';
 import { costruisciBorghi } from '../src/mondo/fondale.js';
+import { costruisciMestieri, grigliaDeiMestieri } from '../src/mondo/mestieri.js';
 import { EDIFICIO, FIUME as C_FIUME2, MONUMENTO } from '../src/mondo/griglia.js';
 
 // i monumenti modellati in Blender cambiano la pianta (Santa Reparata si
@@ -50,6 +51,9 @@ costruisciMura(cant, griglia);
 const RIQUADRO = [Math.min(...TRACCIATO.map(p => p[0])), Math.min(...TRACCIATO.map(p => p[1])), Math.max(...TRACCIATO.map(p => p[0])), Math.max(...TRACCIATO.map(p => p[1]))];
 const lotti = lottizza(griglia, strade.filter(s => !s.fuori), { dentro: dentroTracciato, riquadro: RIQUADRO, riempimento: 28000 });
 const borghi = costruisciBorghi(cant, griglia, strade);
+// i banchi dei giorni di lavoro occupano la strada: la verifica li mette, così nessun punto di vista finisce sotto un banco
+const mestieri = costruisciMestieri(cant, griglia, lotti, strade);
+grigliaDeiMestieri(griglia, false);
 costruisciPalizzata(cant, griglia);
 console.log(`pianta pronta in ${((Date.now() - t0) / 1000).toFixed(1)} s · ${strade.length} strade · ${lotti.length} lotti · ${borghi.length} case nei borghi`);
 for (const a of AVVISI) console.warn('! ' + a);

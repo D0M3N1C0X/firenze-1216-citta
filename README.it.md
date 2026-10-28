@@ -8,7 +8,7 @@ La Firenze della mattina di Pasqua del 1216, da percorrere a piedi. È la sezion
 
 Serve un computer o un tablet con una buona scheda grafica: il modello è pensato per l'hardware di fascia alta e la prima apertura richiede qualche decina di secondi.
 
-**Prototipo** (ottobre 2026): tutta la città dentro la cerchia del 1172–75, casa per casa, con le mura, le porte e i borghi fuori porta; texture fotografiche e persone animate. Due giornate: **il 10 febbraio**, la promessa rotta, e **la mattina di Pasqua**, il delitto. Il **racconto** porta di scena in scena del gioco, ciascuna nel suo luogo. Il convito di gennaio 1216 è un luogo a parte, il castello dei Mazzinghi a Campi: ci si arriva dalle scene del primo atto o con `?luogo=campi`. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
+**Prototipo** (ottobre 2026): tutta la città dentro la cerchia del 1172–75, casa per casa, con le mura, le porte e i borghi fuori porta; texture fotografiche e persone animate. Due giornate: **il 10 febbraio**, la promessa rotta, e **la mattina di Pasqua**, il delitto. Il 10 febbraio la città lavora: i banchi del cibo al Mercato Vecchio, i cambiatori alle loro tavole, i mercanti di panni in via Calimala, la fucina vicino a Porta Santa Maria, i notai allo scrittoio, ciascuno con il suo suono; a Pasqua il mercato è vuoto. Il **racconto** porta di scena in scena del gioco, ciascuna nel suo luogo. Il convito di gennaio 1216 è un luogo a parte, il castello dei Mazzinghi a Campi: ci si arriva dalle scene del primo atto o con `?luogo=campi`. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
 
 ## Dal gioco alla città
 

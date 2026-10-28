@@ -48,7 +48,10 @@ def mat(nome):
         m.use_nodes = True
         col = {'conci': (0.55, 0.5, 0.42), 'legno': (0.42, 0.34, 0.26), 'legnoScuro': (0.2, 0.14, 0.1),
                'ferro': (0.05, 0.05, 0.05), 'scuro': (0.01, 0.01, 0.01), 'tela': (0.75, 0.68, 0.5),
-               'pietrame': (0.5, 0.45, 0.38), 'intonaco': (0.8, 0.75, 0.66), 'lastre': (0.5, 0.48, 0.44)}[nome]
+               'pietrame': (0.5, 0.45, 0.38), 'intonaco': (0.8, 0.75, 0.66), 'lastre': (0.5, 0.48, 0.44),
+               'pannoVerde': (0.12, 0.3, 0.16), 'pergamena': (0.85, 0.78, 0.6), 'rame': (0.55, 0.3, 0.15), 'verdura': (0.25, 0.42, 0.18),
+               'pesce': (0.6, 0.62, 0.62), 'cesta': (0.55, 0.42, 0.24), 'carne': (0.45, 0.15, 0.1), 'pane': (0.65, 0.45, 0.25),
+               'fuoco': (1.0, 0.45, 0.1), 'fosso': (0.15, 0.2, 0.18)}[nome]
         m.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value = col + (1,)
         MATERIALI[nome] = m
     return MATERIALI[nome]
@@ -476,6 +479,249 @@ def panca(nome, lun=2.4):
     return P.crea()
 
 
+# ============================================================ i mestieri
+# Aggiunti il 28 ottobre 2026 (PIANO.md, «Mestieri, mercato e suoni»).
+# Pezzi da banco: stanno da soli sulla strada o in piazza, con il davanti
+# verso +Y (dove sta chi compra) e chi vende dietro, verso -Y. L'origine è
+# a terra, al centro del banco. Forme per analogia con le botteghe e i
+# banchi di Due e Trecento dipinti e miniati: tutte «ipotesi» (FONTI.md).
+
+def cil(P, cx, cy, r, z0, z1, m, n=10, r1=None):
+    """Cilindro (o tronco di cono) verticale."""
+    r1 = r if r1 is None else r1
+    n = max(5, n // 2) if LOD else n
+    P.solido([(cx + math.cos(2 * math.pi * k / n) * rr, cy + math.sin(2 * math.pi * k / n) * rr, z)
+              for k in range(n) for rr, z in ((r, z0), (r1, z1))], m)
+
+
+def palla(P, cx, cy, cz, rx, ry, rz, m, n=5):
+    """Ellissoide: pani, cavoli, pesci, carne, sacchi."""
+    n = 3 if LOD else n
+    pts = []
+    for i in range(n + 1):
+        t = math.pi * i / n
+        for k in range(2 * n):
+            a = math.pi * k / n
+            pts.append((cx + rx * math.sin(t) * math.cos(a), cy + ry * math.sin(t) * math.sin(a), cz + rz * math.cos(t)))
+    P.solido(pts, m)
+
+
+def tavola_cavalletti(P, lun, prof, h, m='legno'):
+    """Asse su due cavalletti: il banco di chi vende in piazza."""
+    P.blocco(-lun / 2, lun / 2, h - 0.05, h, -prof / 2, prof / 2, m, smusso=0.006)
+    for x in (-lun / 2 + 0.28, lun / 2 - 0.28):
+        P.blocco(x - 0.04, x + 0.04, h - 0.12, h - 0.05, -prof * 0.42, prof * 0.42, 'legnoScuro', smusso=0)
+        for sy in (-1, 1):
+            P.solido([(x - 0.03, sy * prof * 0.4, 0), (x + 0.03, sy * prof * 0.4, 0), (x - 0.03, sy * prof * 0.4 + 0.05 * sy, 0), (x + 0.03, sy * prof * 0.4 + 0.05 * sy, 0),
+                      (x - 0.03, sy * 0.02, h - 0.12), (x + 0.03, sy * 0.02, h - 0.12), (x - 0.03, sy * 0.07, h - 0.12), (x + 0.03, sy * 0.07, h - 0.12)], 'legnoScuro')
+
+
+def panca_legno(P, x0, x1, y, h=0.45):
+    P.blocco(x0, x1, h - 0.05, h, y - 0.15, y + 0.15, 'legno', smusso=0)
+    for x in (x0 + 0.12, x1 - 0.12):
+        P.blocco(x - 0.04, x + 0.04, 0, h - 0.05, y - 0.12, y + 0.12, 'legnoScuro', smusso=0)
+
+
+def libro(P, x, y, z, w=0.26, d=0.19, h=0.05):
+    P.blocco(x - w / 2, x + w / 2, z, z + h, y - d / 2, y + d / 2, 'legnoScuro', smusso=0)
+    P.blocco(x - w / 2 + 0.01, x + w / 2 + 0.004, z + 0.008, z + h - 0.008, y - d / 2 + 0.01, y + d / 2 - 0.01, 'pergamena', smusso=0)
+
+
+def banco_cambio(nome):
+    """La tavola del cambiatore: panno verde, bilancia, pile di monete, il registro, la cassetta."""
+    P = Pezzo(nome)
+    h = 0.82
+    tavola_cavalletti(P, 1.6, 0.8, h)
+    P.blocco(-0.82, 0.82, h, h + 0.012, -0.42, 0.42, 'pannoVerde', smusso=0)          # il panno
+    P.blocco(-0.82, 0.82, h - 0.36, h + 0.012, 0.42, 0.432, 'pannoVerde', smusso=0)   # ricade sul davanti
+    libro(P, -0.45, -0.1, h + 0.012, 0.32, 0.24, 0.06)                                # il registro
+    P.blocco(-0.75, -0.48, h + 0.012, h + 0.2, -0.38, -0.2, 'legno', smusso=0.004)    # la cassetta
+    P.blocco(-0.76, -0.47, h + 0.08, h + 0.1, -0.385, -0.195, 'ferro', smusso=0)
+    # la bilancia: colonnina, giogo, due piatti
+    cil(P, 0.5, -0.15, 0.06, h + 0.012, h + 0.03, 'rame', 10)
+    P.blocco(0.49, 0.51, h + 0.03, h + 0.42, -0.16, -0.14, 'ferro', smusso=0)
+    P.blocco(0.3, 0.7, h + 0.41, h + 0.43, -0.16, -0.14, 'ferro', smusso=0)
+    for x in (0.31, 0.69):
+        cil(P, x, -0.15, 0.07, h + 0.16, h + 0.18, 'rame', 12, 0.08)
+        if not LOD:
+            P.blocco(x - 0.003, x + 0.003, h + 0.18, h + 0.41, -0.153, -0.147, 'ferro', smusso=0)
+    if not LOD:
+        for k, (x, y) in enumerate([(-0.05, 0.12), (0.06, 0.18), (0.14, 0.08), (-0.14, 0.2), (0.25, 0.2)]):
+            cil(P, x, y, 0.013, h + 0.012, h + 0.012 + 0.01 * (2 + k % 4), 'rame', 8)   # pile di denari
+        palla(P, 0.2, -0.28, h + 0.07, 0.07, 0.06, 0.07, 'tela')                    # un sacchetto
+        palla(P, 0.05, -0.3, h + 0.05, 0.05, 0.05, 0.05, 'tela')
+    panca_legno(P, -0.6, 0.6, -0.75)
+    return P.crea()
+
+
+def pezze(nome):
+    """Una pila di pezze di panno piegate: il colore lo dà la città."""
+    P = Pezzo(nome)
+    if LOD:
+        P.blocco(-0.3, 0.3, 0, 0.36, -0.2, 0.2, 'tela', smusso=0)
+        return P.crea()
+    for k in range(3):
+        dx, dy = R.uniform(-0.03, 0.03), R.uniform(-0.03, 0.03)
+        P.blocco(-0.29 + dx, 0.29 + dx, k * 0.12, k * 0.12 + 0.115, -0.19 + dy, 0.19 + dy, 'tela', smusso=0.012)
+    return P.crea()
+
+
+def banco_panni(nome):
+    """Il banco del mercante di panni: la canna per misurare (quattro braccia) e le forbici."""
+    P = Pezzo(nome)
+    h = 0.86
+    tavola_cavalletti(P, 2.0, 0.85, h)
+    P.blocco(-1.17, 1.17, h, h + 0.025, 0.3, 0.325, 'legnoScuro', smusso=0)        # la canna, 2,33 m
+    if not LOD:
+        for s in (-1, 1):                                                         # le forbici
+            P.solido([(0.55, -0.1, h), (0.57, -0.1, h), (0.55, -0.1, h + 0.01), (0.83, -0.1 + s * 0.03, h), (0.83, -0.1 + s * 0.03, h + 0.01)], 'ferro')
+    return P.crea()
+
+
+def banco_beccaio(nome):
+    """Il banco del beccaio: il ceppo, la stanga con i pezzi appesi, la carne sul banco."""
+    P = Pezzo(nome)
+    h = 0.85
+    tavola_cavalletti(P, 1.7, 0.8, h)
+    cil(P, 1.2, -0.05, 0.26, 0, 0.82, 'legno', 12)                                # il ceppo
+    P.blocco(1.1, 1.36, 0.82, 0.835, -0.07, -0.03, 'ferro', smusso=0)             # la mannaia
+    for x in (-0.8, 0.8):                                                          # la stanga
+        P.blocco(x - 0.04, x + 0.04, 0, 2.05, -0.42, -0.36, 'legnoScuro', smusso=0)
+    P.blocco(-0.84, 0.84, 1.97, 2.03, -0.42, -0.36, 'legnoScuro', smusso=0)
+    for x in (-0.5, -0.1, 0.3, 0.62):                                              # pezzi appesi
+        if not LOD:
+            P.blocco(x - 0.005, x + 0.005, 1.7, 1.97, -0.395, -0.385, 'ferro', smusso=0)
+        palla(P, x, -0.39, 1.48, 0.12, 0.08, 0.24, 'carne')
+    for x in (-0.55, -0.15, 0.3):                                                  # sul banco
+        palla(P, x, 0.05, h + 0.06, 0.16, 0.11, 0.06, 'carne')
+    return P.crea()
+
+
+def banco_pesce(nome):
+    """Il banco del pesce: ceste sul banco e la tinozza con l'acqua."""
+    P = Pezzo(nome)
+    h = 0.8
+    tavola_cavalletti(P, 1.6, 0.8, h)
+    for x in (-0.48, 0.0, 0.48):
+        cil(P, x, 0.0, 0.22, h, h + 0.16, 'cesta', 12, 0.25)
+        n = 2 if LOD else 5
+        for k in range(n):
+            a = k * 2.4
+            palla(P, x + math.cos(a) * 0.09, math.sin(a) * 0.09, h + 0.17 + 0.02 * (k % 2), 0.13, 0.035, 0.025, 'pesce')
+    cil(P, 1.15, 0.05, 0.3, 0, 0.42, 'legno', 12, 0.33)                           # la tinozza
+    cil(P, 1.15, 0.05, 0.28, 0.36, 0.38, 'fosso', 12)
+    return P.crea()
+
+
+def banco_ortolano(nome):
+    """Il banco dell'ortolano: ceste di cavoli e di rape, sacchi a terra."""
+    P = Pezzo(nome)
+    h = 0.8
+    tavola_cavalletti(P, 1.7, 0.8, h)
+    for x in (-0.5, 0.05):
+        cil(P, x, 0.0, 0.24, h, h + 0.14, 'cesta', 12, 0.27)
+    for k in range(3 if LOD else 6):                                               # cavoli
+        palla(P, -0.5 + (k % 3 - 1) * 0.13, (k // 3 - 0.5) * 0.14, h + 0.2, 0.1, 0.1, 0.09, 'verdura')
+    for k in range(3 if LOD else 7):                                               # rape
+        palla(P, 0.05 + (k % 4 - 1.5) * 0.09, (k // 4 - 0.5) * 0.12, h + 0.18, 0.05, 0.05, 0.05, 'intonaco')
+    palla(P, 0.6, 0.05, h + 0.12, 0.2, 0.15, 0.12, 'verdura')                      # un mazzo di erbe
+    for x in (-0.6, 0.55):                                                         # sacchi a terra, legati in cima
+        cil(P, x, 0.65, 0.21, 0, 0.42, 'tela', 10, 0.13)
+        cil(P, x, 0.65, 0.05, 0.42, 0.5, 'tela', 6, 0.08)
+    return P.crea()
+
+
+def banco_pane(nome):
+    """Il banco del fornaio: pani tondi in file, una cesta, la pala."""
+    P = Pezzo(nome)
+    h = 0.82
+    tavola_cavalletti(P, 1.6, 0.8, h)
+    for i in range(3 if LOD else 5):
+        for j in range(2):
+            palla(P, -0.6 + i * 0.26 + (0.13 if j else 0), -0.15 + j * 0.26, h + 0.05, 0.11, 0.11, 0.055, 'pane')
+    cil(P, 0.55, 0.0, 0.22, h, h + 0.18, 'cesta', 12, 0.25)
+    if not LOD:
+        for k in range(4):
+            palla(P, 0.5 + (k % 2) * 0.1, -0.05 + (k // 2) * 0.1, h + 0.22, 0.08, 0.08, 0.045, 'pane')
+    P.blocco(-0.9, -0.84, 0, 1.6, -0.5, -0.46, 'legno', smusso=0)                 # la pala, appoggiata
+    P.blocco(-0.98, -0.76, 1.55, 1.85, -0.51, -0.47, 'legno', smusso=0)
+    return P.crea()
+
+
+def fucina(nome):
+    """La fucina del fabbro sotto una tettoia: forgia accesa con la cappa, mantice, incudine, tinozza, ferri."""
+    P = Pezzo(nome)
+    # la tettoia: quattro pali e un tetto di tavole che scende verso la strada
+    for x in (-1.6, 1.6):
+        for y, z in ((-1.2, 2.9), (1.2, 2.45)):
+            P.blocco(x - 0.07, x + 0.07, 0, z, y - 0.07, y + 0.07, 'legnoScuro', smusso=0)
+    P.solido([(-1.75, -1.35, 2.95), (1.75, -1.35, 2.95), (-1.75, 1.35, 2.42), (1.75, 1.35, 2.42),
+              (-1.75, -1.35, 3.0), (1.75, -1.35, 3.0), (-1.75, 1.35, 2.47), (1.75, 1.35, 2.47)], 'legno')
+    # la forgia: un banco di muratura con il fuoco, e la cappa che sale oltre il tetto
+    P.blocco(-1.45, -0.25, 0, 0.82, -1.15, -0.35, 'pietrame', smusso=0.01)
+    P.blocco(-1.05, -0.65, 0.82, 0.86, -0.9, -0.6, 'fuoco', smusso=0)
+    P.blocco(-1.2, -0.5, 0.82, 0.84, -1.0, -0.5, 'scuro', smusso=0)
+    palla(P, -0.85, -0.75, 0.86, 0.24, 0.18, 0.1, 'fuoco')                       # la brace accesa, ben visibile
+    P.solido([(-1.4, -1.15, 1.6), (-0.3, -1.15, 1.6), (-1.4, -0.4, 1.6), (-0.3, -0.4, 1.6),
+              (-1.0, -1.0, 2.3), (-0.7, -1.0, 2.3), (-1.0, -0.7, 2.3), (-0.7, -0.7, 2.3)], 'pietrame')
+    P.blocco(-1.0, -0.7, 2.3, 3.5, -1.0, -0.7, 'pietrame', smusso=0.01)
+    # il mantice, di fianco alla forgia
+    P.solido([(-0.25, -1.0, 0.95), (-0.25, -0.5, 0.95), (-0.25, -1.0, 1.15), (-0.25, -0.5, 1.15),
+              (0.55, -0.85, 1.0), (0.55, -0.65, 1.0), (0.55, -0.85, 1.08), (0.55, -0.65, 1.08)], 'legnoScuro')
+    P.blocco(-0.25, -0.18, 0, 0.98, -0.8, -0.7, 'legnoScuro', smusso=0)
+    # l'incudine sul ceppo
+    cil(P, 0.4, 0.25, 0.24, 0, 0.62, 'legno', 12)
+    P.blocco(0.25, 0.55, 0.62, 0.78, 0.17, 0.33, 'ferro', smusso=0.006)
+    P.solido([(0.55, 0.19, 0.72), (0.55, 0.31, 0.72), (0.55, 0.19, 0.78), (0.55, 0.31, 0.78), (0.72, 0.25, 0.76)], 'ferro')
+    P.blocco(0.22, 0.58, 0.78, 0.84, 0.15, 0.35, 'ferro', smusso=0.004)
+    # la tinozza per temprare
+    cil(P, 1.15, -0.3, 0.3, 0, 0.5, 'legno', 12, 0.33)
+    cil(P, 1.15, -0.3, 0.28, 0.44, 0.46, 'fosso', 12)
+    if not LOD:
+        P.blocco(0.3, 0.6, 0.84, 0.86, 0.22, 0.25, 'ferro', smusso=0)              # il martello posato
+        for k in range(4):                                                       # ferri di cavallo appesi al palo
+            a0 = math.radians(-30)
+            for i in range(6):
+                b0, b1 = a0 + i * math.radians(40), a0 + (i + 1) * math.radians(40)
+                P.concio(1.6, 1.0 + 0.1 * (k // 2) + 0.4, 0.05, 0.065, b0, b1, -1.13 - 0.12 * (k % 2), -1.115 - 0.12 * (k % 2), 'ferro', smusso=0)
+        for k in range(3):                                                       # tenaglie e martelli sulla rastrelliera
+            P.blocco(1.0 + k * 0.15, 1.02 + k * 0.15, 0.9, 1.45, -1.18, -1.16, 'ferro', smusso=0)
+        P.blocco(0.9, 1.5, 1.3, 1.36, -1.2, -1.15, 'legnoScuro', smusso=0)
+    return P.crea()
+
+
+def banco_notaio(nome):
+    """Lo scrittoio del notaio: il piano inclinato con la pergamena, calamaio e penna, i registri, lo sgabello."""
+    P = Pezzo(nome)
+    for x in (-0.42, 0.42):
+        for y in (-0.25, 0.25):
+            P.blocco(x - 0.03, x + 0.03, 0, 0.74 if y < 0 else 0.86, y - 0.03, y + 0.03, 'legnoScuro', smusso=0)
+    # il piano, inclinato verso chi scrive (dietro, -Y, dove sta lo sgabello)
+    P.solido([(-0.48, -0.3, 0.74), (0.48, -0.3, 0.74), (-0.48, 0.3, 0.86), (0.48, 0.3, 0.86),
+              (-0.48, -0.3, 0.77), (0.48, -0.3, 0.77), (-0.48, 0.3, 0.89), (0.48, 0.3, 0.89)], 'legno')
+    P.solido([(-0.2, -0.18, 0.775), (0.18, -0.18, 0.775), (-0.2, 0.18, 0.892), (0.18, 0.18, 0.892),
+              (-0.2, -0.18, 0.78), (0.18, -0.18, 0.78), (-0.2, 0.18, 0.897), (0.18, 0.18, 0.897)], 'pergamena')
+    P.blocco(0.28, 0.4, 0.89, 0.95, 0.22, 0.3, 'legnoScuro', smusso=0)           # la tavoletta del calamaio, in alto
+    cil(P, 0.34, 0.26, 0.025, 0.95, 1.01, 'scuro', 8)                              # il calamaio di corno
+    if not LOD:
+        P.solido([(0.34, 0.26, 0.98), (0.345, 0.26, 0.98), (0.25, 0.32, 1.19), (0.26, 0.32, 1.19)], 'pergamena')   # la penna
+    libro(P, -0.75, 0.0, 0.0, 0.3, 0.22, 0.07)                                    # registri a terra, nella cassetta
+    P.blocco(-0.95, -0.55, 0, 0.32, -0.2, 0.2, 'legno', smusso=0.004)
+    libro(P, -0.75, 0.0, 0.32, 0.3, 0.22, 0.06)
+    cil(P, 0.0, -0.75, 0.2, 0, 0.48, 'legno', 10)                                  # lo sgabello
+    return P.crea()
+
+
+def tenda_muro(nome):
+    """Una tenda di tela contro la facciata, su due pali: il riparo di un banco davanti a casa."""
+    P = Pezzo(nome)
+    for x in (-1.15, 1.15):
+        P.blocco(x - 0.035, x + 0.035, 0, 2.05, 1.35, 1.42, 'legnoScuro', smusso=0)
+    P.solido([(-1.25, 0.0, 2.55), (1.25, 0.0, 2.55), (-1.25, 1.45, 2.08), (1.25, 1.45, 2.08),
+              (-1.25, 0.0, 2.57), (1.25, 0.0, 2.57), (-1.25, 1.45, 2.1), (1.25, 1.45, 2.1)], 'tela')
+    return P.crea()
+
+
 # ================================================================ tutto
 # Ogni telaio dichiara il FORO da aprire nel muro (largo w, alto h dalla
 # soglia, ad arco o no) e le chiusure che ci stanno dentro. Il livello è
@@ -523,6 +769,9 @@ def costruisci():
     registra(portafiaccola('portafiaccola'), tipo='arredo', livello='ipotesi', fasi=['1480'])
     registra(scala_esterna('scala_esterna'), tipo='arredo', salita=3.6, livello='ipotesi', fasi=[])
     registra(panca('panca'), tipo='arredo', livello='ipotesi', fasi=['1480'])
+    # i mestieri (28 ottobre 2026): banchi e botteghe allestite, solo nel 1216 per ora
+    for fn in (banco_cambio, pezze, banco_panni, banco_beccaio, banco_pesce, banco_ortolano, banco_pane, fucina, banco_notaio, tenda_muro):
+        registra(fn(fn.__name__), tipo='mestiere', livello='ipotesi', fasi=['1216'])
 
 
 def esporta():

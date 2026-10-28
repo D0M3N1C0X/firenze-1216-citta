@@ -205,6 +205,14 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
   MAT.tela = new MeshStandardMaterial({ color: 0xc9b98f, roughness: 0.85, metalness: 0, vertexColors: true });
   MAT.scuro = new MeshStandardMaterial({ color: 0x0d0b09, roughness: 1, metalness: 0, vertexColors: true });
   MAT.marmoVerde = new MeshStandardMaterial({ color: 0x2f4a3c, roughness: 0.4, metalness: 0, vertexColors: true });
+  // i mestieri (kit, 28 ottobre 2026): il panno verde dei cambiatori, la pergamena dei notai,
+  // il rame delle monete e delle bilance, verdure, pesce, ceste di vimini
+  MAT.pannoVerde = new MeshStandardMaterial({ color: 0x24502e, roughness: 0.95, metalness: 0, vertexColors: true });
+  MAT.pergamena = new MeshStandardMaterial({ color: 0xdccba2, roughness: 0.8, metalness: 0, vertexColors: true });
+  MAT.rame = new MeshStandardMaterial({ color: 0x8f5a34, roughness: 0.45, metalness: 0.6, vertexColors: true });
+  MAT.verdura = new MeshStandardMaterial({ color: 0x55803a, roughness: 0.8, metalness: 0, vertexColors: true });
+  MAT.pesce = new MeshStandardMaterial({ color: 0xa2abad, roughness: 0.35, metalness: 0.3, vertexColors: true });
+  MAT.cesta = new MeshStandardMaterial({ color: 0x9e7c4b, roughness: 0.95, metalness: 0, vertexColors: true });
   // l'acqua ferma del fossato, e le pareti trasparenti delle due ipotesi del lato sud (mura.js)
   MAT.fosso = new MeshStandardMaterial({ color: 0x3b4636, roughness: 0.12, metalness: 0.05, vertexColors: true });
   MAT.muroIncerto = new MeshStandardMaterial({ color: 0xa8323e, roughness: 0.8, metalness: 0, transparent: true, opacity: 0.42, depthWrite: false, side: DoubleSide, vertexColors: true });

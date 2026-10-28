@@ -80,8 +80,10 @@ export class Interfaccia {
       if (e.code === 'Escape') this.chiudiDestra();
     });
 
-    $('#legenda').innerHTML = '<b>Che cosa è certo</b>' + Object.values(LIVELLI)
-      .map(l => `<div><i style="background:${l.colore}"></i><span>${l.nome}<small>${l.testo}</small></span></div>`).join('');
+    // la legenda in parole di tutti i giorni; le definizioni precise restano in materiali.js e nel PIANO
+    const SEMPLICE = { documentato: 'lo dicono le fonti, o c\'è ancora oggi', dedotto: 'ricavato da indizi: resti senza data, piante più tarde, confronti', ipotesi: 'ricostruito per somiglianza, senza una prova diretta' };
+    $('#legenda').innerHTML = '<b>Che cosa è certo</b>' + Object.entries(LIVELLI)
+      .map(([k, l]) => `<div><i style="background:${l.colore}"></i><span>${l.nome}<small>${SEMPLICE[k] || l.testo}</small></span></div>`).join('');
     // i luoghi principali, poi le porte della cerchia in un gruppo che si apre
     const voce = l => `<li><button data-id="${l.id}"><i style="background:${LIVELLI[l.forma.livello].colore}"></i>${esc(l.nome)}</button></li>`;
     const porte = LUOGHI.filter(l => l.gruppo === 'porte');

@@ -8,7 +8,10 @@
    - il brusio della gente, che cresce quando ci sono persone intorno;
    - le rondini, tornate da poco: a metà aprile è plausibile.
    Il 10 febbraio (dati/giornate.js) niente festa e niente rondini: solo
-   qualche rintocco lento, come per le ore canoniche.
+   qualche rintocco lento, come per le ore canoniche. Nei giorni di lavoro
+   si sentono anche i mestieri (mondo/mestieri.js), ciascuno nel suo
+   luogo: il martello sull'incudine e il mantice alla fucina, le monete
+   sulle tavole dei cambiatori, il brusio del mercato.
    I suoni sono un'ipotesi d'atmosfera, non una ricostruzione.
    ===================================================================== */
 
@@ -22,7 +25,7 @@ const CAMPANILI = [
 const FIUME = [[-20, 15], [-140, -55], [110, 50]];
 
 export class Suoni {
-  constructor() { this.ctx = null; this.attivo = false; this.muto = false; this.g = { campane: 'festa', rondini: true }; }
+  constructor() { this.ctx = null; this.attivo = false; this.muto = false; this.g = { campane: 'festa', rondini: true }; this.fonti = []; }
 
   /** Campane e rondini della giornata (giornate.js). */
   giornata(g) {
@@ -56,10 +59,75 @@ export class Suoni {
     src.connect(bp).connect(bp2).connect(this.brusio).connect(this.master);
     src.start();
 
+    this.preparaMercato();
     this.prossimaCampana = c.currentTime + 1.5;
     this.prossimaRondine = c.currentTime + 4;
     this.attivo = true;
     addEventListener('keydown', e => { if (e.code === 'KeyM') this.muta(!this.muto); });
+  }
+
+  /** I suoni dei mestieri della giornata (mondo/mestieri.js): [{ tipo, x, z, r }]. */
+  mestieri(lista) {
+    this.fonti = (lista || []).map(f => ({ ...f, prossimo: 0 }));
+    if (this.ctx) this.preparaMercato();
+  }
+
+  /** Il brusio del mercato: fermo in piazza, si sente avvicinandosi; a Pasqua tace. */
+  preparaMercato() {
+    if (this.gMercato || !this.ctx) return;
+    const m = this.fonti.find(f => f.tipo === 'mercato') || { x: 60, z: -366 }, c = this.ctx;
+    const src = c.createBufferSource(); src.buffer = this.rumore; src.loop = true;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 600; bp.Q.value = 0.7;
+    const pk = c.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 1500; pk.gain.value = 6;
+    this.gMercato = c.createGain(); this.gMercato.gain.value = 0;
+    src.connect(bp).connect(pk).connect(this.gMercato).connect(this.pannello(m.x, 1.6, m.z, 14, 1.2)).connect(this.master);
+    src.start(c.currentTime + Math.random());
+  }
+
+  /** Un gruppo di colpi di martello sull'incudine, a volte con il soffio del mantice. */
+  martellate(f, t0) {
+    const c = this.ctx;
+    if (!f.pann) { f.pann = this.pannello(f.x, 1.0, f.z, 6, 1.2); f.pann.connect(this.master); f.pann.connect(this.ingressoRiverbero); }
+    let t = t0;
+    const colpi = 3 + Math.floor(Math.random() * 4), base = 790 + Math.random() * 80;
+    for (let i = 0; i < colpi; i++) {
+      const forza = i === colpi - 1 ? 0.6 : 1;
+      for (const [r, a, dec] of [[1, 0.5, 0.35], [2.76, 0.3, 0.22], [5.4, 0.18, 0.12], [8.93, 0.1, 0.07]]) {
+        const o = c.createOscillator(), e = c.createGain();
+        o.frequency.value = base * r * (1 + (Math.random() - 0.5) * 0.01);
+        e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.09 * a * forza, t + 0.002); e.gain.exponentialRampToValueAtTime(0.0005, t + dec);
+        o.connect(e).connect(f.pann); o.start(t); o.stop(t + dec + 0.02);
+      }
+      const n = c.createBufferSource(); n.buffer = this.rumore;
+      const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3000;
+      const e = c.createGain(); e.gain.setValueAtTime(0.4 * forza, t); e.gain.exponentialRampToValueAtTime(0.001, t + 0.025);
+      n.connect(hp).connect(e).connect(f.pann); n.start(t, Math.random()); n.stop(t + 0.03);
+      t += 0.32 + Math.random() * 0.14;
+    }
+    if (Math.random() < 0.35) {                       // il mantice
+      const n = c.createBufferSource(); n.buffer = this.rumore;
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+      const e = c.createGain(); const t1 = t + 0.4;
+      e.gain.setValueAtTime(0, t1); e.gain.linearRampToValueAtTime(0.35, t1 + 0.5); e.gain.linearRampToValueAtTime(0, t1 + 1.3);
+      n.connect(lp).connect(e).connect(f.pann); n.start(t1, Math.random()); n.stop(t1 + 1.35);
+      t = t1 + 1.3;
+    }
+    return t + 1.0 + Math.random() * 3;
+  }
+
+  /** Qualche moneta sulla tavola del cambiatore. */
+  monete(f, t0) {
+    const c = this.ctx;
+    if (!f.pann) { f.pann = this.pannello(f.x, 0.9, f.z, 3, 1.4); f.pann.connect(this.master); }
+    let t = t0;
+    for (let i = 0, n = 1 + Math.floor(Math.random() * 3); i < n; i++) {
+      const o = c.createOscillator(), e = c.createGain();
+      o.frequency.value = 3300 + Math.random() * 2200;
+      e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.03, t + 0.002); e.gain.exponentialRampToValueAtTime(0.0003, t + 0.14);
+      o.connect(e).connect(f.pann); o.start(t); o.stop(t + 0.16);
+      t += 0.1 + Math.random() * 0.18;
+    }
+    return t + 3 + Math.random() * 6;
   }
 
   muta(on) { this.muto = on; if (this.master) this.master.gain.setTargetAtTime(on ? 0 : 0.75, this.ctx.currentTime, 0.1); }
@@ -167,6 +235,13 @@ export class Suoni {
       this.rondine(t + 0.05, p.x + (Math.random() - 0.5) * 60, p.y + 12 + Math.random() * 20, p.z + (Math.random() - 0.5) * 60);
       this.prossimaRondine = t + 1.5 + Math.random() * 6;
     }
+    // i mestieri vicini: si programmano solo quando si è abbastanza vicini da sentirli
+    for (const f of this.fonti) {
+      if (f.tipo === 'mercato' || t < f.prossimo || Math.hypot(f.x - p.x, f.z - p.z) > f.r * 2.5) continue;
+      if (f.tipo === 'incudine') f.prossimo = this.martellate(f, t + 0.05);
+      else if (f.tipo === 'monete') f.prossimo = this.monete(f, t + 0.05);
+    }
+    if (this.gMercato) this.gMercato.gain.setTargetAtTime(this.fonti.some(f => f.tipo === 'mercato') ? 0.9 : 0, t, 1.2);
     // brusio: quante persone ci sono entro 18 m
     let n = 0;
     if (abitanti?.figure) for (const f of abitanti.figure) if (Math.abs(f.x - p.x) < 18 && Math.abs(f.z - p.z) < 18) n++;

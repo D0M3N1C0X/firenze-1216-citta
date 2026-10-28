@@ -53,8 +53,8 @@ export const GIORNATE = {
     campane: 'ore',             // solo i rintocchi delle ore canoniche
     gente: 280,                 // 190 fino al 13 ottobre 2026, quando la città è arrivata alle mura
     ora: 7.6,
-    // dove la gente si ferma: al mercato e davanti alle botteghe
-    gruppi: [[62, -360, 4], [80, -372, 3], [48, -348, 3], [70, -195, 3], [35, -70, 2], [-60, 110, 2], [15, -38, 2], [272, -340, 2]]
+    // dove la gente si ferma a parlare; al mercato e alle botteghe di Calimala ci sono i banchi (mondo/mestieri.js)
+    gruppi: [[70, -195, 3], [35, -70, 2], [-60, 110, 2], [15, -38, 2], [272, -340, 2]]
   },
   pasqua: {
     id: 'pasqua',
