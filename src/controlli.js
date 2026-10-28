@@ -22,7 +22,7 @@ const PASSO_TOCCO = 2.3;          // m/s quando si cammina da soli verso un punt
 
 export class Controlli {
   /**
-   * @param {object} opz { scene: per il segno dove si va, avviso(testo), gesto(): il primo gesto dell'utente }
+   * @param {object} opz { scene: per il segno dove si va, avviso(chiave): un messaggio (ui/lingua.js), gesto(): il primo gesto dell'utente }
    */
   constructor(camera, dom, griglia, quotaIn, opz = {}) {
     this.camera = camera; this.dom = dom; this.griglia = griglia; this.quotaIn = quotaIn; this.opz = opz;
@@ -121,14 +121,13 @@ export class Controlli {
 
   tocca(cx, cy) {
     const p = this.puntoSotto(cx, cy);
-    if (!p) { this.opz.avviso?.('Lì non c\'è una strada: tocca un punto della strada, o la facciata di una casa per andarci davanti.'); return; }
+    if (!p) { this.opz.avviso?.('avviso.cielo'); return; }
     if (this.volo) { this.voloVerso = p; this.mostraSegno(p); return; }
     this.giraAuto = true;
     const c = trovaCammino(this.griglia, [this.pos.x, this.pos.z], p);
     if (!c) {
       const lontano = Math.hypot(p[0] - this.pos.x, p[1] - this.pos.z) > 250;
-      this.opz.avviso?.(lontano ? 'È lontano: per arrivarci prima usa «Vai a…» o «Dall\'alto».'
-        : 'Da qui a piedi non ci si arriva: forse è dietro un muro o dall\'altra parte del fiume.');
+      this.opz.avviso?.(lontano ? 'avviso.lontano' : 'avviso.muro');
       return;
     }
     this.percorso = c.slice(1);

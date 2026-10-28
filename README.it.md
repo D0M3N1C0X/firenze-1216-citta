@@ -36,14 +36,16 @@ Pensati per chiunque, anche senza tastiera e anche su iPad. All'ingresso si sceg
 | **Racconto** (R) | le scene del gioco, nei loro luoghi |
 | **Vai a…** | l'elenco dei luoghi, con la scheda e le fonti; da qui si ricomincia la visita |
 | **Aiuto** | come si usa, in parole semplici |
-| **Impostazioni** | giornata (10 febbraio o Pasqua), immagini più belle o più leggere, testo più grande, movimento ridotto |
+| **Impostazioni** | lingua (italiano o inglese), giornata (10 febbraio o Pasqua), immagini più belle o più leggere, testo più grande, movimento ridotto, lettura ad alta voce delle tappe, mappa nell'angolo |
 | **WASD / frecce** | cammina con la tastiera (Maiusc: svelto; Q ed E: girati) |
 | **I** | scheda del luogo vicino |
 | **M** | silenzia i suoni |
 
+In un angolo c'è una **mappa** con la freccia di dove sei: toccandola si apre la pianta intera, e si tocca un luogo per andarci. Le tappe della visita e le schede si possono **ascoltare** con la voce del dispositivo; alla fine della visita ci sono **quattro domande per la classe**. La città è anche **in inglese** (Impostazioni, o `?lang=en`): pulsanti, visita, domande e schede; il racconto del gioco per ora è solo in italiano.
+
 Le impostazioni restano sul dispositivo. Se nei primi secondi la città va a scatti, le immagini si alleggeriscono da sole, e lo si dice.
 
-Parametri: `?scena=IV3` (apre su una scena), `?luogo=campi` (apre il castello del convito invece della città), `?racconto` (apre il racconto dall'inizio), `?giorno=febbraio`, `?ora=7.5` (ora solare), `?gente=300`, `?da=x,z,direzione`.
+Parametri: `?scena=IV3` (apre su una scena), `?lang=en` (in inglese), `?luogo=campi` (apre il castello del convito invece della città), `?racconto` (apre il racconto dall'inizio), `?giorno=febbraio`, `?ora=7.5` (ora solare), `?gente=300`, `?da=x,z,direzione`.
 
 Dopo ogni modifica a strade, luoghi, scene o tappe della visita: `npm run verifica` controlla che ogni luogo si raggiunga a piedi e che ogni scena e ogni tappa abbiano un punto di vista percorribile. Se cambia il copione del gioco: `npm run copione` (solo dal repository completo del progetto).
 

@@ -14,33 +14,33 @@
 
 <section id="avvio" aria-labelledby="titolo">
   <div class="carta">
-    <p class="sopra">Cosa fatta capo ha · la città</p>
-    <h1 id="titolo">Firenze, la mattina di Pasqua del 1216</h1>
+    <p class="sopra" data-t="avvio.sopra">Cosa fatta capo ha · la città</p>
+    <h1 id="titolo" data-t="avvio.titolo">Firenze, la mattina di Pasqua del 1216</h1>
     <p class="data">Domenica 10 aprile 1216 · al capo del Ponte Vecchio</p>
-    <p class="intro">Una città da percorrere a piedi, ricostruita a partire dalle fonti. Dove le fonti non dicono niente, la città lo dice.</p>
+    <p class="intro" data-t="avvio.intro">Una città da percorrere a piedi, ricostruita a partire dalle fonti. Dove le fonti non dicono niente, la città lo dice.</p>
     <p id="avvio-scena" hidden></p>
 
     <div class="caricamento">
       <div class="traccia" id="traccia" role="progressbar" aria-label="Preparazione della città" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="riempimento"></div></div>
-      <p id="progresso" role="status">Preparo la città…</p>
+      <p id="progresso" role="status" data-t="carico.inizio">Preparo la città…</p>
       <p id="fase"></p>
     </div>
 
     <div class="scelte-avvio">
-      <button id="b-visita-inizio" class="grande primario">Visita guidata<small>dieci tappe, pochi minuti</small></button>
-      <button id="entra" class="grande">Esplora da solo<small>vai dove vuoi</small></button>
+      <button id="b-visita-inizio" class="grande primario" data-t-html="avvio.visita">Visita guidata<small>dieci tappe, pochi minuti</small></button>
+      <button id="entra" class="grande" data-t-html="avvio.esplora">Esplora da solo<small>vai dove vuoi</small></button>
     </div>
-    <p class="come" id="come">Per camminare, tocca la strada dove vuoi andare. Per guardarti intorno, trascina.</p>
+    <p class="come" id="come" data-t="avvio.come">Per camminare, tocca la strada dove vuoi andare. Per guardarti intorno, trascina.</p>
 
     <details>
-      <summary>Che cosa non è</summary>
-      <ul>
+      <summary data-t="avvio.nonE">Che cosa non è</summary>
+      <ul data-t-html="avvio.nonE.lista">
         <li><b>Non è una ricostruzione validata.</b> È un prototipo, e un medievista non l'ha ancora visto.</li>
         <li><b>Le case sono generate.</b> Solo le chiese e le torri con un nome hanno la pianta di un edificio vero.</li>
         <li><b>Il delitto non c'è.</b> Il modello mostra il luogo, non l'uccisione.</li>
       </ul>
     </details>
-    <p class="crediti">Dati cartografici © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · texture Poly Haven (CC0) · persone MakeHuman (CC0) con i movimenti del <a href="http://mocap.cs.cmu.edu" target="_blank" rel="noopener">CMU Motion Capture Database</a></p>
+    <p class="crediti" data-t-html="avvio.crediti">Dati cartografici © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · texture Poly Haven (CC0) · persone MakeHuman (CC0) con i movimenti del <a href="http://mocap.cs.cmu.edu" target="_blank" rel="noopener">CMU Motion Capture Database</a></p>
   </div>
 </section>
 
@@ -51,43 +51,46 @@
 
 <div id="vicino" hidden></div>
 <div id="avviso" role="status" hidden></div>
+<div id="mappa" hidden>
+  <button id="mappa-piccola" aria-label="Apri la pianta della città" data-t-aria="mappa.apri"><canvas width="216" height="216"></canvas></button>
+</div>
 
 <nav id="barra" hidden aria-label="Comandi">
-  <label class="ora" title="L'ora del giorno">
+  <label class="ora" title="L'ora del giorno" data-t-title="barra.ora.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
-    <span class="testo">Ora</span>
-    <input id="cursore-ora" type="range" min="5.2" max="12" step="0.05" value="8.5" aria-label="Ora del giorno">
+    <span class="testo" data-t="barra.ora">Ora</span>
+    <input id="cursore-ora" type="range" min="5.2" max="12" step="0.05" value="8.5" aria-label="Ora del giorno" data-t-aria="barra.ora.t">
   </label>
-  <button id="b-certezza" aria-label="Che cosa è certo" aria-pressed="false" title="Colora la città secondo quanto ne sappiamo (tasto C)">
+  <button id="b-certezza" aria-label="Che cosa è certo" aria-pressed="false" title="Colora la città secondo quanto ne sappiamo (tasto C)" data-t-aria="barra.certezza" data-t-title="barra.certezza.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M7.8 12.3l2.8 2.8 5.6-6"/></svg>
-    <span class="testo">Che cosa è certo</span>
+    <span class="testo" data-t="barra.certezza">Che cosa è certo</span>
   </button>
-  <button id="b-volo" aria-label="Dall'alto" aria-pressed="false" title="Guarda la città dall'alto (tasto F)">
+  <button id="b-volo" aria-label="Dall'alto" aria-pressed="false" title="Guarda la città dall'alto (tasto F)" data-t-aria="barra.volo" data-t-title="barra.volo.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20l6-9 4 5 3-4 5 8z"/><path d="M12 3v6M9.5 5.5L12 3l2.5 2.5"/></svg>
-    <span class="testo">Dall'alto</span>
+    <span class="testo" data-t="barra.volo">Dall'alto</span>
   </button>
-  <button id="b-racconto" aria-label="Racconto" aria-pressed="false" title="Le scene del gioco, nei loro luoghi (tasto R)">
+  <button id="b-racconto" aria-label="Racconto" aria-pressed="false" title="Le scene del gioco, nei loro luoghi (tasto R)" data-t-aria="barra.racconto" data-t-title="barra.racconto.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5c3-1.3 6-1.3 9 .8v13c-3-2-6-2-9-.8zM21 5.5c-3-1.3-6-1.3-9 .8v13c3-2 6-2 9-.8z"/></svg>
-    <span class="testo">Racconto</span>
+    <span class="testo" data-t="barra.racconto">Racconto</span>
   </button>
-  <button id="b-luoghi" aria-label="Vai a un luogo" title="Vai in un luogo e leggi la sua scheda">
+  <button id="b-luoghi" aria-label="Vai a un luogo" title="Vai in un luogo e leggi la sua scheda" data-t-aria="barra.luoghi.a" data-t-title="barra.luoghi.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0113 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.4"/></svg>
-    <span class="testo">Vai a…</span>
+    <span class="testo" data-t="barra.luoghi">Vai a…</span>
   </button>
-  <button id="b-aiuto" aria-label="Aiuto" title="Come si usa">
+  <button id="b-aiuto" aria-label="Aiuto" title="Come si usa" data-t-aria="barra.aiuto" data-t-title="barra.aiuto.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 114 2c-.9.6-1.6 1.1-1.6 2.3M12 16.9v.2"/></svg>
-    <span class="testo">Aiuto</span>
+    <span class="testo" data-t="barra.aiuto">Aiuto</span>
   </button>
-  <button id="b-impostazioni" aria-label="Impostazioni" title="Giornata, qualità, testo grande, movimento ridotto">
+  <button id="b-impostazioni" aria-label="Impostazioni" title="Giornata, qualità, testo grande, movimento ridotto" data-t-aria="barra.impostazioni" data-t-title="barra.impostazioni.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
-    <span class="testo">Impostazioni</span>
+    <span class="testo" data-t="barra.impostazioni">Impostazioni</span>
   </button>
 </nav>
 
 <aside id="legenda" hidden aria-label="Legenda della certezza"></aside>
 
 <aside id="scheda" class="destra" hidden aria-live="polite">
-  <button class="chiudi" aria-label="Chiudi la scheda">×</button>
+  <button class="chiudi" aria-label="Chiudi la scheda" data-t-aria="scheda.chiudi">×</button>
   <div id="scheda-corpo"></div>
 </aside>
 
@@ -95,16 +98,16 @@
 <aside id="visita" class="sinistra" hidden aria-label="La visita guidata" aria-live="polite"></aside>
 
 <aside id="elenco" class="destra" hidden>
-  <button class="chiudi" aria-label="Chiudi l'elenco">×</button>
-  <h2>Vai a…</h2>
-  <button id="b-visita-elenco" class="leggi">Ricomincia la visita guidata</button>
+  <button class="chiudi" aria-label="Chiudi l'elenco" data-t-aria="elenco.chiudi">×</button>
+  <h2 data-t="elenco.titolo">Vai a…</h2>
+  <button id="b-visita-elenco" class="leggi" data-t="elenco.visita">Ricomincia la visita guidata</button>
   <ul id="elenco-luoghi"></ul>
 </aside>
 
 <aside id="aiuto" class="destra" hidden>
-  <button class="chiudi" aria-label="Chiudi l'aiuto">×</button>
-  <h2>Come si usa</h2>
-  <ul class="aiuti">
+  <button class="chiudi" aria-label="Chiudi l'aiuto" data-t-aria="aiuto.chiudi">×</button>
+  <h2 data-t="aiuto.titolo">Come si usa</h2>
+  <ul class="aiuti" data-t-html="aiuto.lista">
     <li><b>Camminare</b>Tocca o clicca la strada dove vuoi andare: ci vai a piedi, girando gli angoli da solo.</li>
     <li><b>Guardarti intorno</b>Trascina con il dito o con il mouse.</li>
     <li><b>Andare in un luogo</b>«Vai a…» apre l'elenco dei luoghi. Ogni luogo ha una scheda con le fonti.</li>
@@ -113,27 +116,42 @@
     <li><b>Il racconto</b>«Racconto» mostra le scene del gioco, ciascuna nel suo luogo.</li>
     <li><b>Con la tastiera</b>Frecce o W A S D per camminare, Maiuscolo per andare più svelti.</li>
   </ul>
-  <button id="b-visita-aiuto" class="grande primario">Fai la visita guidata</button>
+  <button id="b-visita-aiuto" class="grande primario" data-t="aiuto.visita">Fai la visita guidata</button>
+</aside>
+
+<aside id="mappa-grande" hidden aria-label="La pianta della città">
+  <button class="chiudi" aria-label="Chiudi la pianta" data-t-aria="mappa.chiudi">×</button>
+  <h2 data-t="mappa.titolo">La pianta della città</h2>
+  <p class="nota" data-t="mappa.nota">La freccia rossa sei tu. Tocca un luogo per andarci.</p>
+  <div class="mappa-area"><canvas id="mappa-tela"></canvas></div>
 </aside>
 
 <aside id="impostazioni" class="destra" hidden>
-  <button class="chiudi" aria-label="Chiudi le impostazioni">×</button>
-  <h2>Impostazioni</h2>
+  <button class="chiudi" aria-label="Chiudi le impostazioni" data-t-aria="imp.chiudi">×</button>
+  <h2 data-t="imp.titolo">Impostazioni</h2>
   <div class="riga">
-    <span>Giornata</span>
+    <span data-t="imp.lingua">Lingua</span>
+    <div class="segmenti" id="seg-lingua" role="group" aria-label="Lingua · Language">
+      <button data-v="it" lang="it">Italiano</button><button data-v="en" lang="en">English</button>
+    </div>
+  </div>
+  <div class="riga">
+    <span data-t="imp.giornata">Giornata</span>
     <div class="segmenti" id="seg-giorno" role="group" aria-label="Giornata">
-      <button data-v="febbraio">10 febbraio</button><button data-v="pasqua">Pasqua</button>
+      <button data-v="febbraio" data-t="giorno.febbraio">10 febbraio</button><button data-v="pasqua" data-t="giorno.pasqua">Pasqua</button>
     </div>
   </div>
   <p class="nota" id="nota-giorno"></p>
   <div class="riga">
-    <span>Immagini</span>
+    <span data-t="imp.immagini">Immagini</span>
     <div class="segmenti" id="seg-qualita" role="group" aria-label="Qualità delle immagini">
-      <button data-v="alta">Più belle</button><button data-v="media">Più leggere</button>
+      <button data-v="alta" data-t="imp.belle">Più belle</button><button data-v="media" data-t="imp.leggere">Più leggere</button>
     </div>
   </div>
-  <label class="riga interruttore"><span>Testo più grande</span><input type="checkbox" id="i-testo"></label>
-  <label class="riga interruttore"><span>Movimento ridotto<small>il passo non ondeggia, niente dissolvenze</small></span><input type="checkbox" id="i-movimento"></label>
+  <label class="riga interruttore"><span data-t="imp.testo">Testo più grande</span><input type="checkbox" id="i-testo"></label>
+  <label class="riga interruttore"><span data-t-html="imp.movimento">Movimento ridotto<small>il passo non ondeggia, niente dissolvenze</small></span><input type="checkbox" id="i-movimento"></label>
+  <label class="riga interruttore" id="riga-voce"><span data-t-html="imp.voce">Leggi ad alta voce le tappe<small>con la voce del dispositivo</small></span><input type="checkbox" id="i-voce"></label>
+  <label class="riga interruttore"><span data-t="imp.mappa">Mappa nell'angolo</span><input type="checkbox" id="i-mappa" checked></label>
 </aside>
 
 <script type="module" src="./src/main.js"></script>

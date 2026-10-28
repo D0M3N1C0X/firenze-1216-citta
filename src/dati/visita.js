@@ -105,3 +105,41 @@ export const TAPPE = [
     certezza: true
   }
 ];
+
+/* ---------------------------------------------------------------------
+   LE DOMANDE ALLA FINE DELLA VISITA
+
+   Quattro domande semplici per la classe. Ogni risposta rimanda alla
+   scheda del luogo, dove ci sono le fonti; il «perché» dice solo quello
+   che dice la scheda.
+   --------------------------------------------------------------------- */
+export const DOMANDE = [
+  {
+    domanda: 'Nel 1216, quanti ponti attraversano l\'Arno a Firenze?',
+    risposte: ['Uno, il Ponte Vecchio', 'Due', 'Quattro, come oggi'],
+    giusta: 0,
+    perche: 'Il Ponte Vecchio è l\'unico: il ponte alla Carraia si comincia nel 1218, quello di Rubaconte nel 1237, Santa Trinita nel 1252.',
+    luogo: 'ponte'
+  },
+  {
+    domanda: 'Dove fu ucciso Buondelmonte, la mattina di Pasqua?',
+    risposte: ['In Santa Reparata, durante la messa', 'Al capo del Ponte Vecchio, appena passato il fiume', 'Nel castello di Campi'],
+    giusta: 1,
+    perche: 'Veniva d\'Oltrarno e aveva appena passato il ponte: fu abbattuto da cavallo e ucciso lì, accanto alla pietra di Marte.',
+    luogo: 'capo-ponte'
+  },
+  {
+    domanda: 'Che cosa scrive, il giorno dopo, il registro dei morti della cattedrale?',
+    risposte: ['Chi l\'ha ucciso e perché', 'Solo «è morto messer Buondelmonte»', 'Niente: non ne parla'],
+    giusta: 1,
+    perche: 'L\'obituario di Santa Reparata registra soltanto la morte: né come, né per mano di chi. Il resto lo raccontano le cronache, molti anni dopo.',
+    luogo: 'santa-reparata'
+  },
+  {
+    domanda: 'In questa città, che cosa vuol dire un edificio colorato di grigio con «Che cosa è certo»?',
+    risposte: ['Che è ancora in piedi oggi', 'Che è un\'ipotesi: ricostruito per somiglianza, senza una prova diretta', 'Che è stato distrutto in guerra'],
+    giusta: 1,
+    perche: 'Azzurro vuol dire documentato, arancione dedotto da indizi, grigio ipotesi. Ogni scheda dice perché.',
+    luogo: null
+  }
+];

@@ -18,7 +18,8 @@ import { LUOGHI } from '../src/dati/luoghi.js';
 import { GIORNATE } from '../src/dati/giornate.js';
 import { SCENE, TIPI_NOTA } from '../src/dati/scene.js';
 import { COPIONE } from '../src/dati/copione.js';
-import { TAPPE } from '../src/dati/visita.js';
+import { DOMANDE, TAPPE } from '../src/dati/visita.js';
+import { DOMANDE_EN, LUOGHI_EN, TAPPE_EN } from '../src/dati/inglese.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from '../src/mondo/griglia.js';
 import { Cantiere } from '../src/mondo/cantiere.js';
 import { costruisciMonumenti } from '../src/mondo/monumenti.js';
@@ -124,6 +125,13 @@ for (const s of SCENE) {
   if (s.luogo && ids.has(s.luogo) && (LUOGHI.find(l => l.id === s.luogo).mondo || 'citta') !== (s.mondo || 'citta')) errori.push(`scena ${s.id}: il luogo è in un altro mondo`);
 }
 
+// l'inglese (dati/inglese.js): ogni scheda, tappa e domanda italiana ha la sua traduzione
+for (const l of LUOGHI) if (!l.gruppo && !LUOGHI_EN[l.id]) errori.push(`inglese: manca la scheda «${l.id}»`);
+for (const k of Object.keys(LUOGHI_EN)) if (!LUOGHI.some(l => l.id === k)) errori.push(`inglese: la scheda «${k}» non corrisponde a nessun luogo`);
+if (TAPPE_EN.length !== TAPPE.length) errori.push(`inglese: ${TAPPE_EN.length} tappe tradotte su ${TAPPE.length}`);
+if (DOMANDE_EN.length !== DOMANDE.length) errori.push(`inglese: ${DOMANDE_EN.length} domande tradotte su ${DOMANDE.length}`);
+DOMANDE_EN.forEach((d, k) => { if (d.risposte.length !== DOMANDE[k].risposte.length) errori.push(`inglese: la domanda ${k + 1} ha un numero diverso di risposte`); });
+
 // la visita guidata: ogni tappa in un luogo che esiste, da un punto dove si può stare
 TAPPE.forEach((t, k) => {
   if (t.luogo && !ids.has(t.luogo)) errori.push(`visita, tappa ${k + 1}: luogo «${t.luogo}» inesistente`);
@@ -135,4 +143,4 @@ if (errori.length) {
   console.error(errori.map(e => '✗ ' + e).join('\n'));
   process.exit(1);
 }
-console.log(`✓ ${LUOGHI.length} luoghi raggiungibili, ${SCENE.length} scene coerenti, ${TAPPE.length} tappe della visita`);
+console.log(`✓ ${LUOGHI.length} luoghi raggiungibili, ${SCENE.length} scene coerenti, ${TAPPE.length} tappe della visita, inglese completo`);

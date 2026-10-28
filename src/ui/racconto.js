@@ -2,6 +2,7 @@ import { COPIONE } from '../dati/copione.js';
 import { GIORNATE } from '../dati/giornate.js';
 import { LUOGHI } from '../dati/luoghi.js';
 import { SCENE, TIPI_NOTA } from '../dati/scene.js';
+import { t } from './lingua.js';
 
 /* =====================================================================
    IL RACCONTO NELLA CITTÀ
@@ -91,6 +92,7 @@ export class Racconto {
       <button class="chiudi" data-azione="chiudi" aria-label="Chiudi il racconto">×</button>
       <p class="sopra">Il racconto · ${esc(atto(s.id))} · ${this.passo + 1} di ${PASSI.length}</p>
       <h2>${esc(s.id)} · ${esc(c.titolo)}</h2>
+      ${t('racconto.solo') ? `<p class="nella-citta" lang="en">${esc(t('racconto.solo'))}</p>` : ''}
       ${rami}
       <p class="dove">${esc(quando)}</p>
       ${c.testo.map(p => `<p>${esc(p)}</p>`).join('')}

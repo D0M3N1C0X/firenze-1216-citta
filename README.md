@@ -45,6 +45,8 @@ stops, from the Buondelmonte house to the walls) and **exploring alone**.
 Every scene of the game has a link (`?scena=IV3` opens the voices on the bridge), and `npm run verifica` checks, on
 every change, that each place can be reached on foot and each scene has a walkable point of view.
 
+
+A small **map** in the corner shows where you are; tap it to open the full plan and tap a place to go there. The stops of the visit and the place cards can be **read aloud** with the device's voice, and the visit ends with **four questions for the class**. The city is in **Italian and English** (Settings, or `?lang=en`): buttons, visit, questions and cards; the game's story mode is Italian only for now.
 ## What it is not
 
 - **Not validated yet.** No medievalist has seen it.

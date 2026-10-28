@@ -137,6 +137,29 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 .leggi:hover { background: #ebe1cf; }
 #vicino .leggi { background: rgba(241, 235, 224, 0.12); border-color: rgba(241, 235, 224, 0.3); color: var(--testo); }
 
+/* ------------------------------------------- ascolta, domande, mappa */
+.ascolta { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 14px; margin: 0 0 10px; border-radius: 20px;
+  border: 1px solid #cbbba0; background: #f8f2e6; color: var(--scuro); font-size: 15px; font-weight: 600; }
+.ascolta::before { content: "▶"; font-size: 11px; }
+.ascolta[aria-pressed="true"]::before { content: "■"; }
+.ascolta[aria-pressed="true"] { background: var(--scuro); color: #f6efe2; border-color: var(--scuro); }
+.risposte { display: grid; gap: 8px; margin: 6px 0 12px; }
+.risposta { min-height: 52px; text-align: left; padding: 10px 14px; border-radius: 10px; border: 2px solid #cbbba0; background: #f8f2e6; color: var(--inchiostro); font-size: 17px; }
+.risposta:disabled { cursor: default; opacity: 0.75; }
+.risposta.giusta { border-color: #5c9a4f; background: #e3f0dc; opacity: 1; }
+.risposta.sbagliata { border-color: #b4532a; background: #f6dfd3; opacity: 1; }
+.esito-domanda p { font-size: 16.5px; }
+#mappa { position: fixed; right: 16px; bottom: var(--sopra-barra, 86px); z-index: 1; zoom: var(--zoom); }
+#mappa-piccola { display: block; width: 108px; height: 108px; padding: 0; border-radius: 50%; overflow: hidden; border: 3px solid rgba(241, 235, 224, 0.92);
+  background: #efe6d4; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
+#mappa-piccola canvas { width: 100%; height: 100%; display: block; }
+#mappa-grande { position: fixed; inset: 16px; z-index: 7; display: flex; flex-direction: column; padding: 18px 20px 14px; border-radius: 14px;
+  background: var(--carta); color: var(--inchiostro); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); zoom: var(--zoom); }
+#mappa-grande h2 { font-family: var(--serif); font-size: 24px; margin: 0 44px 2px 0; }
+#mappa-grande .nota { margin: 0 0 8px; }
+.mappa-area { flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; }
+#mappa-tela { cursor: pointer; border-radius: 6px; }
+
 /* --------------------------------------------- aiuto e impostazioni */
 .aiuti { list-style: none; padding: 0; margin: 0 0 18px; }
 .aiuti li { padding: 10px 0; border-bottom: 1px solid #ddd0bb; font-size: 16px; line-height: 1.45; }
@@ -194,6 +217,7 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 
 /* sugli schermi medi la barra va su due righe ma tiene le parole; solo sul telefono restano le icone */
 @media (max-width: 640px) {
+  #mappa-piccola { width: 80px; height: 80px; }
   #barra .testo { display: none; }
   #barra button, #barra label { padding: 6px 11px; }
   #avvio .carta { padding: 24px 20px 18px; }

@@ -142,7 +142,7 @@ export const LUOGHI = [
     pos: [-40, -96], raggio: 20,
     luogo: { livello: 'ipotesi', nota: 'i lotti sono generati lungo le strade, non rilevati' },
     forma: { livello: 'ipotesi', nota: 'tipi edilizi presi dall\'architettura fiorentina del Due e Trecento' },
-    testo: 'Le case-torri, gli sporti di legno sulle strade, le botteghe al piano terra con l\'arco largo: sono i tipi della Firenze del Duecento. Ma ogni singola casa che vedi è generata dal programma. Le botteghe sono chiuse perché è Pasqua. Solo le torri con un nome hanno l\'impronta di una torre vera.',
+    testo: 'Le case-torri, gli sporti di legno sulle strade, le botteghe al piano terra con l\'arco largo: sono i tipi della Firenze del Duecento. Ma ogni singola casa che vedi è generata dal programma. A Pasqua le botteghe sono chiuse; il 10 febbraio sono aperte. Solo le torri con un nome hanno l\'impronta di una torre vera.',
     fonti: ['Tipi edilizi: G. Fanelli, Firenze. Architettura e città, 1973 [da verificare: pagine]']
   },
   {
@@ -276,7 +276,7 @@ export const LUOGHI = [
     pos: [246, 58], raggio: 26,
     luogo: { livello: 'dedotto', nota: 'il tracciato si legge nelle vie di oggi: via dei Fossi, del Giglio, de\' Pucci, Verdi, de\' Benci, dei Vagellai e altre (dati/cerchia.js)' },
     forma: { livello: 'ipotesi', nota: 'altezza, spessore e merli del muro non li conosciamo; in Oltrarno la palizzata è disegnata a mano' },
-    testo: 'Tra il 1172 e il 1175 il Comune costruì in fretta, in pietre di fiume e materiali di recupero, una cerchia molto più ampia di quella del 1078: per la prima volta comprendeva l\'Oltrarno. Nel 1216 è il muro che chiude Firenze. Le mura non ci sono più, ma molte strade di oggi corrono dove correvano il muro e il fosso: per questo il modello costruisce il muro sull\'asse di quelle vie. Qui, in piazza dei Giudici, c\'era la postierla d\'Altafronte e qui finisce il tratto sicuro. Più a ovest non sappiamo se il muro corresse lungo il fiume o dietro le case di via Lambertesca e di borgo Santi Apostoli: nel secondo caso la torre degli Amidei e Santo Stefano sarebbero rimaste fuori. Il modello non sceglie: accendi «Certezza» e vedrai le due linee possibili, trasparenti. In Oltrarno il muro non c\'era: chiudevano le case, con le pareti verso fuori senza aperture, e una palizzata.',
+    testo: 'Tra il 1172 e il 1175 il Comune costruì in fretta, in pietre di fiume e materiali di recupero, una cerchia molto più ampia di quella del 1078: per la prima volta comprendeva l\'Oltrarno. Nel 1216 è il muro che chiude Firenze. Le mura non ci sono più, ma molte strade di oggi corrono dove correvano il muro e il fosso: per questo il modello costruisce il muro sull\'asse di quelle vie. Qui, in piazza dei Giudici, c\'era la postierla d\'Altafronte e qui finisce il tratto sicuro. Più a ovest non sappiamo se il muro corresse lungo il fiume o dietro le case di via Lambertesca e di borgo Santi Apostoli: nel secondo caso la torre degli Amidei e Santo Stefano sarebbero rimaste fuori. Il modello non sceglie: premi «Che cosa è certo» e vedrai le due linee possibili, trasparenti. In Oltrarno il muro non c\'era: chiudevano le case, con le pareti verso fuori senza aperture, e una palizzata.',
     fonti: [
       'Wikipedia, «Mura di Firenze», consultata il 7 e il 12 ottobre 2026, che rimanda a Davidsohn, Storia di Firenze (1968), pp. 789–790, a E. Scampoli, Firenze, archeologia di una città (2010), p. 233, e a Bargellini-Guarnieri, Le strade di Firenze [da verificare su quelle opere]',
       'Date di inizio: 1172 o 1173, le fonti divergono [da verificare]',
@@ -345,7 +345,7 @@ function schedePorte() {
         ? `Una delle porte della cerchia del 1172–75, dove oggi è ${dove}. Da qui la strada usciva verso i borghi e la campagna.${FOSSO.has(p.id) ? ' Davanti al muro correva un fossato: si passava su un terrapieno.' : ''} La torre che vedi è un'ipotesi: ha la stessa forma data a Porta Santa Maria.`
         : `Una postierla: un passaggio stretto nel muro, per chi andava a piedi, dove oggi è ${dove}. Il varco ad arco che vedi è un'ipotesi.`;
     return {
-      id: p.id, gruppo: 'porte', nome: p.nome, pos: p.pos, raggio: 12,
+      id: p.id, gruppo: 'porte', nome: p.nome, pos: p.pos, raggio: 12, porta: p,
       luogo: { livello: oltrarno ? 'ipotesi' : 'dedotto', nota: oltrarno ? `la fonte nomina la porta e la via; il punto è dove la via incontra la palizzata disegnata a mano` : `la fonte la mette in ${dove}; il punto è dove la via incontra il muro, ricostruito sull'asse delle vie di oggi` },
       forma: { livello: 'ipotesi', nota: oltrarno ? 'porta di legno nella palizzata' : p.tipo === 'porta' ? 'torre di porta, come Porta Santa Maria' : 'varco ad arco nel muro' },
       testo,

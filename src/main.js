@@ -37,8 +37,11 @@ import { Suoni } from './mondo/suoni.js';
 import { alba, formatoOra, oraCanonica } from './mondo/sole.js';
 import { Controlli } from './controlli.js';
 import { Interfaccia } from './ui/interfaccia.js';
+import { t } from './ui/lingua.js';
 import { Racconto } from './ui/racconto.js';
 import { Visita } from './ui/visita.js';
+import { Mappa } from './ui/mappa.js';
+import { TAPPE } from './dati/visita.js';
 
 /* =====================================================================
    FIRENZE 1216 — LA CITTÀ  ·  prototipo v0.3: dal capo del Ponte Vecchio a Santa Reparata
@@ -57,18 +60,16 @@ const pausa = () => new Promise(r => { const c = new MessageChannel(); c.port1.o
 // a Campi la schermata d'avvio parla del convito, non della mattina di Pasqua
 if (MONDO === 'campi') {
   document.title = 'Campi, il convito del 1216 — Firenze 1216';
-  document.getElementById('titolo').textContent = 'Campi, il convito di gennaio 1216';
-  document.querySelector('#avvio .data').textContent = 'Gennaio 1216 · il castello dei Mazzinghi, sei miglia a nord-ovest di Firenze';
-  document.querySelector('#avvio .data + p').innerHTML = 'Il convito in cui comincia la storia: un castello da percorrere a piedi, costruito a partire dalle fonti. Dove le fonti si fermano, il modello lo dice: l\'interruttore <b>Certezza</b> colora ogni cosa secondo quanto ne sappiamo.';
-  document.querySelector('#avvio details ul').innerHTML =
-    '<li><b>Non è una ricostruzione validata.</b> È un prototipo, e un medievista non l\'ha ancora visto.</li>' +
-    '<li><b>Il castello non c\'è più.</b> Recinto, sala e arredo sono ricostruiti sul tipo dei castelli del contado: sono un\'ipotesi.</li>' +
-    '<li><b>Gli invitati non hanno un volto.</b> Chi sia ciascuno non lo diciamo: lo racconta il gioco, con le fonti.</li>';
+  const chiave = (sel, k, html) => { const el = document.querySelector(sel); if (html) el.dataset.tHtml = k; else el.dataset.t = k; };
+  chiave('#titolo', 'campi.titolo');
+  chiave('#avvio .intro', 'campi.intro', true);
+  document.querySelector('#avvio .intro').removeAttribute('data-t');
+  chiave('#avvio details ul', 'campi.nonE.lista', true);
 }
 
 // senza WebGL la città non si può disegnare: lo si dice subito, in parole semplici
 if (!document.createElement('canvas').getContext('webgl2')) {
-  document.querySelector('.caricamento').innerHTML = '<p class="errore"><b>Questo browser non riesce a disegnare la città in 3D.</b><br>Prova con Safari, Chrome o Firefox aggiornati, o su un altro computer.</p>';
+  document.querySelector('.caricamento').innerHTML = `<p class="errore">${t('errore.webgl')}</p>`;
   document.querySelector('.scelte-avvio').hidden = true;
   throw new Error('WebGL 2 non disponibile');
 }
@@ -111,11 +112,15 @@ const ui = new Interfaccia({
   vai: l => vaiA(l),
   qualita: v => { if (v !== qualita) cambiaQualita(); },
   racconto: () => { visita.chiudi(false); racconto.alterna(); },
-  movimentoRidotto: on => { movimentoRidotto = on; if (mondo) mondo.controlli.movimentoRidotto = on; }
+  movimentoRidotto: on => { movimentoRidotto = on; if (mondo) mondo.controlli.movimentoRidotto = on; },
+  leggiTappe: on => { visita.leggiDaSola = on; },
+  mappa: on => mappa?.mostra(on)
 });
 qualita = ui.qualitaRicordata === 'media' ? 'media' : 'alta';
 renderer.setPixelRatio(qualita === 'alta' ? Math.min(devicePixelRatio, 2) : 1);
 ui.applicaPreferenze();
+// la mappa con «tu sei qui» (ui/mappa.js): solo in città, dopo che le strade sono pronte
+let mappa = null;
 const racconto = new Racconto({
   vai: s => vaiScena(s),
   scheda: l => ui.apri(l),
@@ -131,11 +136,12 @@ const visita = new Visita({
     if (certezzaDallaVisita) { certezzaDallaVisita = false; impostaCertezza(false); }
     if (finita) {
       collocaVista(mondo.controlli, { x: 20, z: -46, verso: [9, -27] });
-      ui.avviso('Ora esplora da solo: tocca la strada dove vuoi andare, trascina per guardarti intorno.', 7000);
+      ui.avviso(t('avviso.dopoVisita'), 7000);
     }
   }
 });
-if (scenaIniziale) ui.scenaIniziale(`Dal gioco: scena ${scenaIniziale.id}, «${COPIONE[scenaIniziale.id].titolo}»`);
+visita.leggiDaSola = ui.leggiTappe;
+if (scenaIniziale) ui.scenaIniziale(t('scena.dalGioco', { id: scenaIniziale.id, t: COPIONE[scenaIniziale.id].titolo }));
 
 // quanto pesa ogni fase sul tempo di caricamento (misure del 22/10/2026 su questo Mac):
 // servono alla barra dell'avvio, che così avanza più o meno con il tempo vero
@@ -151,7 +157,7 @@ function ricordaDurata(s) {
   const k = 'citta.durata.' + MONDO;
   try { if (s) localStorage.setItem(k, s.toFixed(1)); else return +localStorage.getItem(k) || 0; } catch (e) { return 0; }
 }
-const opzComandi = () => ({ scene, avviso: t => ui.avviso(t), gesto: () => ui.nascondiAvviso() });
+const opzComandi = () => ({ scene, avviso: k => ui.avviso(t(k)), gesto: () => ui.nascondiAvviso() });
 
 async function costruisci() {
   const t0 = performance.now();
@@ -250,6 +256,9 @@ async function costruisci() {
   impostaComposizione();
   if (qualita !== 'alta') cielo.dimensioneOmbre(2048, 80);
   controlli.movimentoRidotto = movimentoRidotto;
+  mappa = new Mappa({ vai: l => { vaiA(l); ui.apri(l); } }, LUOGHI.filter(l => mondoDi(l) === 'citta' && !l.gruppo), TAPPE.map(t => t.luogo).filter(Boolean));
+  mappa.prepara(strade);
+  mappa.mostra(ui.conMappa);
   await passo('');
   ricordaDurata((performance.now() - t0) / 1000);
   console.info(tempiCaricamento.join(' · '));
@@ -343,7 +352,7 @@ function impostaOra() {
   if (!mondo) return;
   mondo.cielo.imposta(ora);
   mondo.acqua?.material.uniforms.sunDirection.value.copy(mondo.cielo.dir);
-  ui.ora(formatoOra(ora) + ' ora solare', oraCanonica(ora, giornata.doy));
+  ui.ora(formatoOra(ora), oraCanonica(ora, giornata.doy));
 }
 
 /* ----------------------------------------------------- post-produzione */
@@ -415,7 +424,7 @@ function entra(modo) {
   mondo.suoni.avvia(camera);
   if (scenaIniziale || params.has('racconto')) racconto.apri(scenaIniziale?.id);
   else if (modo === 'visita' && MONDO === 'citta') apriVisita();
-  else if (!params.has('subito')) ui.avviso('Tocca la strada dove vuoi andare. Trascina per guardarti intorno.', 7000);
+  else if (!params.has('subito')) ui.avviso(t('avviso.inizio'), 7000);
 }
 
 function impostaCertezza(on) {
@@ -469,7 +478,7 @@ function controllaScioltezza(vero) {
   if (fps < 12 && qualita === 'alta' && !ui.qualitaScelta) {
     cambiaQualita();
     ui.segna('#seg-qualita', 'media');
-    ui.avviso('Questo computer fa fatica: ho alleggerito le immagini. Puoi cambiarlo in Impostazioni.', 7000);
+    ui.avviso(t('avviso.lento'), 7000);
   }
 }
 
@@ -487,6 +496,7 @@ function ciclo() {
     mondo.abitanti.aggiorna(dt, camera.position);
     mondo.cantiere.aggiornaLod(camera.position);
     mondo.suoni.aggiorna(dt, camera, mondo.abitanti);
+    if (mappa && c.attivo) mappa.aggiorna(camera.position.x, camera.position.z, c.yaw);
     if ((tHud += dt) > 0.25) {
       tHud = 0;
       let best = null, bd = Infinity;
@@ -520,5 +530,5 @@ if (params.has('debug')) window.citta = {
   }
 };
 
-costruisci().catch(e => { console.error(e); ui.errore('Ricarica la pagina; se succede ancora, prova con un altro browser. (Dettaglio tecnico: ' + e.message + ')'); });
+costruisci().catch(e => { console.error(e); ui.errore(e.message); });
 ciclo();
