@@ -124,6 +124,10 @@ const PAROLE = {
   'mappa.qui': ['Tu sei qui', 'You are here'],
   'mappa.chiudi': ['Chiudi la pianta', 'Close the plan'],
   'racconto.solo': ['', 'The scenes of the game are in Italian for now.'],
+  'aiuto.gioco': ['Per la classe c\'è anche <a href="./gioco/" target="_blank" rel="noopener">il gioco «Cosa fatta capo ha»</a>, da fare insieme alla LIM: ogni scena ha un pulsante che apre qui il suo luogo.', 'For the classroom there is also <a href="./gioco/" target="_blank" rel="noopener">the game «Cosa fatta capo ha»</a>, played together on the interactive whiteboard: each scene has a button that opens its place here. The game is in Italian for now.'],
+  'gioco.torna': ['Torna al gioco', 'Back to the game'],
+  'gioco.torna.t': ['Chiude la città e torna alla schermata del gioco', 'Closes the city and goes back to the game screen'],
+  'gioco.chiudi': ['Il gioco è nella scheda accanto: chiudi questa per tornarci.', 'The game is in the other tab: close this one to go back to it.'],
   'scena.dalGioco': ['Dal gioco: scena {id}, «{t}»', 'From the game: scene {id}, «{t}» (in Italian)'],
   'scena.entra': ['Entra nella scena<small>la città si apre lì, con il racconto</small>', 'Enter the scene<small>the city opens there, with the story</small>'],
   'campi.entra': ['Entra nel castello<small>gli invitati sono già a tavola</small>', 'Enter the castle<small>the guests are already at table</small>']

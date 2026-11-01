@@ -2,7 +2,7 @@
 
 [English](README.md) · **Italiano**
 
-La Firenze della mattina di Pasqua del 1216, da percorrere a piedi. È la sezione esplorabile del progetto *Cosa fatta capo ha*: il gioco, in preparazione, racconta il delitto; la città mostra i luoghi.
+La Firenze della mattina di Pasqua del 1216, da percorrere a piedi. È la sezione esplorabile del progetto *Cosa fatta capo ha*: [il gioco](https://d0m3n1c0x.github.io/firenze-1216-citta/gioco/), un prototipo per la classe, racconta il delitto; la città mostra i luoghi.
 
 **[▶ Apri la città](https://d0m3n1c0x.github.io/firenze-1216-citta/)**
 
@@ -11,6 +11,8 @@ Serve un computer o un tablet con una buona scheda grafica: il modello è pensat
 **Prototipo** (ottobre 2026): tutta la città dentro la cerchia del 1172–75, casa per casa, con le mura, le porte e i borghi fuori porta; texture fotografiche e persone animate. Due giornate: **il 10 febbraio**, la promessa rotta, e **la mattina di Pasqua**, il delitto. Il 10 febbraio la città lavora: i banchi del cibo al Mercato Vecchio, i cambiatori alle loro tavole, i mercanti di panni in via Calimala, la fucina vicino a Porta Santa Maria, i notai allo scrittoio, ciascuno con il suo suono; a Pasqua il mercato è vuoto. Il **racconto** porta di scena in scena del gioco, ciascuna nel suo luogo. Il convito di gennaio 1216 è un luogo a parte, il castello dei Mazzinghi a Campi: ci si arriva dalle scene del primo atto o con `?luogo=campi`. Il piano completo, con le fasi, le fonti, il calendario e i rischi, è in [PIANO.md](PIANO.md).
 
 ## Dal gioco alla città
+
+Il gioco è un file solo, che si apre in rete su [/gioco/](https://d0m3n1c0x.github.io/firenze-1216-citta/gioco/) o si scarica dalla sua copertina per la LIM senza rete. È costruito dal repository completo del progetto e copiato qui in `public/gioco/index.html`. Ogni scena con un luogo ha il pulsante «Vedi il luogo nella città», che apre la città su quella scena in una scheda nuova con `?scena=CODICE&gioco`: con `gioco` la città mostra **Torna al gioco**, che chiude la scheda e riporta alla partita.
 
 Ogni scena del copione ha un link: `?scena=` seguito dal codice della schermata. Per esempio [le voci del ponte](https://d0m3n1c0x.github.io/firenze-1216-citta/?scena=IV3) (IV3), [Santo Stefano](https://d0m3n1c0x.github.io/firenze-1216-citta/?scena=IV2b) (IV2b), [Porta Santa Maria il 10 febbraio](https://d0m3n1c0x.github.io/firenze-1216-citta/?scena=II3) (II3). La città si apre nella giornata, all'ora e nel punto di vista della scena, con il racconto aperto. L'elenco delle scene e di che cosa ne fa la città è in [src/dati/scene.js](src/dati/scene.js).
 

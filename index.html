@@ -30,6 +30,10 @@
       <button id="b-visita-inizio" class="grande primario" data-t-html="avvio.visita">Visita guidata<small>dieci tappe, pochi minuti</small></button>
       <button id="entra" class="grande" data-t-html="avvio.esplora">Esplora da solo<small>vai dove vuoi</small></button>
     </div>
+    <button class="torna-gioco" hidden title="Chiude la città e torna alla schermata del gioco" data-t-title="gioco.torna.t">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      <span data-t="gioco.torna">Torna al gioco</span>
+    </button>
     <p class="come" id="come" data-t="avvio.come">Per camminare, tocca la strada dove vuoi andare. Per guardarti intorno, trascina.</p>
 
     <details>
@@ -56,6 +60,10 @@
 </div>
 
 <nav id="barra" hidden aria-label="Comandi">
+  <button class="torna-gioco" hidden title="Chiude la città e torna alla schermata del gioco" data-t-title="gioco.torna.t">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+    <span data-t="gioco.torna">Torna al gioco</span>
+  </button>
   <label class="ora" title="L'ora del giorno" data-t-title="barra.ora.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
     <span class="testo" data-t="barra.ora">Ora</span>
@@ -117,6 +125,7 @@
     <li><b>Con la tastiera</b>Frecce o W A S D per camminare, Maiuscolo per andare più svelti.</li>
   </ul>
   <button id="b-visita-aiuto" class="grande primario" data-t="aiuto.visita">Fai la visita guidata</button>
+  <p class="al-gioco" data-t-html="aiuto.gioco">Per la classe c'è anche <a href="./gioco/" target="_blank" rel="noopener">il gioco «Cosa fatta capo ha»</a>, da fare insieme alla LIM: ogni scena ha un pulsante che apre qui il suo luogo.</p>
 </aside>
 
 <aside id="mappa-grande" hidden aria-label="La pianta della città">

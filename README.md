@@ -14,7 +14,8 @@
 Florence on Easter morning 1216, to walk through on foot. It is the explorable part of *Cosa fatta capo ha*, a
 serious game for schools in development: the game tells the story of the murder of Buondelmonte de' Buondelmonti,
 the event the chronicles take as the start of Guelphs and Ghibellines; the city shows the places. The class writes
-the chronicle as a young notary, then compares it with the chronicles that survive.
+the chronicle as a young notary, then compares it with the chronicles that survive. A prototype of the game, in
+Italian, is at [/gioco/](https://d0m3n1c0x.github.io/firenze-1216-citta/gioco/).
 
 It needs a computer or tablet with a good graphics card: the model is built for high-end hardware, and the first
 opening takes a few tens of seconds.
@@ -42,7 +43,8 @@ stops, from the Buondelmonte house to the walls) and **exploring alone**.
 | **Go to…** | the list of places, each with its card and sources |
 | **Settings** | the day (10 February or Easter), lighter or richer images, larger text, reduced motion |
 
-Every scene of the game has a link (`?scena=IV3` opens the voices on the bridge), and `npm run verifica` checks, on
+Every scene of the game has a link (`?scena=IV3` opens the voices on the bridge). The game's «Vedi il luogo» button
+opens it in a new tab with `&gioco`, and the city then shows **Back to the game**, which closes the tab. And `npm run verifica` checks, on
 every change, that each place can be reached on foot and each scene has a walkable point of view.
 
 

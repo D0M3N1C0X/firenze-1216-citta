@@ -142,6 +142,16 @@ const visita = new Visita({
 });
 visita.leggiDaSola = ui.leggiTappe;
 if (scenaIniziale) ui.scenaIniziale(t('scena.dalGioco', { id: scenaIniziale.id, t: COPIONE[scenaIniziale.id].titolo }));
+// chi arriva dal gioco (?gioco) ci torna con un pulsante. Il gioco apre la città in una scheda
+// nuova: chiuderla riporta alla sua schermata, con la partita dov'era
+if (params.has('gioco')) for (const b of document.querySelectorAll('.torna-gioco')) {
+  b.hidden = false;
+  b.addEventListener('click', () => {
+    window.close();
+    // un browser chiude da sé solo le schede aperte da un link: se questa resta, lo si dice
+    setTimeout(() => ui.avviso(t('gioco.chiudi'), 7000), 300);
+  });
+}
 
 // quanto pesa ogni fase sul tempo di caricamento (misure del 22/10/2026 su questo Mac):
 // servono alla barra dell'avvio, che così avanza più o meno con il tempo vero

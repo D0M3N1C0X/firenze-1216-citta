@@ -1,4 +1,4 @@
-/* Generato da scripts/copione-estrai.mjs il 2026-10-09. Non modificare a mano.
+/* Generato da scripts/copione-estrai.mjs il 2026-11-01. Non modificare a mano.
    Fonte: storia/copione.md del progetto «Cosa fatta capo ha» (bozza 0.1 del 15 settembre 2026. Da provare su carta con un docente e da rivedere con un medievista.).
    Testi di Domenico Perroni, licenza CC BY 4.0. */
 
@@ -209,7 +209,7 @@ export const COPIONE = {
    {
     "id": "N23",
     "tipo": "visto",
-    "testo": "il giorno della settimana contato dal notaio."
+    "testo": "«Contando dalla Pasqua del 10 aprile, oggi è mercoledì.»"
    }
   ],
   "citazioni": [],

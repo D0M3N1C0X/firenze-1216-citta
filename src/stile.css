@@ -86,7 +86,7 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 #avviso {
   position: fixed; left: 50%; transform: translateX(-50%); top: 70px; max-width: min(520px, calc(100vw - 32px));
   padding: 12px 18px; border-radius: 12px; background: var(--carta); color: var(--inchiostro); font-size: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); z-index: 6; text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); z-index: 11; text-align: center;
 }
 
 #barra {
@@ -102,6 +102,14 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 #barra button:hover { background: rgba(241, 235, 224, 0.1); }
 #barra button[aria-pressed="true"] { background: var(--accento); color: #1d160d; border-color: var(--accento); }
 #barra input[type=range] { width: 120px; accent-color: var(--accento); height: 28px; }
+/* il ritorno al gioco (?gioco): in evidenza nella barra, e sulla carta d'avvio sotto le scelte */
+#barra .torna-gioco { background: var(--carta); color: var(--inchiostro); border-color: transparent; font-weight: 600; }
+#aiuto .al-gioco { font-size: 15px; line-height: 1.45; margin: 14px 2px 0; }
+#aiuto .al-gioco a { color: #7a4f12; font-weight: 600; }
+#avvio .torna-gioco {
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; margin: 12px 0 0;
+  border: 2px solid #b0802a; border-radius: 12px; background: #f3e6c9; color: var(--scuro); font-size: 16px; font-weight: 600;
+}
 
 #legenda {
   position: fixed; right: 16px; top: 14px; padding: 12px 15px; border-radius: 12px; background: var(--vetro);
