@@ -18,7 +18,7 @@ import { nomeLuogo, suLingua, t } from './lingua.js';
 const X0 = -700, X1 = 820, Z0 = -880, Z1 = 520;
 const SCALA = 1.4;                    // pixel per metro nella pianta disegnata una volta
 const PICCOLA = 300;                  // metri di città nel cerchio
-const COL = { carta: '#efe6d4', strada: '#b9a98c', piazza: '#d9ccb2', fiume: '#9fbfd6', muro: '#7a3b2a', palizzata: '#8e5a2b', testo: '#2b241c' };
+const COL = { carta: '#efe6d4', strada: '#b9a98c', piazza: '#d9ccb2', fiume: '#9fbfd6', muro: '#7a3b2a', palizzata: '#8e5a2b', testo: '#2b241c', edificio: '#b8a68c' };
 
 export class Mappa {
   /**
@@ -58,6 +58,32 @@ export class Mappa {
     this.base = c;
     this.W = W; this.H = H;
     this.el.hidden = false;
+  }
+
+  /**
+   * La pianta di oggi (mondo/oggi.js): gli edifici veri, pieni, e le strade
+   * tra l'uno e l'altro. Fuori dal riquadro dei dati resta la carta.
+   */
+  preparaOggi(volumi) {
+    if (!this.base) return;
+    const c = document.createElement('canvas'); c.width = this.W; c.height = this.H;
+    const g = c.getContext('2d');
+    const P = ([x, z]) => [(x - X0) * SCALA, (z - Z0) * SCALA];
+    const anello = pts => pts.forEach((p, i) => { const [a, b] = P(p); i ? g.lineTo(a, b) : g.moveTo(a, b); });
+    g.fillStyle = COL.carta; g.fillRect(0, 0, this.W, this.H);
+    g.beginPath(); for (const o of volumi) { anello(o.p); g.closePath(); for (const b of o.b || []) { anello(b); g.closePath(); } }
+    g.fillStyle = COL.edificio; g.fill('evenodd');
+    g.beginPath(); anello(FIUME); g.closePath(); g.fillStyle = COL.fiume; g.fill();
+    this.baseOggi = c;
+  }
+
+  /** Il 1216 o oggi: cambia la pianta sotto la freccia. */
+  epoca(oggi, colore = null) {
+    this.colore = oggi ? colore : null;
+    this.base1216 ||= this.base;
+    this.base = oggi && this.baseOggi ? this.baseOggi : this.base1216;
+    this.ultima = 0;
+    if (!this.grande.hidden) this.disegnaGrande();
   }
 
   mostra(on) { this.el.hidden = !on || !this.base; }
@@ -111,7 +137,7 @@ export class Mappa {
     for (const l of this.luoghi) {
       const [a, b] = P(l.pos);
       g.beginPath(); g.arc(a, b, 6 / k, 0, Math.PI * 2);
-      g.fillStyle = LIVELLI[l.forma.livello]?.colore || '#555'; g.fill();
+      g.fillStyle = this.colore?.(l) || LIVELLI[l.forma.livello]?.colore || '#555'; g.fill();
       g.lineWidth = 2 / k; g.strokeStyle = '#fff'; g.stroke();
     }
     const occupati = [], h = 16 / k;

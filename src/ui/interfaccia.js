@@ -2,7 +2,8 @@ import { LIVELLI } from '../mondo/materiali.js';
 import { LUOGHI as TUTTI } from '../dati/luoghi.js';
 import { MONDO, mondoDi } from '../mondo/dove.js';
 import { voce } from './voce.js';
-import { applicaTesti, fase as faseL, giornata as giornataL, impostaLingua, inglese, lang, ora as oraL, scheda as schedaL, suLingua, t } from './lingua.js';
+import { applicaTesti, fase as faseL, giornata as giornataL, impostaLingua, inglese, lang, ora as oraL, scheda as schedaL, schedaOggi, suLingua, t } from './lingua.js';
+import { COLORI_RESTA } from '../dati/oggi-luoghi.js';
 
 // i luoghi del mondo in cui si è: la città, oppure un luogo a parte (Campi)
 const LUOGHI = TUTTI.filter(l => mondoDi(l) === MONDO);
@@ -24,6 +25,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 // [da verificare] (e in inglese [to be checked]) e «le fonti divergono» restano visibili anche nella scheda
 const evidenzia = s => esc(s).replace(/\[(da verificare|to be checked)[^\]]*\]/g, m => `<span class="verifica">${m}</span>`);
 const badge = l => `<span class="badge" style="background:${LIVELLI[l].colore}">${t('livello.' + l)}</span>`;
+const badgeResta = k => `<span class="badge" style="background:${COLORI_RESTA[k]}">${t('oggi.resta.' + k)}</span>`;
 
 // le preferenze restano sul dispositivo; se il browser non le salva, si va avanti senza
 const ricorda = (k, v) => { try { localStorage.setItem('citta.' + k, JSON.stringify(v)); } catch (e) { /* niente */ } };
@@ -52,6 +54,9 @@ export class Interfaccia {
 
     $('#b-certezza').addEventListener('click', () => this.certezza());
     $('#b-volo').addEventListener('click', () => this.volo());
+    $('#b-oggi').addEventListener('click', () => this.oggi());
+    // a Campi non c'è una Firenze di oggi da mostrare
+    if (MONDO === 'campi') $('#b-oggi').hidden = true;
     $('#b-luoghi').addEventListener('click', () => this.alterna('#elenco'));
     $('#b-aiuto').addEventListener('click', () => this.alterna('#aiuto'));
     $('#b-impostazioni').addEventListener('click', () => this.alterna('#impostazioni'));
@@ -91,8 +96,9 @@ export class Interfaccia {
 
     addEventListener('keydown', e => {
       if (e.repeat || !this.dentro || (e.target.closest && e.target.closest('input'))) return;
-      if (e.code === 'KeyC' && !az.inVolo()) this.certezza();
+      if (e.code === 'KeyC' && !az.inVolo() && !$('#b-certezza').hidden) this.certezza();
       if (e.code === 'KeyF') this.volo();
+      if (e.code === 'KeyO' && MONDO !== 'campi') this.oggi();
       if (e.code === 'KeyI' && this.vicino) this.apri(this.vicino);
       if (e.code === 'KeyR') az.racconto();
       if (e.code === 'Escape') this.chiudiDestra();
@@ -130,13 +136,19 @@ export class Interfaccia {
 
   /** La legenda in parole di tutti i giorni; le definizioni precise restano in materiali.js e nel PIANO. */
   disegnaLegenda() {
+    if (this.inOggi) {
+      $('#legenda').innerHTML = `<b>${esc(t('oggi.legenda'))}</b>` + Object.entries(COLORI_RESTA)
+        .map(([k, c]) => `<div><i style="background:${c}"></i><span>${esc(t('oggi.resta.' + k))}</span></div>`).join('');
+      return;
+    }
     $('#legenda').innerHTML = `<b>${esc(t('legenda.titolo'))}</b>` + Object.entries(LIVELLI)
       .map(([k, l]) => `<div><i style="background:${l.colore}"></i><span>${t('livello.' + k)}<small>${t('legenda.' + k)}</small></span></div>`).join('');
   }
 
   /** I luoghi principali, poi le porte della cerchia in un gruppo che si apre. */
   disegnaElenco() {
-    const voceElenco = l => `<li><button data-id="${l.id}"><i style="background:${LIVELLI[l.forma.livello].colore}"></i>${esc(schedaL(l).nome)}</button></li>`;
+    const colore = l => (this.inOggi && COLORI_RESTA[schedaOggi(l)?.resta]) || LIVELLI[l.forma.livello].colore;
+    const voceElenco = l => `<li><button data-id="${l.id}"><i style="background:${colore(l)}"></i>${esc(schedaL(l).nome)}</button></li>`;
     const porte = LUOGHI.filter(l => l.gruppo === 'porte');
     $('#elenco-luoghi').innerHTML = LUOGHI.filter(l => !l.gruppo).map(voceElenco).join('') +
       (porte.length ? `<li class="gruppo"><details><summary>${esc(t('elenco.porte', { n: porte.length }))}</summary><ul>${porte.map(voceElenco).join('')}</ul></details></li>` : '');
@@ -238,6 +250,25 @@ export class Interfaccia {
   }
   elenco() { this.alterna('#elenco'); }
 
+  /** Il 1216 o oggi: il pulsante dice in che epoca si è. */
+  oggi() { this.az.epoca($('#b-oggi').getAttribute('aria-pressed') === 'true' ? '1216' : 'oggi'); }
+  statoEpoca(oggi) {
+    $('#b-oggi').setAttribute('aria-pressed', oggi);
+    this.inOggi = oggi;
+    // la certezza riguarda il 1216: oggi tutto quello che si vede è misurato o disegnato. La
+    // legenda dice invece che cosa resta; le giornate sono quelle del 1216
+    $('#b-certezza').hidden = oggi;
+    $('#seg-giorno').closest('.riga').hidden = oggi;
+    this.disegnaLegenda();
+    this.disegnaElenco();
+    $('#legenda').hidden = !oggi && $('#b-certezza').getAttribute('aria-pressed') !== 'true';
+    if (this.giornataMostrata) this.giornata(...this.giornataMostrata);
+    if (this.oraMostrata) this.ora(...this.oraMostrata);
+    const v = this.vicino; this.vicino = undefined; this.luogoVicino(v);
+    if (this.aperta && !$('#scheda').hidden) this.apri(this.aperta);
+    this.misuraBarra?.();
+  }
+
   /** Lo stato dei pulsanti quando a cambiarlo è il racconto o la visita, non un clic. */
   statoVolo(on) { $('#b-volo').setAttribute('aria-pressed', on); }
   statoRacconto(on) { $('#b-racconto').setAttribute('aria-pressed', on); }
@@ -251,15 +282,15 @@ export class Interfaccia {
   /** L'ora in testata: l'ora solare e l'ora canonica (in inglese con i nomi della liturgia). */
   ora(h, canonica) {
     this.oraMostrata = [h, canonica];
-    $('#ora').textContent = t('ora.solare', { h, c: oraL(canonica) });
+    $('#ora').textContent = this.inOggi ? t('oggi.ora', { h }) : t('ora.solare', { h, c: oraL(canonica) });
   }
 
   /** La giornata mostrata: testata, avvio, impostazioni e limiti del cursore dell'ora (dall'alba). */
   giornata(g0, alba, ora) {
     this.giornataMostrata = [g0, alba, ora];
     const g = giornataL(g0);
-    $('#quando').textContent = g.titolo;
-    $('#quando').title = g.nota;
+    $('#quando').textContent = this.inOggi ? t('oggi.quando') : g.titolo;
+    $('#quando').title = this.inOggi ? '' : g.nota;
     $('#avvio .data').textContent = `${g.titolo} · ${g.nota}`;
     this.segna('#seg-giorno', g.id);
     for (const b of document.querySelectorAll('#seg-giorno button')) b.disabled = MONDO === 'campi';
@@ -276,27 +307,39 @@ export class Interfaccia {
     const v = $('#vicino');
     if (!l) { v.hidden = true; return; }
     v.hidden = false;
-    v.innerHTML = `<b>${esc(schedaL(l).nome)}</b>${badge(l.forma.livello)}<button class="leggi" title="I">${esc(t('vicino.leggi'))}</button>`;
+    const o = this.inOggi ? schedaOggi(l) : null;
+    v.innerHTML = `<b>${esc(schedaL(l).nome)}</b>${o ? badgeResta(o.resta) : badge(l.forma.livello)}<button class="leggi" title="I">${esc(t('vicino.leggi'))}</button>`;
   }
 
   apri(l) {
     this.chiudiDestra();
     this.aperta = l;
-    const s = schedaL(l);
+    const s = schedaL(l), o = schedaOggi(l), adesso = this.inOggi && o;
+    // allora e oggi: prima la parte dell'epoca in cui si è, e un pulsante per passare all'altra
+    const parteOggi = !o ? '' : `<section class="oggi-scheda">
+        <h3>${esc(t('scheda.oggi'))} ${badgeResta(o.resta)}</h3>
+        <p>${evidenzia(o.testo)}</p>
+        <button class="grande cambia-epoca">${esc(t(this.inOggi ? 'scheda.guarda1216' : 'scheda.guardaOggi'))}</button>
+      </section>`;
+    const titoloAllora = o ? `<h3 class="allora">${esc(t('scheda.allora'))}</h3>` : '';
     $('#scheda').hidden = false;
     $('#scheda-corpo').innerHTML = `
       <h2>${esc(s.nome)}</h2>
       ${voce.disponibile ? `<button class="ascolta" aria-pressed="false">${esc(t('ascolta'))}</button>` : ''}
+      ${adesso ? parteOggi : ''}
+      ${titoloAllora}
       <div class="livelli">
         <div class="livello"><b>${esc(t('scheda.luogo'))}</b><span>${badge(l.luogo.livello)}${evidenzia(s.luogo)}</span></div>
         <div class="livello"><b>${esc(t('scheda.forma'))}</b><span>${badge(l.forma.livello)}${evidenzia(s.forma)}</span></div>
       </div>
       <p>${evidenzia(s.testo)}</p>
+      ${adesso ? '' : parteOggi}
       <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#6b5a42;margin:16px 0 4px">${esc(inglese() ? t('scheda.fonti.it') : t('scheda.fonti'))}</h3>
-      <ul class="fonti" lang="it">${l.fonti.map(f => `<li>${evidenzia(f)}</li>`).join('')}</ul>`;
+      <ul class="fonti" lang="it">${[...(o?.fonti || []), ...l.fonti].map(f => `<li>${evidenzia(f)}</li>`).join('')}</ul>`;
     $('#scheda').scrollTop = 0;
+    $('#scheda .cambia-epoca')?.addEventListener('click', () => this.oggi());
     const b = $('#scheda .ascolta');
     // si legge il racconto della scheda, senza i segni [da verificare]: quelli restano scritti
-    if (b) b.addEventListener('click', () => voce.leggi(s.nome + '. ' + s.testo.replace(/\s*\[[^\]]*\]/g, ''), b));
+    if (b) b.addEventListener('click', () => voce.leggi(s.nome + '. ' + (adesso ? o.testo : s.testo).replace(/\s*\[[^\]]*\]/g, ''), b));
   }
 }

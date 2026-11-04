@@ -135,6 +135,12 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 .livello { display: grid; grid-template-columns: 74px 1fr; gap: 8px; align-items: start; }
 .livello b { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b5a42; padding-top: 2px; }
 .badge { display: inline-block; padding: 1px 7px; border-radius: 4px; color: #fff; font-size: 12.5px; font-weight: 600; margin-right: 6px; }
+/* allora e oggi: la parte sull'oggi di ogni scheda, e il pulsante per passare all'altra epoca */
+.oggi-scheda { margin: 14px 0; padding: 12px 14px; border-left: 4px solid #b0802a; border-radius: 6px; background: rgba(176, 128, 42, 0.09); }
+.oggi-scheda h3, #scheda h3.allora { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b5a42; }
+#scheda h3.allora { margin-top: 16px; }
+.oggi-scheda .badge { text-transform: none; letter-spacing: 0; }
+.oggi-scheda .cambia-epoca { width: 100%; min-height: 44px; margin-top: 8px; }
 .fonti { font-size: 14px; color: #4b3e2e; padding-left: 18px; }
 .fonti li { margin: 4px 0; }
 .verifica { background: #f1d9a6; padding: 0 3px; border-radius: 2px; }

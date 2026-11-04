@@ -220,3 +220,33 @@ export const GIORNATE_EN = {
   febbraio: { nome: '10 February', titolo: '10 February 1216', nota: 'for the Florentines still 1215: the new year begins on 25 March' },
   gennaio: { nome: 'January', titolo: 'January 1216 · the banquet at Campi', nota: 'for the Florentines still 1215; the day is not recorded: here, mid-January' }
 };
+
+/** What is left of 1216 (dati/oggi-luoghi.js): the text of each card about today. */
+export const OGGI_EN = {
+  'capo-ponte': 'The spot is still here: it is where via Por Santa Maria reaches the Ponte Vecchio. Around it nothing is left of 1216, nor of the centuries after. In the night between 3 and 4 August 1944, mines laid by the retreating German army razed the street and the riverside. The houses you see are post-war.',
+  marte: 'It is gone. The stone disappeared in the flood of 1333 [to be checked: Villani XII, 1]. Today the street and the riverside pass here.',
+  ponte: 'The place is the same, the bridge is another. This is the one rebuilt after the flood of 1333 and finished in 1345, with three arches. In 1495 the Commune sold forty-eight shops to private owners, who enlarged them towards the river. Above runs the Vasari Corridor, of 1565. In August 1944 it was the only bridge in Florence the Germans did not blow up.',
+  amidei: 'The tower is here, in via Por Santa Maria, but it is not the original: the mines of August 1944 almost entirely destroyed it, and it was rebuilt from photographs and drawings, under the direction of Guido Morozzi. It is also called the Tower of the Lions, for the two heads on the front: only the left one is old.',
+  'santo-stefano': 'The church is still here, with its white and green marble doorway of about 1233. It was hit by the war and by the flood of 1966, and badly damaged by the via dei Georgofili bombing of 27 May 1993. Since 1986 it has no longer been a parish; since 2015 it has hosted exhibitions, and concerts are held there.',
+  'santi-apostoli': 'The church is still here, in piazza del Limbo, along borgo Santi Apostoli [to be checked: how much of what you see already stood in 1216].',
+  'porta-santa-maria': 'The gate is gone: it survives in the name of via Por Santa Maria. The houses of the street are new too: the mines of 1944 razed the whole row, and the street was rebuilt between the late 1940s and the early 1950s.',
+  'santa-maria-sopra-porta': 'A later building stands in its place. The church was rebuilt in the second half of the 13th century and dedicated to Saint Blaise, perhaps to leave behind the memory of the feuds between families. Today it is deconsecrated and houses the library of the Palagio di Parte Guelfa.',
+  mannelli: 'The tower is still here, at the Oltrarno end of the bridge, with its facing of bare stone. The mines of 1944 damaged it, though not beyond repair, and Nello Baroni restored it. The Vasari Corridor still runs around it, hanging on its corbels.',
+  strade: 'Today the streets of the centre are paved with stone. Many routes are still the medieval ones [to be checked], but not all: around piazza della Repubblica the network was remade at the end of the 19th century.',
+  fiume: 'The earth banks are gone. Today the Arno runs between the embankment walls and the lungarni, mostly of the 19th century [to be checked: the dates of each stretch]. The wall you see is simplified: the real one is almost vertical.',
+  case: 'The houses you see now are today\'s: shape and height measured by the Tuscany Region in 2011, windows and roofs drawn. Of the 13th century what remains is mostly cut-down towers and pieces of wall inside later houses [to be checked].',
+  battistero: 'It is the same building as in 1216. Since then the mosaics and the three bronze doors have arrived: the ones you see today are copies, and the originals are in the Museo dell\'Opera del Duomo. The pattern of the marble in this model is generic, not the real one.',
+  'case-donati': 'We have not checked this yet: we do not know whether anything recognisable is left of these houses [to be checked].',
+  'case-buondelmonti': 'We have not checked this yet: we do not know whether anything recognisable is left of these houses [to be checked].',
+  'case-uberti': 'They are gone. After the victory at Benevento the Guelphs demolished the houses of the Ghibellines, and around 1268 piazza della Signoria began to take shape. The Uberti stood in the northern part of the square. Today you see the square and Palazzo Vecchio here.',
+  'case-lamberti': 'We have not checked this yet: we do not know whether anything recognisable is left of these houses [to be checked].',
+  'torre-fifanti': 'We have not checked this yet: we do not know whether anything recognisable is left of this tower [to be checked].',
+  'mercato-vecchio': 'It is gone. It was demolished between 1885 and 1895, together with the old Ghetto, to make piazza della Repubblica: they called it «risanamento», the clean-up. The Column of Abundance remains, put back in 1956 where the two main streets of the Roman city met. The column is not in the model yet.',
+  cambiatori: 'Nothing is left: this side of the Mercato Vecchio was demolished with the rest between 1885 and 1895. Today it is piazza della Repubblica.',
+  calimala: 'The street is still here and is still called Calimala, but the cloth shops are not. The houses around were largely rebuilt in the clean-up of the late 19th century [to be checked].',
+  fucina: 'This spot is an invention of the model: we do not know where the smiths worked in 1216, so today there is nothing to look for.',
+  cerchia: 'The wall of 1172–75 can no longer be seen: the city outgrew it with the larger circuit begun at the end of the 13th century [to be checked: whether stretches survive inside other buildings]. Its route remains, in the curve of some streets.',
+  'casa-del-notaio': 'The notary and the house are inventions of the game: there is nothing to look for. Via delle Terme, though, is still here.',
+  'santa-reparata': 'You cannot see it from outside: it lies under the Duomo that replaced it. Its remains were excavated in six campaigns between 1965 and 1974, and today you can visit them from the right aisle of the cathedral.'
+};
+export const OGGI_PORTA_EN = 'The gate is gone [to be checked]: the circuit of 1172–75 was outgrown by the larger one begun at the end of the 13th century. The street that passed through it remains.';

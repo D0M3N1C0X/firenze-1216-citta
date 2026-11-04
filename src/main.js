@@ -32,6 +32,8 @@ import { costruisciMura, costruisciPalizzata, ipotesiLatoSud } from './mondo/mur
 import { creaVegetazione } from './mondo/vegetazione.js';
 import { costruisciMestieri, figureDeiMestieri, grigliaDeiMestieri, suoniDeiMestieri } from './mondo/mestieri.js';
 import { Abitanti } from './mondo/abitanti.js';
+import { costruisciOggi, diradaAlberi, postoLibero } from './mondo/oggi.js';
+import { COLORI_RESTA, oggiDi } from './dati/oggi-luoghi.js';
 import { caricaAnimali, caricaFigure } from './mondo/figure.js';
 import { Suoni } from './mondo/suoni.js';
 import { alba, formatoOra, oraCanonica } from './mondo/sole.js';
@@ -100,6 +102,8 @@ let mondo = null;
 let modelli = null;          // le figure di Blender, caricate una volta sola
 let animali = null;          // cavalli, muli e asini di Blender
 let certezzaAccesa = false;
+// il 1216 o oggi (mondo/oggi.js): la città di oggi si costruisce la prima volta che serve
+let epoca = '1216', oggi = null, costruendoOggi = null;
 
 const ui = new Interfaccia({
   entra,
@@ -107,6 +111,7 @@ const ui = new Interfaccia({
   certezza: on => impostaCertezza(on),
   giorno: id => { if (MONDO === 'citta' && id !== giornata.id) impostaGiornata(id); },
   volo: on => mondo.controlli.impostaVolo(on),
+  epoca: e => impostaEpoca(e),
   inVolo: () => mondo?.controlli.volo,
   ora: h => { ora = h; impostaOra(); },
   vai: l => vaiA(l),
@@ -209,7 +214,10 @@ async function costruisci() {
   // le strade del 1216 servono già qui: gli alberi non crescono sulle strade fuori porta
   const strade = strade1216(STRADE);
   creaTerreno(scene);
+  // gli alberi si ricordano: dove oggi ci sono le case, nella Firenze di oggi si tolgono
+  const primaDegliAlberi = scene.children.length;
   creaVegetazione(scene, { evita: strade.filter(s => s.fuori) });
+  const alberi = scene.children.slice(primaDegliAlberi);
   const acqua = creaAcqua(scene, cielo.dir);
 
   await passo('Le strade del 1216…');
@@ -260,7 +268,7 @@ async function costruisci() {
   else if (scenaIniziale?.vista) collocaVista(controlli, scenaIniziale.vista);
   else controlli.colloca(20, -46, 2.62, -0.02);
 
-  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri };
+  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri, alberi };
   mondo.abitanti = creaAbitanti();
   impostaGiornata(giornata.id, { ora });
   impostaComposizione();
@@ -276,6 +284,7 @@ async function costruisci() {
     (KIT.pezzi ? ` · kit ${(cantiere.triangoliKit / 1e6).toFixed(1)} M triangoli · pozzi ${pozzi.length}` : ' · senza kit'));
   ui.pronto();
   if (params.has('subito')) entra();
+  if (params.get('epoca') === 'oggi') impostaEpoca('oggi');
 }
 
 /**
@@ -348,14 +357,65 @@ function impostaGiornata(id, opz = {}) {
   if (!mondo) return;
   mondo.cielo.giornata(g);
   mondo.cantiere.giornata(g);
+  if (epoca === 'oggi') mostra1216(false);
   mondo.suoni.giornata(g);
   if (MONDO === 'citta') { grigliaDeiMestieri(mondo.griglia, g.festa); mondo.suoni.mestieri(suoniDeiMestieri(g)); }
   if (cambia) {
     mondo.abitanti.distruggi();
     mondo.abitanti = creaAbitanti();
-    if (certezzaAccesa) mondo.abitanti.visibili(false);
+    if (certezzaAccesa || epoca === 'oggi') mondo.abitanti.visibili(false);
   }
   impostaOra();
+}
+
+/** Accende o spegne tutto quello che è del 1216: case, monumenti, mura, mestieri, gente, campagna. */
+function mostra1216(on) {
+  for (const m of mondo.cantiere.mesh) m.visible = on;
+  if (on) { mondo.cantiere.giornata(giornata); mondo.cantiere.certezza(certezzaAccesa); }
+  mondo.abitanti.visibili(on && !certezzaAccesa);
+  mondo.suoni.mestieri(on ? suoniDeiMestieri(giornata) : []);
+}
+
+/**
+ * Il 1216 o oggi, nello stesso punto. La prima volta la Firenze di oggi si
+ * costruisce (qualche secondo); poi si scambia con il 1216 in un attimo.
+ */
+async function impostaEpoca(e) {
+  if (costruendoOggi && !oggi) return;           // la si sta ancora costruendo
+  if (MONDO !== 'citta' || !mondo || e === epoca) return ui.statoEpoca(epoca === 'oggi');
+  if (e === 'oggi' && !oggi) {
+    ui.avviso(t('oggi.costruisco'), 60000);
+    ui.statoEpoca(true);
+    try {
+      const t0 = performance.now();
+      // i luoghi della storia hanno un segno anche oggi, del colore di che cosa ne resta (dati/oggi-luoghi.js)
+      const segni = LUOGHI.filter(l => mondoDi(l) === 'citta' && !l.gruppo && oggiDi(l)).map(l => ({ pos: l.pos, colore: COLORI_RESTA[oggiDi(l).resta] }));
+      oggi = await (costruendoOggi ||= costruisciOggi(scene, { pausa, segni }));
+      console.info(`Firenze di oggi in ${((performance.now() - t0) / 1000).toFixed(1)} s · ${oggi.volumi.length} volumi · oggetti ${oggi.gruppo.children.length}`);
+      oggi.gruppo.visible = false;
+      mappa?.preparaOggi(oggi.volumi);
+    } catch (err) {
+      console.error(err); costruendoOggi = null;
+      ui.statoEpoca(false); ui.avviso(t('oggi.errore'), 7000);
+      return;
+    }
+  }
+  const adesso = e === 'oggi';
+  if (adesso && certezzaAccesa) impostaCertezza(false);
+  epoca = e;
+  mostra1216(!adesso);
+  oggi.gruppo.visible = adesso;
+  diradaAlberi(mondo.alberi, oggi.riquadro, adesso);
+  // si cammina sulla griglia dell'epoca; chi si trova dentro un muro dell'altra si sposta di poco
+  const c = mondo.controlli;
+  c.ferma();
+  c.griglia = adesso ? oggi.griglia : mondo.griglia;
+  c.quotaIn = adesso ? oggi.quotaIn : mondo.quotaIn;
+  c.yLiscia = null;
+  if (!c.volo) { const q = postoLibero(c.griglia, c.pos.x, c.pos.z); if (q) { c.pos.x = q[0]; c.pos.z = q[1]; } }
+  mappa?.epoca(adesso, l => COLORI_RESTA[oggiDi(l)?.resta]);
+  ui.statoEpoca(adesso);
+  ui.avviso(t(adesso ? 'oggi.pronta' : 'oggi.torna'), adesso ? 9000 : 3000);
 }
 
 function impostaOra() {
@@ -415,6 +475,7 @@ function collocaVista(c, v) {
 
 /** La città va nella giornata, all'ora e nel punto di vista di una scena. */
 function vaiScena(s) {
+  if (epoca === 'oggi') impostaEpoca('1216');
   // una scena in un altro mondo (Campi o la città): si riapre la pagina lì
   if (mondoDi(s) !== MONDO) {
     const q = new URLSearchParams(location.search);
@@ -450,6 +511,7 @@ function apriVisita() {
 
 /** Una tappa della visita: si va nel punto di vista, con una breve dissolvenza. */
 async function vaiTappa(t) {
+  if (epoca === 'oggi') await impostaEpoca('1216');
   const sfuma = !movimentoRidotto && mondo;
   const velo = document.getElementById('dissolvenza');
   if (sfuma) { velo.classList.add('su'); await new Promise(r => setTimeout(r, 280)); }
@@ -465,7 +527,7 @@ function vaiA(l) {
   // si guarda il luogo da qualche metro, da un punto dove si può stare
   for (let r = 8; r < 40; r += 2) for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
     const x = l.pos[0] + Math.cos(a) * r, z = l.pos[1] + Math.sin(a) * r;
-    if (mondo.griglia.percorribile(x, z)) {
+    if (c.griglia.percorribile(x, z)) {
       const yaw = Math.atan2(-(l.pos[0] - x), -(l.pos[1] - z));
       if (c.volo) { c.pos.set(x, c.pos.y, z); c.yaw = yaw; }
       else c.colloca(x, z, yaw, 0.08);
@@ -523,7 +585,7 @@ function ciclo() {
 
 // per le verifiche dalla console: ?debug
 if (params.has('debug')) window.citta = {
-  renderer, scene, camera, get mondo() { return mondo; }, get composer() { return composer; }, get giornata() { return giornata; }, impostaGiornata, racconto, vaiScena,
+  renderer, scene, camera, get mondo() { return mondo; }, get oggi() { return oggi; }, impostaEpoca, get composer() { return composer; }, get giornata() { return giornata; }, impostaGiornata, racconto, vaiScena,
   get figure() { return modelli; }, get animali() { return animali; }, tempi: tempiCaricamento, visita, ui,
   /** Salva un fotogramma a piena risoluzione (solo con il server di sviluppo). */
   async cattura(nome = 'cattura') {

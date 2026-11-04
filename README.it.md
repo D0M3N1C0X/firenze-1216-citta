@@ -25,6 +25,10 @@ npm run dev
 
 Poi aprire http://localhost:5216. Serve una scheda video di fascia alta: il modello è pensato per PC e tablet potenti, non per la LIM.
 
+## La Firenze di oggi
+
+Il pulsante **Oggi** (tasto O) mostra lo stesso punto com'è adesso; ritoccandolo si torna al 1216. Ogni edificio ha la forma e l'altezza misurate dalla Regione Toscana nel 2011: novemila volumi, mentre finestre, persiane e tetti sono disegnati, uguali per tipo e non veri edificio per edificio. A parte sono curati la cupola, i marmi di cattedrale, Battistero e campanile, Palazzo Vecchio, la Loggia dei Lanzi e il Ponte Vecchio con le botteghe e il Corridoio Vasariano. Ogni luogo della storia ha a terra un anello con una colonnina e una scheda «allora e oggi»: c'è ancora, in parte, non c'è più, oppure da verificare. Si apre direttamente con [`?epoca=oggi`](https://d0m3n1c0x.github.io/firenze-1216-citta/?epoca=oggi). I dati si caricano solo la prima volta che si tocca il pulsante.
+
 ## Comandi
 
 Pensati per chiunque, anche senza tastiera e anche su iPad. All'ingresso si sceglie tra **Visita guidata** (dieci tappe, dalla casa di Buondelmonte alle mura) ed **Esplora da solo**; si può scegliere anche mentre la città si prepara, e una barra dice quanto manca.
@@ -64,12 +68,14 @@ Dopo ogni modifica a strade, luoghi, scene o tappe della visita: `npm run verifi
 ```
 src/dati/        luoghi e schede (luoghi.js), strade del 1216 (strade-1216.js), giornate (giornate.js),
                  scene del gioco (scene.js), testi del copione (copione.js, generato), cerchia (cerchia.js),
-                 estratto OSM (osm.js, generato)
-src/mondo/       terreno e fiume, cielo e sole, materiali, case, monumenti, abitanti, suoni, vegetazione
+                 estratto OSM (osm.js, generato), edifici di oggi (oggi.js, generato), che cosa resta (oggi-luoghi.js)
+src/mondo/       terreno e fiume, cielo e sole, materiali, case, monumenti, abitanti, suoni, vegetazione,
+                 la Firenze di oggi (oggi.js, oggi-monumenti.js)
 src/ui/          interfaccia e racconto
 public/          texture fotografiche, figure e animali (da strumenti/figure/ e strumenti/animali/), kit edilizio e monumenti
 strumenti/       script di Blender per le figure, gli animali, il kit edilizio (finestre, porte, botteghe, pozzi) e i monumenti
-scripts/         osm-estrai.mjs (OpenStreetMap → osm.js), copione-estrai.mjs (copione → copione.js),
+scripts/         osm-estrai.mjs (OpenStreetMap → osm.js), oggi-estrai.mjs (Regione Toscana → oggi.js),
+                 copione-estrai.mjs (copione → copione.js),
                  verifica.mjs (luoghi e scene raggiungibili), pubblica.sh
 dati-osm/        estratto OpenStreetMap del 01/10/2026 (ODbL)
 app/             l'app per iPhone, iPad e Mac (Capacitor): vedi app/README.md
@@ -80,6 +86,7 @@ app/             l'app per iPhone, iPad e Mac (Capacitor): vedi app/README.md
 - **Codice:** MIT (vedi [LICENSE](LICENSE)). **Testi, schede e testi del copione:** CC BY 4.0 (vedi [LICENSE-CONTENUTI.md](LICENSE-CONTENUTI.md)).
 - **Citare:** vedi [CITATION.cff](CITATION.cff).
 - **Dati cartografici:** © OpenStreetMap contributors, licenza [ODbL 1.0](https://opendatacommons.org/licenses/odbl/). Il letto dell'Arno, i tracciati delle strade e le impronte delle torri, delle chiese e del Battistero vengono da lì (estratti del 1° e del 9 ottobre 2026).
+- **Edifici di oggi:** Regione Toscana, «Edificato multiscala», unità volumetriche (servizio Geoscopio, volo dell'8 marzo 2011), licenza CC BY. Forma e altezza vengono da lì; finestre, tetti e monumenti curati sono rielaborazioni di questo progetto.
 - **three.js** (MIT), incluso nel pacchetto.
 - **Texture fotografiche:** Poly Haven, licenza CC0 (autori: Rob Tuytel, Dimitrios Savva, Amal Kumar, Charlotte Baglioni, Dario Barresi; dettagli in `public/texture/FONTI.json`). Erba, marmo e suoni sono generati dal codice.
 - **Figure:** corpi MakeHuman (CC0) e movimenti del CMU Graphics Lab Motion Capture Database (http://mocap.cs.cmu.edu, finanziato da NSF EIA-0196217). Come si producono: [strumenti/figure/README.md](strumenti/figure/README.md).

@@ -28,6 +28,13 @@ desks, each with its own sound; on Easter morning the market is empty. The **sto
 January 1216 banquet is a separate place, the Mazzinghi castle at Campi. The full plan, with phases, sources, calendar
 and risks, is in [PIANO.md](PIANO.md).
 
+**Today's Florence** (November 2026): the **Today** button swaps 1216 for the present-day city at the same spot, and
+back. Every building has the shape and height measured by the Tuscany Region in 2011, about nine thousand volumes;
+windows, shutters and roofs are drawn, by type, not the real ones. The dome, the marble of the cathedral, baptistery and
+bell tower, Palazzo Vecchio, the Loggia dei Lanzi and the Ponte Vecchio with its shops and the Vasari Corridor are
+modelled apart. Every place in the story has a marker and a "then and now" card: still there, in part, gone, or
+to be checked. Open it directly with [`?epoca=oggi`](https://d0m3n1c0x.github.io/firenze-1216-citta/?epoca=oggi).
+
 ## Made for anyone
 
 It is designed to be used without a keyboard and on an iPad. At the start you choose between a **guided visit** (ten
@@ -71,7 +78,8 @@ npm run verifica     # every place reachable, every scene walkable
 ## Licences and credits
 
 Code under MIT ([LICENSE](LICENSE)); texts, cards and script texts under CC BY 4.0
-([LICENSE-CONTENUTI.md](LICENSE-CONTENUTI.md)); map data © OpenStreetMap contributors (ODbL 1.0); photographic
+([LICENSE-CONTENUTI.md](LICENSE-CONTENUTI.md)); map data © OpenStreetMap contributors (ODbL 1.0); present-day
+buildings from the Tuscany Region, "Edificato multiscala" (CC BY); photographic
 textures from Poly Haven (CC0); figures from MakeHuman (CC0) with motion from the CMU Graphics Lab Motion Capture
 Database; horses, mules and donkeys from Lyndon Daniels' "Rigged Horse" (CC0). Every source and level of certainty is
 listed in [README.it.md](README.it.md#licenze-e-attribuzioni) and in the `FONTI.md` files under `strumenti/`. To cite:

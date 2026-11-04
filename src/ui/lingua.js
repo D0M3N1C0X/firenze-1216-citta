@@ -1,4 +1,5 @@
-import { DOMANDE_EN, GIORNATE_EN, LUOGHI_EN, TAPPE_EN, portaEN } from '../dati/inglese.js';
+import { DOMANDE_EN, GIORNATE_EN, LUOGHI_EN, OGGI_EN, OGGI_PORTA_EN, TAPPE_EN, portaEN } from '../dati/inglese.js';
+import { oggiDi } from '../dati/oggi-luoghi.js';
 
 /* =====================================================================
    LA LINGUA DELLA PAGINA: italiano o inglese (28 ottobre 2026)
@@ -28,8 +29,8 @@ const PAROLE = {
   'avvio.nonE': ['Che cosa non è', 'What it is not'],
   'avvio.nonE.lista': ['<li><b>Non è una ricostruzione validata.</b> È un prototipo, e un medievista non l\'ha ancora visto.</li><li><b>Le case sono generate.</b> Solo le chiese e le torri con un nome hanno la pianta di un edificio vero.</li><li><b>Il delitto non c\'è.</b> Il modello mostra il luogo, non l\'uccisione.</li>',
     '<li><b>It is not a validated reconstruction.</b> It is a prototype, and no medievalist has seen it yet.</li><li><b>The houses are generated.</b> Only the churches and the named towers have the plan of a real building.</li><li><b>The murder is not shown.</b> The model shows the place, not the killing.</li>'],
-  'avvio.crediti': ['Dati cartografici © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · texture Poly Haven (CC0) · persone MakeHuman (CC0) con i movimenti del <a href="http://mocap.cs.cmu.edu" target="_blank" rel="noopener">CMU Motion Capture Database</a>',
-    'Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · textures Poly Haven (CC0) · people MakeHuman (CC0) with movements from the <a href="http://mocap.cs.cmu.edu" target="_blank" rel="noopener">CMU Motion Capture Database</a>'],
+  'avvio.crediti': ['Dati cartografici © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · texture Poly Haven (CC0) · persone MakeHuman (CC0) con i movimenti del <a href="http://mocap.cs.cmu.edu" target="_blank" rel="noopener">CMU Motion Capture Database</a> · Firenze oggi: edifici della <a href="https://www502.regione.toscana.it/geoscopio/cartoteca.html" target="_blank" rel="noopener">Regione Toscana</a> (CC BY)',
+    'Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL) · textures Poly Haven (CC0) · people MakeHuman (CC0) with movements from the <a href="http://mocap.cs.cmu.edu" target="_blank" rel="noopener">CMU Motion Capture Database</a> · Florence today: buildings from the <a href="https://www502.regione.toscana.it/geoscopio/cartoteca.html" target="_blank" rel="noopener">Tuscany Region</a> (CC BY)'],
   'carico.titolo': ['Preparo la città: {pc}%{quanto}', 'Preparing the city: {pc}%{quanto}'],
   'carico.ancora': [' · ancora circa {n} secondi', ' · about {n} seconds left'],
   'carico.quasi': [' · quasi pronta', ' · almost ready'],
@@ -44,6 +45,8 @@ const PAROLE = {
   'barra.certezza.t': ['Colora la città secondo quanto ne sappiamo (tasto C)', 'Colour the city by how much we know (key C)'],
   'barra.volo': ['Dall\'alto', 'From above'],
   'barra.volo.t': ['Guarda la città dall\'alto (tasto F)', 'Look at the city from above (key F)'],
+  'barra.oggi': ['Oggi', 'Today'],
+  'barra.oggi.t': ['Guarda come è oggi questo stesso punto (tasto O)', 'See this same spot as it is today (key O)'],
   'barra.racconto': ['Racconto', 'Story'],
   'barra.racconto.t': ['Le scene del gioco, nei loro luoghi (tasto R)', 'The scenes of the game, in their places (key R)'],
   'barra.luoghi': ['Vai a…', 'Go to…'],
@@ -76,8 +79,8 @@ const PAROLE = {
   'elenco.porte': ['Le porte della cerchia ({n})', 'The gates of the walls ({n})'],
   'elenco.chiudi': ['Chiudi l\'elenco', 'Close the list'],
   'aiuto.titolo': ['Come si usa', 'How to use it'],
-  'aiuto.lista': ['<li><b>Camminare</b>Tocca o clicca la strada dove vuoi andare: ci vai a piedi, girando gli angoli da solo.</li><li><b>Guardarti intorno</b>Trascina con il dito o con il mouse.</li><li><b>Andare in un luogo</b>«Vai a…» apre l\'elenco dei luoghi; la mappa nell\'angolo apre la pianta. Ogni luogo ha una scheda con le fonti.</li><li><b>Vedere dall\'alto</b>Premi «Dall\'alto», poi tocca un punto della città per volarci sopra.</li><li><b>Sapere che cosa è certo</b>«Che cosa è certo» colora ogni edificio secondo quanto ne sappiamo.</li><li><b>Il racconto</b>«Racconto» mostra le scene del gioco, ciascuna nel suo luogo.</li><li><b>Con la tastiera</b>Frecce o W A S D per camminare, Maiuscolo per andare più svelti.</li>',
-    '<li><b>Walking</b>Tap or click the street where you want to go: you walk there, turning the corners by yourself.</li><li><b>Looking around</b>Drag with your finger or the mouse.</li><li><b>Going to a place</b>«Go to…» opens the list of places; the map in the corner opens the plan. Every place has a card with its sources.</li><li><b>Seeing from above</b>Press «From above», then tap a point of the city to fly over it.</li><li><b>Knowing what is certain</b>«What is certain» colours every building by how much we know about it.</li><li><b>The story</b>«Story» shows the scenes of the game, each in its place (in Italian).</li><li><b>With the keyboard</b>Arrows or W A S D to walk, Shift to go faster.</li>'],
+  'aiuto.lista': ['<li><b>Camminare</b>Tocca o clicca la strada dove vuoi andare: ci vai a piedi, girando gli angoli da solo.</li><li><b>Guardarti intorno</b>Trascina con il dito o con il mouse.</li><li><b>Andare in un luogo</b>«Vai a…» apre l\'elenco dei luoghi; la mappa nell\'angolo apre la pianta. Ogni luogo ha una scheda con le fonti.</li><li><b>Vedere dall\'alto</b>Premi «Dall\'alto», poi tocca un punto della città per volarci sopra.</li><li><b>Sapere che cosa è certo</b>«Che cosa è certo» colora ogni edificio secondo quanto ne sappiamo.</li><li><b>Com\'è oggi</b>«Oggi» mostra lo stesso punto com\'è adesso, con i segni di che cosa resta del 1216. Ritoccalo per tornare indietro.</li><li><b>Il racconto</b>«Racconto» mostra le scene del gioco, ciascuna nel suo luogo.</li><li><b>Con la tastiera</b>Frecce o W A S D per camminare, Maiuscolo per andare più svelti.</li>',
+    '<li><b>Walking</b>Tap or click the street where you want to go: you walk there, turning the corners by yourself.</li><li><b>Looking around</b>Drag with your finger or the mouse.</li><li><b>Going to a place</b>«Go to…» opens the list of places; the map in the corner opens the plan. Every place has a card with its sources.</li><li><b>Seeing from above</b>Press «From above», then tap a point of the city to fly over it.</li><li><b>Knowing what is certain</b>«What is certain» colours every building by how much we know about it.</li><li><b>As it is today</b>«Today» shows the same spot as it is now, with signs of what is left of 1216. Tap it again to go back.</li><li><b>The story</b>«Story» shows the scenes of the game, each in its place (in Italian).</li><li><b>With the keyboard</b>Arrows or W A S D to walk, Shift to go faster.</li>'],
   'aiuto.visita': ['Fai la visita guidata', 'Take the guided visit'],
   'aiuto.chiudi': ['Chiudi l\'aiuto', 'Close help'],
   'imp.titolo': ['Impostazioni', 'Settings'],
@@ -122,6 +125,22 @@ const PAROLE = {
   'mappa.titolo': ['La pianta della città', 'The plan of the city'],
   'mappa.nota': ['La freccia rossa sei tu. Tocca un luogo per andarci.', 'The red arrow is you. Tap a place to go there.'],
   'mappa.qui': ['Tu sei qui', 'You are here'],
+  'oggi.costruisco': ['Costruisco la Firenze di oggi: novemila edifici, qualche secondo…', 'Building today\'s Florence: nine thousand buildings, a few seconds…'],
+  'oggi.pronta': ['Firenze oggi, nello stesso punto. Forma e altezza di ogni edificio sono misurate (Regione Toscana, 2011); finestre e tetti sono disegnati. Ritocca «Oggi» per tornare al 1216.', 'Florence today, at the same spot. The shape and height of every building are measured (Tuscany Region, 2011); windows and roofs are drawn. Tap «Today» again to go back to 1216.'],
+  'oggi.torna': ['Di nuovo nel 1216.', 'Back in 1216.'],
+  'oggi.quando': ['Firenze oggi', 'Florence today'],
+  'oggi.ora': ['ore {h}', '{h}'],
+  'oggi.legenda': ['Che cosa resta del 1216', 'What is left of 1216'],
+  'oggi.resta.si': ['C\'è ancora', 'Still there'],
+  'oggi.resta.parte': ['In parte', 'In part'],
+  'oggi.resta.no': ['Non c\'è più', 'Gone'],
+  'oggi.resta.incerto': ['Da verificare', 'To be checked'],
+  'oggi.resta.inventato': ['Invenzione', 'Invented'],
+  'scheda.oggi': ['Oggi', 'Today'],
+  'scheda.allora': ['Nel 1216', 'In 1216'],
+  'scheda.guardaOggi': ['Guarda com\'è oggi', 'See it as it is today'],
+  'scheda.guarda1216': ['Guarda com\'era nel 1216', 'See it as it was in 1216'],
+  'oggi.errore': ['La Firenze di oggi non si è potuta costruire: resti nel 1216.', 'Today\'s Florence could not be built: you stay in 1216.'],
   'mappa.chiudi': ['Chiudi la pianta', 'Close the plan'],
   'racconto.solo': ['', 'The scenes of the game are in Italian for now.'],
   'aiuto.gioco': ['Per la classe c\'è anche <a href="./gioco/" target="_blank" rel="noopener">il gioco «Cosa fatta capo ha»</a>, da fare insieme alla LIM: ogni scena ha un pulsante che apre qui il suo luogo.', 'For the classroom there is also <a href="./gioco/" target="_blank" rel="noopener">the game «Cosa fatta capo ha»</a>, played together on the interactive whiteboard: each scene has a button that opens its place here. The game is in Italian for now.'],
@@ -172,6 +191,13 @@ export function scheda(l) {
   return { nome: l.nome, testo: l.testo, luogo: l.luogo.nota, forma: l.forma.nota };
 }
 export const nomeLuogo = l => scheda(l).nome;
+
+/** Che cosa resta oggi di un luogo (dati/oggi-luoghi.js): null dove il modello di oggi non arriva. */
+export function schedaOggi(l) {
+  const o = oggiDi(l);
+  if (!o) return null;
+  return lingua === 'en' ? { ...o, testo: l.gruppo === 'porte' ? OGGI_PORTA_EN : OGGI_EN[l.id] } : o;
+}
 
 /** Una tappa della visita, una domanda, una giornata: nella lingua della pagina. */
 export const tappa = (t0, i) => (lingua === 'en' && TAPPE_EN[i] ? { ...t0, ...TAPPE_EN[i] } : t0);

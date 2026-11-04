@@ -19,7 +19,9 @@ import { GIORNATE } from '../src/dati/giornate.js';
 import { SCENE, TIPI_NOTA } from '../src/dati/scene.js';
 import { COPIONE } from '../src/dati/copione.js';
 import { DOMANDE, TAPPE } from '../src/dati/visita.js';
-import { DOMANDE_EN, LUOGHI_EN, TAPPE_EN } from '../src/dati/inglese.js';
+import { DOMANDE_EN, LUOGHI_EN, OGGI_EN, TAPPE_EN } from '../src/dati/inglese.js';
+import { COLORI_RESTA, OGGI_LUOGHI } from '../src/dati/oggi-luoghi.js';
+import { EDIFICI_OGGI, RIQUADRO_OGGI } from '../src/dati/oggi.js';
 import { FIUME as C_FIUME, Griglia, PIAZZA, STRADA } from '../src/mondo/griglia.js';
 import { Cantiere } from '../src/mondo/cantiere.js';
 import { costruisciMonumenti } from '../src/mondo/monumenti.js';
@@ -132,6 +134,22 @@ if (TAPPE_EN.length !== TAPPE.length) errori.push(`inglese: ${TAPPE_EN.length} t
 if (DOMANDE_EN.length !== DOMANDE.length) errori.push(`inglese: ${DOMANDE_EN.length} domande tradotte su ${DOMANDE.length}`);
 DOMANDE_EN.forEach((d, k) => { if (d.risposte.length !== DOMANDE[k].risposte.length) errori.push(`inglese: la domanda ${k + 1} ha un numero diverso di risposte`); });
 
+// la Firenze di oggi (dati/oggi-luoghi.js, dati/oggi.js): ogni luogo della città dice che cosa ne resta, in due lingue
+for (const l of LUOGHI) if (!l.gruppo && (l.mondo || 'citta') === 'citta' && !OGGI_LUOGHI[l.id]) errori.push(`oggi: il luogo «${l.id}» non dice che cosa ne resta`);
+for (const [k, o] of Object.entries(OGGI_LUOGHI)) {
+  if (!ids.has(k)) errori.push(`oggi: la scheda «${k}» non corrisponde a nessun luogo`);
+  if (!COLORI_RESTA[o.resta]) errori.push(`oggi: «${k}» ha un valore di «resta» sconosciuto: ${o.resta}`);
+  if (!OGGI_EN[k]) errori.push(`oggi: manca l'inglese di «${k}»`);
+}
+for (const k of Object.keys(OGGI_EN)) if (!OGGI_LUOGHI[k]) errori.push(`oggi: l'inglese di «${k}» non corrisponde a nessuna scheda`);
+const [ox0, oz0, ox1, oz1] = RIQUADRO_OGGI;
+for (const o of EDIFICI_OGGI) {
+  if (!(o.h > 0) || o.p.length < 3) errori.push(`oggi: volume dell'edificio ${o.e} non valido`);
+  const fuori = o.p.reduce((a, v) => a + v[0], 0) / o.p.length;
+  if (fuori < ox0 - 60 || fuori > ox1 + 60) errori.push(`oggi: volume dell'edificio ${o.e} fuori dal riquadro`);
+}
+if (oz0 >= oz1 || ox0 >= ox1) errori.push('oggi: riquadro non valido');
+
 // la visita guidata: ogni tappa in un luogo che esiste, da un punto dove si può stare
 TAPPE.forEach((t, k) => {
   if (t.luogo && !ids.has(t.luogo)) errori.push(`visita, tappa ${k + 1}: luogo «${t.luogo}» inesistente`);
@@ -143,4 +161,4 @@ if (errori.length) {
   console.error(errori.map(e => '✗ ' + e).join('\n'));
   process.exit(1);
 }
-console.log(`✓ ${LUOGHI.length} luoghi raggiungibili, ${SCENE.length} scene coerenti, ${TAPPE.length} tappe della visita, inglese completo`);
+console.log(`✓ ${LUOGHI.length} luoghi raggiungibili, ${SCENE.length} scene coerenti, ${TAPPE.length} tappe della visita, inglese completo, ${EDIFICI_OGGI.length} volumi di oggi e ${Object.keys(OGGI_LUOGHI).length} schede «allora e oggi»`);
