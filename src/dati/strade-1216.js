@@ -64,7 +64,7 @@ export const ESCLUSE = {
   // entrate con l'estratto fino alla cerchia (12 ottobre 2026)
   'Piazza del Duomo': 'la piazza di oggi si apre con la cattedrale nuova, dal 1296; quella del 1216 è più piccola (AGGIUNTE, piazza di San Giovanni)',
   'Piazza di San Giovanni': 'nella forma di oggi è successiva; quella del 1216 è disegnata a mano (AGGIUNTE)',
-  'Piazza della Signoria': 'la piazza si apre dopo il 1268, sulle case degli Uberti, e con il palazzo dei Priori dal 1299',
+  'Piazza della Signoria': 'la piazza si apre sulle case degli Uberti, abbattute nel 1258 (Villani VII, 65), e con il palazzo dei Priori dal 1298 (Villani IX, 26)',
   'Piazza dei Mozzi': 'slargo al capo del ponte Rubaconte, che è del 1237',
   'Via dei Renai': 'i renai erano i banchi di sabbia lungo il fiume; la strada è successiva [da verificare]',
   'Piazza Demidoff': 'piazza dell\'Ottocento',
@@ -174,7 +174,7 @@ function semplifica(pts) {
 }
 
 /** I tratti di una spezzata dove vale tiene(x, z), a passi di al più 3 m. */
-function ritaglia(pts, tiene) {
+export function ritaglia(pts, tiene) {
   const tratti = [];
   let cur = null;
   for (let k = 0; k + 1 < pts.length; k++) {

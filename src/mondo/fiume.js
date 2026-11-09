@@ -1,4 +1,5 @@
 import { FIUME } from '../dati/osm.js';
+import { NEL_1300 } from './epoca.js';
 
 /* La distanza dal letto dell'Arno, che decide le rive e le case sull'acqua. */
 
@@ -6,7 +7,10 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 /* ---------------------------------- distanza con segno dal letto */
 // Precalcolata su una griglia di 2 m: negativa dentro il letto.
-const DMIN = -900, DMAX = 900, DP = 2, DN = (DMAX - DMIN) / DP;
+// Nel 1300 la città arriva alla cerchia nuova e il campo si allarga a ±2 km.
+// L'ampiezza arriva al worker nel messaggio, perché il worker non vede l'indirizzo della pagina.
+let DMIN = NEL_1300 ? -2000 : -900, DMAX = -DMIN, DP = 2, DN = (DMAX - DMIN) / DP;
+export function ampiezzaCampo(m) { DMIN = -m; DMAX = m; DN = (DMAX - DMIN) / DP; }
 let campo = null;
 
 function dentroPoligono(x, z, p) {
@@ -66,7 +70,7 @@ export function preparaCampo() {
       const w = new Worker(new URL('./fiume-worker.js', import.meta.url), { type: 'module' });
       w.onmessage = e => { impostaCampo(e.data); w.terminate(); ok(); };
       w.onerror = () => { w.terminate(); impostaCampo(calcolaCampo()); ok(); };
-      w.postMessage(0);
+      w.postMessage(DMAX);
     } catch { impostaCampo(calcolaCampo()); ok(); }
   });
 }

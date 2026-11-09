@@ -105,6 +105,7 @@ function vicinoRaggiunto(x, z, r = 40) {
 }
 
 for (const l of LUOGHI) {
+  if (l.epoca === '1300') continue;            // i luoghi del 1300 li controlla verifica-1300.mjs
   const campi = (l.mondo || 'citta') === 'campi';
   const d = campi ? vicinoPercorribile(pianta(l), l.pos[0], l.pos[1]) : vicinoRaggiunto(l.pos[0], l.pos[1]);
   if (d === null) errori.push(`luogo «${l.nome}»: nessun punto ${campi ? 'percorribile' : 'raggiungibile a piedi dall\'ingresso'} entro 40 m da ${l.pos}`);
@@ -135,7 +136,7 @@ if (DOMANDE_EN.length !== DOMANDE.length) errori.push(`inglese: ${DOMANDE_EN.len
 DOMANDE_EN.forEach((d, k) => { if (d.risposte.length !== DOMANDE[k].risposte.length) errori.push(`inglese: la domanda ${k + 1} ha un numero diverso di risposte`); });
 
 // la Firenze di oggi (dati/oggi-luoghi.js, dati/oggi.js): ogni luogo della città dice che cosa ne resta, in due lingue
-for (const l of LUOGHI) if (!l.gruppo && (l.mondo || 'citta') === 'citta' && !OGGI_LUOGHI[l.id]) errori.push(`oggi: il luogo «${l.id}» non dice che cosa ne resta`);
+for (const l of LUOGHI) if (!l.gruppo && !l.epoca && (l.mondo || 'citta') === 'citta' && !OGGI_LUOGHI[l.id]) errori.push(`oggi: il luogo «${l.id}» non dice che cosa ne resta`);
 for (const [k, o] of Object.entries(OGGI_LUOGHI)) {
   if (!ids.has(k)) errori.push(`oggi: la scheda «${k}» non corrisponde a nessun luogo`);
   if (!COLORI_RESTA[o.resta]) errori.push(`oggi: «${k}» ha un valore di «resta» sconosciuto: ${o.resta}`);
@@ -161,4 +162,4 @@ if (errori.length) {
   console.error(errori.map(e => '✗ ' + e).join('\n'));
   process.exit(1);
 }
-console.log(`✓ ${LUOGHI.length} luoghi raggiungibili, ${SCENE.length} scene coerenti, ${TAPPE.length} tappe della visita, inglese completo, ${EDIFICI_OGGI.length} volumi di oggi e ${Object.keys(OGGI_LUOGHI).length} schede «allora e oggi»`);
+console.log(`✓ ${LUOGHI.filter(l => !l.epoca).length} luoghi raggiungibili, ${SCENE.length} scene coerenti, ${TAPPE.length} tappe della visita, inglese completo, ${EDIFICI_OGGI.length} volumi di oggi e ${Object.keys(OGGI_LUOGHI).length} schede «allora e oggi»`);

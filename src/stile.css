@@ -102,6 +102,11 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 #barra button:hover { background: rgba(241, 235, 224, 0.1); }
 #barra button[aria-pressed="true"] { background: var(--accento); color: #1d160d; border-color: var(--accento); }
 #barra input[type=range] { width: 120px; accent-color: var(--accento); height: 28px; }
+/* la linea del tempo: tre tappe su un filo, come una linea del tempo disegnata */
+#linea-tempo { position: relative; display: flex; align-items: center; gap: 4px; padding: 2px 4px; border: 1px solid rgba(241, 235, 224, 0.16); border-radius: 11px; }
+#linea-tempo::before { content: ""; position: absolute; left: 18px; right: 18px; top: 50%; height: 2px; background: rgba(241, 235, 224, 0.35); pointer-events: none; }
+#barra #linea-tempo button { position: relative; min-height: 40px; border: 0; padding: 4px 10px; font-variant-numeric: tabular-nums; background: var(--vetro); }
+#barra #linea-tempo button[aria-pressed="true"] { background: var(--accento); }
 /* il ritorno al gioco (?gioco): in evidenza nella barra, e sulla carta d'avvio sotto le scelte */
 #barra .torna-gioco { background: var(--carta); color: var(--inchiostro); border-color: transparent; font-weight: 600; }
 #aiuto .al-gioco { font-size: 15px; line-height: 1.45; margin: 14px 2px 0; }
@@ -265,3 +270,11 @@ svg { width: 22px; height: 22px; flex: 0 0 22px; fill: none; stroke: currentColo
 @media (prefers-reduced-motion: reduce) {
   #dissolvenza, #riempimento, .interruttore input, .interruttore input::after { transition: none; }
 }
+
+/* la parte «nel 1300» delle schede: le parole dei cronisti */
+.trecento-scheda { background: #f3ead8; border-left: 4px solid #8a5a1e; padding: 10px 14px; margin: 12px 0; border-radius: 0 10px 10px 0; }
+.trecento-scheda h3 { margin: 0 0 6px; font-family: var(--serif); }
+.trecento-scheda blockquote { margin: 10px 0 0; padding: 0 0 0 10px; border-left: 2px solid #c9b18a; }
+.trecento-scheda blockquote p { margin: 0; font-family: var(--serif); font-style: italic; font-size: 16px; line-height: 1.45; }
+.trecento-scheda cite { display: block; font-style: normal; font-size: 13px; color: #6b5a42; margin-top: 3px; }
+.trecento-scheda small { display: block; font-size: 13px; color: #4a3e2c; margin-top: 2px; }

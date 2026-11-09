@@ -1,12 +1,14 @@
 import { LIVELLI } from '../mondo/materiali.js';
-import { LUOGHI as TUTTI } from '../dati/luoghi.js';
+import { LUOGHI as TUTTI, dellEpoca } from '../dati/luoghi.js';
+import { TRECENTO } from '../dati/trecento-luoghi.js';
 import { MONDO, mondoDi } from '../mondo/dove.js';
 import { voce } from './voce.js';
 import { applicaTesti, fase as faseL, giornata as giornataL, impostaLingua, inglese, lang, ora as oraL, scheda as schedaL, schedaOggi, suLingua, t } from './lingua.js';
 import { COLORI_RESTA } from '../dati/oggi-luoghi.js';
+import { EPOCA } from '../mondo/epoca.js';
 
 // i luoghi del mondo in cui si è: la città, oppure un luogo a parte (Campi)
-const LUOGHI = TUTTI.filter(l => mondoDi(l) === MONDO);
+const LUOGHI = TUTTI.filter(l => mondoDi(l) === MONDO && dellEpoca(l, EPOCA));
 
 /* =====================================================================
    L'INTERFACCIA
@@ -54,9 +56,15 @@ export class Interfaccia {
 
     $('#b-certezza').addEventListener('click', () => this.certezza());
     $('#b-volo').addEventListener('click', () => this.volo());
-    $('#b-oggi').addEventListener('click', () => this.oggi());
-    // a Campi non c'è una Firenze di oggi da mostrare
-    if (MONDO === 'campi') $('#b-oggi').hidden = true;
+    // la linea del tempo: 1216 e 1300 sono due città, oggi si sovrappone a quella che c'è
+    for (const b of document.querySelectorAll('#linea-tempo button')) b.addEventListener('click', () => this.scegliEpoca(b.dataset.epoca));
+    // a Campi non ci sono né il 1300 né una Firenze di oggi da mostrare
+    if (MONDO === 'campi') $('#linea-tempo').hidden = true;
+    // le giornate dell'epoca: nel 1216 il 10 febbraio e la Pasqua, nel 1300 il 1° maggio
+    const giorni = EPOCA === '1300' ? ['maggio'] : ['febbraio', 'pasqua'];
+    for (const b of document.querySelectorAll('#seg-giorno button')) b.hidden = !giorni.includes(b.dataset.v);
+    this.inOggi = false;
+    this.segnaEpoca();
     $('#b-luoghi').addEventListener('click', () => this.alterna('#elenco'));
     $('#b-aiuto').addEventListener('click', () => this.alterna('#aiuto'));
     $('#b-impostazioni').addEventListener('click', () => this.alterna('#impostazioni'));
@@ -250,11 +258,21 @@ export class Interfaccia {
   }
   elenco() { this.alterna('#elenco'); }
 
-  /** Il 1216 o oggi: il pulsante dice in che epoca si è. */
-  oggi() { this.az.epoca($('#b-oggi').getAttribute('aria-pressed') === 'true' ? '1216' : 'oggi'); }
+  /** Oggi sì o no (tasto O, e il pulsante nelle schede «allora e oggi»). */
+  oggi() { this.az.epoca(this.inOggi ? 'base' : 'oggi'); }
+  /** Dalla linea del tempo: oggi si sovrappone, l'altra epoca ricostruisce la città. */
+  scegliEpoca(e) {
+    if (e === 'oggi') { if (!this.inOggi) this.az.epoca('oggi'); }
+    else if (e === EPOCA) { if (this.inOggi) this.az.epoca('base'); }
+    else this.az.ricostruisci(e);
+  }
+  segnaEpoca() {
+    const qui = this.inOggi ? 'oggi' : EPOCA;
+    for (const b of document.querySelectorAll('#linea-tempo button')) b.setAttribute('aria-pressed', b.dataset.epoca === qui);
+  }
   statoEpoca(oggi) {
-    $('#b-oggi').setAttribute('aria-pressed', oggi);
     this.inOggi = oggi;
+    this.segnaEpoca();
     // la certezza riguarda il 1216: oggi tutto quello che si vede è misurato o disegnato. La
     // legenda dice invece che cosa resta; le giornate sono quelle del 1216
     $('#b-certezza').hidden = oggi;
@@ -294,9 +312,11 @@ export class Interfaccia {
     $('#avvio .data').textContent = `${g.titolo} · ${g.nota}`;
     this.segna('#seg-giorno', g.id);
     for (const b of document.querySelectorAll('#seg-giorno button')) b.disabled = MONDO === 'campi';
-    $('#nota-giorno').textContent = MONDO === 'campi' ? t('nota.campi') : g.id === 'pasqua' ? t('nota.pasqua') : t('nota.febbraio');
+    $('#nota-giorno').textContent = MONDO === 'campi' ? t('nota.campi') : g.id === 'pasqua' ? t('nota.pasqua') : g.id === 'maggio' ? t('nota.maggio') : t('nota.febbraio');
     const r = $('#cursore-ora');
     r.min = (Math.floor((alba - 0.4) * 20) / 20).toFixed(2);
+    // la sera del 1° maggio va oltre mezzogiorno: fino a dopo il tramonto
+    r.max = String(g.oraMax || 12);
     r.value = ora;
   }
 
@@ -319,14 +339,22 @@ export class Interfaccia {
     const parteOggi = !o ? '' : `<section class="oggi-scheda">
         <h3>${esc(t('scheda.oggi'))} ${badgeResta(o.resta)}</h3>
         <p>${evidenzia(o.testo)}</p>
-        <button class="grande cambia-epoca">${esc(t(this.inOggi ? 'scheda.guarda1216' : 'scheda.guardaOggi'))}</button>
+        <button class="grande cambia-epoca">${esc(t(this.inOggi ? 'scheda.guarda1216' : 'scheda.guardaOggi', { e: EPOCA }))}</button>
       </section>`;
-    const titoloAllora = o ? `<h3 class="allora">${esc(t('scheda.allora'))}</h3>` : '';
+    // nel 1300: che cosa ne è del luogo, e chi lo racconta (dati/trecento-luoghi.js)
+    const tr = EPOCA === '1300' && !l.epoca ? TRECENTO[l.id] : null;
+    const parteTrecento = !tr ? '' : `<section class="trecento-scheda">
+        <h3>${esc(t('scheda.nel1300'))}</h3>
+        <p>${evidenzia(inglese() ? tr.en : tr.testo)}</p>
+        ${tr.racconta.map(r => `<blockquote lang="it"><p>${esc(r.parole)}</p><cite>${esc(r.chi)}, ${esc(r.dove)}</cite>${inglese() ? `<small lang="en">${esc(r.en)}</small>` : ''}</blockquote>`).join('')}
+      </section>`;
+    const titoloAllora = o || tr ? `<h3 class="allora">${esc(t('scheda.allora'))}</h3>` : '';
     $('#scheda').hidden = false;
     $('#scheda-corpo').innerHTML = `
       <h2>${esc(s.nome)}</h2>
       ${voce.disponibile ? `<button class="ascolta" aria-pressed="false">${esc(t('ascolta'))}</button>` : ''}
       ${adesso ? parteOggi : ''}
+      ${adesso ? '' : parteTrecento}
       ${titoloAllora}
       <div class="livelli">
         <div class="livello"><b>${esc(t('scheda.luogo'))}</b><span>${badge(l.luogo.livello)}${evidenzia(s.luogo)}</span></div>
@@ -335,11 +363,11 @@ export class Interfaccia {
       <p>${evidenzia(s.testo)}</p>
       ${adesso ? '' : parteOggi}
       <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#6b5a42;margin:16px 0 4px">${esc(inglese() ? t('scheda.fonti.it') : t('scheda.fonti'))}</h3>
-      <ul class="fonti" lang="it">${[...(o?.fonti || []), ...l.fonti].map(f => `<li>${evidenzia(f)}</li>`).join('')}</ul>`;
+      <ul class="fonti" lang="it">${[...(tr?.fonti || []), ...(o?.fonti || []), ...l.fonti].map(f => `<li>${evidenzia(f)}</li>`).join('')}</ul>`;
     $('#scheda').scrollTop = 0;
     $('#scheda .cambia-epoca')?.addEventListener('click', () => this.oggi());
     const b = $('#scheda .ascolta');
     // si legge il racconto della scheda, senza i segni [da verificare]: quelli restano scritti
-    if (b) b.addEventListener('click', () => voce.leggi(s.nome + '. ' + (adesso ? o.testo : s.testo).replace(/\s*\[[^\]]*\]/g, ''), b));
+    if (b) b.addEventListener('click', () => voce.leggi(s.nome + '. ' + (adesso ? o.testo : tr ? (inglese() ? tr.en : tr.testo) + ' ' + s.testo : s.testo).replace(/\s*\[[^\]]*\]/g, ''), b));
   }
 }

@@ -77,10 +77,11 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20l6-9 4 5 3-4 5 8z"/><path d="M12 3v6M9.5 5.5L12 3l2.5 2.5"/></svg>
     <span class="testo" data-t="barra.volo">Dall'alto</span>
   </button>
-  <button id="b-oggi" aria-label="Oggi" aria-pressed="false" title="Guarda come è oggi questo stesso punto (tasto O)" data-t-aria="barra.oggi" data-t-title="barra.oggi.t">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20.5h18M5 20.5V10h5v10.5M14 20.5V5h5v15.5M7 13h1M7 16h1M16 8h1M16 11h1M16 14h1M16 17h1"/></svg>
-    <span class="testo" data-t="barra.oggi">Oggi</span>
-  </button>
+  <div id="linea-tempo" role="group" aria-label="Epoca" title="La stessa città in tre momenti: il 1216, il 1300 dei cronisti, oggi (tasto O per oggi)" data-t-aria="tempo.gruppo" data-t-title="tempo.t">
+    <button data-epoca="1216" aria-pressed="false">1216</button>
+    <button data-epoca="1300" aria-pressed="false">1300</button>
+    <button data-epoca="oggi" aria-pressed="false" data-t="tempo.oggi">Oggi</button>
+  </div>
   <button id="b-racconto" aria-label="Racconto" aria-pressed="false" title="Le scene del gioco, nei loro luoghi (tasto R)" data-t-aria="barra.racconto" data-t-title="barra.racconto.t">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5c3-1.3 6-1.3 9 .8v13c-3-2-6-2-9-.8zM21 5.5c-3-1.3-6-1.3-9 .8v13c3-2 6-2 9-.8z"/></svg>
     <span class="testo" data-t="barra.racconto">Racconto</span>
@@ -125,7 +126,7 @@
     <li><b>Andare in un luogo</b>«Vai a…» apre l'elenco dei luoghi. Ogni luogo ha una scheda con le fonti.</li>
     <li><b>Vedere dall'alto</b>Premi «Dall'alto», poi tocca un punto della città per volarci sopra.</li>
     <li><b>Sapere che cosa è certo</b>«Che cosa è certo» colora ogni edificio secondo quanto ne sappiamo.</li>
-    <li><b>Com'è oggi</b>«Oggi» mostra lo stesso punto com'è adesso, con i segni di che cosa resta del 1216. Ritoccalo per tornare indietro.</li>
+    <li><b>La linea del tempo</b>«1216», «1300» e «Oggi» mostrano lo stesso punto in tre momenti: la città del delitto, quella dei cronisti che lo raccontano, e com'è adesso. Per passare fra il 1216 e il 1300 la città si ricostruisce, e ci vuole un po'.</li>
     <li><b>Il racconto</b>«Racconto» mostra le scene del gioco, ciascuna nel suo luogo.</li>
     <li><b>Con la tastiera</b>Frecce o W A S D per camminare, Maiuscolo per andare più svelti.</li>
   </ul>
@@ -152,7 +153,7 @@
   <div class="riga">
     <span data-t="imp.giornata">Giornata</span>
     <div class="segmenti" id="seg-giorno" role="group" aria-label="Giornata">
-      <button data-v="febbraio" data-t="giorno.febbraio">10 febbraio</button><button data-v="pasqua" data-t="giorno.pasqua">Pasqua</button>
+      <button data-v="febbraio" data-t="giorno.febbraio">10 febbraio</button><button data-v="pasqua" data-t="giorno.pasqua">Pasqua</button><button data-v="maggio" data-t="giorno.maggio">1° maggio</button>
     </div>
   </div>
   <p class="nota" id="nota-giorno"></p>

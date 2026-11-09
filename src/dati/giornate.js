@@ -76,4 +76,36 @@ export const GIORNATE = {
   }
 };
 
+/*
+   LA GIORNATA DEL 1300 (?epoca=1300, mondo/epoca.js)
+
+   Il 1° maggio 1300, Calendimaggio: «la sera di calen di maggio, anno MCCC»
+   (Villani IX, 39). Giuliano; nel calendario gregoriano prolettico è il
+   9 maggio, perché nel 1300 lo scarto sale a 8 giorni (il 1300 è bisestile
+   solo nel calendario giuliano). Era domenica: calcolato il 6/11/2026 con il
+   numero del giorno giuliano (PIANO-1300.md, § 2). La sera, prima del
+   tramonto (alle 19.08 di tempo solare, mondo/sole.js): si comincia alle
+   18.10, la zuffa è alle 18.40. Il ballo delle
+   donne in piazza Santa Trinita e la zuffa arriveranno con le figure del
+   1300; qui la gente si raduna già in piazza (ipotesi).
+*/
+GIORNATE.maggio = {
+  id: 'maggio',
+  epoca: '1300',
+  nome: '1° maggio',
+  titolo: 'Calendimaggio, 1° maggio 1300',
+  nota: 'domenica; la sera dei balli e delle brigate',
+  doy: 129,                   // 9 maggio gregoriano
+  gregoriano: '9 maggio',
+  festa: true,                // domenica: botteghe chiuse
+  rondini: true,
+  foschia: 0.8,               // una sera di maggio: scelta d'atmosfera, non un dato
+  campane: 'ore',
+  gente: 320,
+  ora: 18 + 10 / 60,          // le 18.10: la zuffa è alle 18.40 (mondo/zuffa.js)
+  oraMax: 20.4,
+  // dove la gente si ferma: piazza Santa Trinita, il capo del ponte, il mercato, San Giovanni
+  gruppi: [[-165, -207, 5], [-150, -192, 4], [-178, -220, 3], [15, -38, 3], [70, -200, 3], [160, -528, 3]]
+};
+
 export const GIORNATA_PREDEFINITA = 'pasqua';

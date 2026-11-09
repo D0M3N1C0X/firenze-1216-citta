@@ -7,6 +7,7 @@ import { KIT, haKit } from './kit.js';
 import { MAT } from './materiali.js';
 import { quota, distanzaFiume } from './terreno.js';
 import { rng } from './rumore.js';
+import { NEL_1300, TETTO_TORRI } from './epoca.js';
 
 /* =====================================================================
    LE CASE DEL 1216 — generate, non rilevate
@@ -219,7 +220,8 @@ export function casa(cant, L) {
   let H0 = R.tra(4.0, 4.6);
   const Hp = R.tra(3.2, 3.6);
   const piede = L.retro ? -7.5 : -1.2;       // sul fiume le fondazioni scendono in acqua
-  const piani = R.vero(0.25) ? 3 : 2 + (R.vero(0.35) ? 1 : 0);
+  // nel 1300 la città vecchia è più alta: più case a tre piani e qualcuna a quattro (ipotesi, PIANO-1300.md, § 3.1)
+  const piani = NEL_1300 && !L.borgo ? (R.vero(0.15) ? 4 : R.vero(0.55) ? 3 : 2) : R.vero(0.25) ? 3 : 2 + (R.vero(0.35) ? 1 : 0);
   const t = 0.55;
 
   const tipo = R();                       // pietra, misto, pietrame
@@ -393,7 +395,8 @@ export function torre(cant, L, livello = LIV) {
   const R = rng(L.seme);
   const y = quota(L.px + L.nx * L.D / 2, L.pz + L.nz * L.D / 2);
   const M = matriceLotto(L.px, y, L.pz, L.nx, L.nz);
-  const W = L.W, D = L.D, H = L.H || R.tra(24, 42), t = 1.1;
+  // nel 1300 le torri sono mozzate a 50 braccia (mondo/epoca.js, Villani VII, 39)
+  const W = L.W, D = L.D, H = Math.min(L.H || R.tra(24, 42), TETTO_TORRI), t = 1.1;
   const tinta = tintaPietra(R);
 
   const lati = [
@@ -485,7 +488,9 @@ export function areaCostruita(raggio, corridoi = []) {
  * opz.dentro(x, z): dove si costruisce; opz.riquadro: [x0, z0, x1, z1], il
  * rettangolo da campionare; opz.riempimento: quanti tentativi per gli isolati;
  * opz.radi(x, z): probabilità di lasciare un vuoto lungo la strada (borghi);
- * opz.seme0: da dove partono i semi delle case, perché non si ripetano.
+ * opz.seme0: da dove partono i semi delle case, perché non si ripetano;
+ * opz.radiRive: vale opz.radi anche per le case sulle rive (nel 1300: lungo il
+ * fiume, verso le mura nuove, le case si diradano come lungo le strade).
  */
 export function lottizza(griglia, strade, opz = {}) {
   const R = rng(1216);
@@ -549,6 +554,7 @@ export function lottizza(griglia, strade, opz = {}) {
     const key = Math.round(x / 7) + ',' + Math.round(z / 7);
     if (vist.has(key)) continue;
     vist.add(key);
+    if (opz.radiRive && opz.radi && R.vero(opz.radi(x, z))) continue;
     // normale verso terra: gradiente della distanza
     const gx = distanzaFiume(x + 1, z) - distanzaFiume(x - 1, z), gz = distanzaFiume(x, z + 1) - distanzaFiume(x, z - 1);
     const g = Math.hypot(gx, gz) || 1;

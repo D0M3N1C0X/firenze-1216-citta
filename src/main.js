@@ -9,8 +9,12 @@ import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
 
 import { FIUME, STRADE } from './dati/osm.js';
 import { strade1216 } from './dati/strade-1216.js';
+import { EPOCA, NEL_1300 } from './mondo/epoca.js';
+import { PALIZZATA_1300, RIEMPIMENTO_1300, componiStrade1300, lottiBorghi1300 } from './mondo/citta-1300.js';
+import { costruisciMonumenti1300 } from './mondo/monumenti-1300.js';
+import { ORA_ZUFFA, Zuffa } from './mondo/zuffa.js';
 import { TRACCIATO, dentroTracciato } from './dati/cerchia.js';
-import { LUOGHI } from './dati/luoghi.js';
+import { LUOGHI, dellEpoca } from './dati/luoghi.js';
 import { GIORNATA_PREDEFINITA, GIORNATE } from './dati/giornate.js';
 import { SCENE } from './dati/scene.js';
 import { figureNegliInterni } from './dati/interni.js';
@@ -69,6 +73,17 @@ if (MONDO === 'campi') {
   chiave('#avvio details ul', 'campi.nonE.lista', true);
 }
 
+// nel 1300 la schermata d'avvio parla della città dei cronisti; la visita guidata è del 1216 e qui non si offre
+if (NEL_1300 && MONDO === 'citta') {
+  document.title = 'Firenze, Calendimaggio 1300 — la città dei cronisti';
+  const chiave = (sel, k, html) => { const el = document.querySelector(sel); if (html) { el.dataset.tHtml = k; el.removeAttribute('data-t'); } else el.dataset.t = k; };
+  chiave('#titolo', 'avvio1300.titolo');
+  chiave('#avvio .intro', 'avvio1300.intro', true);
+  chiave('#avvio details ul', 'avvio1300.nonE.lista', true);
+  document.querySelector('#b-visita-inizio').hidden = true;
+  document.querySelector('#entra').classList.add('primario');
+}
+
 // senza WebGL la città non si può disegnare: lo si dice subito, in parole semplici
 if (!document.createElement('canvas').getContext('webgl2')) {
   document.querySelector('.caricamento').innerHTML = `<p class="errore">${t('errore.webgl')}</p>`;
@@ -94,7 +109,11 @@ if (scenaIniziale?.vista && mondoDi(scenaIniziale) !== MONDO) {
   if (mondoDi(scenaIniziale) === 'citta') params.delete('luogo'); else params.set('luogo', mondoDi(scenaIniziale));
   location.replace('?' + params.toString());
 }
-let giornata = GIORNATE[params.get('giorno')] || GIORNATE[scenaIniziale?.giornata] || GIORNATE[MONDO === 'campi' ? 'gennaio' : GIORNATA_PREDEFINITA];
+// le scene del copione e la visita sono nel 1216: chi ci arriva dal 1300 torna al 1216
+if (NEL_1300 && (scenaIniziale || params.has('racconto') || params.has('visita'))) { params.delete('epoca'); location.replace('?' + params.toString()); }
+// le giornate dell'epoca: nel 1300 c'è solo il 1° maggio (dati/giornate.js)
+const giornataDellEpoca = g => g && (g.epoca || '1216') === EPOCA ? g : null;
+let giornata = giornataDellEpoca(GIORNATE[params.get('giorno')]) || giornataDellEpoca(GIORNATE[scenaIniziale?.giornata]) || GIORNATE[MONDO === 'campi' ? 'gennaio' : NEL_1300 ? 'maggio' : GIORNATA_PREDEFINITA];
 let ora = +(params.get('ora') || scenaIniziale?.ora || giornata.ora);
 let qualita = 'alta';         // dalle impostazioni ricordate, sotto
 let movimentoRidotto = false;
@@ -111,12 +130,13 @@ const ui = new Interfaccia({
   certezza: on => impostaCertezza(on),
   giorno: id => { if (MONDO === 'citta' && id !== giornata.id) impostaGiornata(id); },
   volo: on => mondo.controlli.impostaVolo(on),
-  epoca: e => impostaEpoca(e),
+  epoca: e => impostaEpoca(e === 'base' ? '1216' : e),
+  ricostruisci: e => ricostruisci(e),
   inVolo: () => mondo?.controlli.volo,
   ora: h => { ora = h; impostaOra(); },
   vai: l => vaiA(l),
   qualita: v => { if (v !== qualita) cambiaQualita(); },
-  racconto: () => { visita.chiudi(false); racconto.alterna(); },
+  racconto: () => { if (NEL_1300) return ricostruisci('1216', { racconto: '' }); visita.chiudi(false); racconto.alterna(); },
   movimentoRidotto: on => { movimentoRidotto = on; if (mondo) mondo.controlli.movimentoRidotto = on; },
   leggiTappe: on => { visita.leggiDaSola = on; },
   mappa: on => mappa?.mostra(on)
@@ -212,17 +232,19 @@ async function costruisci() {
 
   await passo('Il letto dell\'Arno e le colline…');
   // le strade del 1216 servono già qui: gli alberi non crescono sulle strade fuori porta
-  const strade = strade1216(STRADE);
+  // nel 1300 (?epoca=1300) i dati della città grande si caricano solo adesso, in un pezzo a parte
+  const d1300 = NEL_1300 ? await carica1300() : null;
+  const strade = NEL_1300 ? d1300.strade : strade1216(STRADE);
   creaTerreno(scene);
   // gli alberi si ricordano: dove oggi ci sono le case, nella Firenze di oggi si tolgono
   const primaDegliAlberi = scene.children.length;
-  creaVegetazione(scene, { evita: strade.filter(s => s.fuori) });
+  creaVegetazione(scene, { evita: strade.filter(s => NEL_1300 ? s.fuoriVecchia : s.fuori) });
   const alberi = scene.children.slice(primaDegliAlberi);
   const acqua = creaAcqua(scene, cielo.dir);
 
-  await passo('Le strade del 1216…');
-  // da −1100 a 1100 m: la cerchia del 1172–75 e i borghi fuori porta
-  const griglia = new Griglia(-1100, 1100);
+  await passo(NEL_1300 ? 'Le strade del 1300…' : 'Le strade del 1216…');
+  // da −1100 a 1100 m: la cerchia del 1172–75 e i borghi fuori porta; nel 1300 fino alla cerchia nuova
+  const griglia = NEL_1300 ? new Griglia(-2000, 1800) : new Griglia(-1100, 1100);
   griglia.poligono(FIUME, C_FIUME);
   for (const s of strade) {
     if (s.area) griglia.poligono(s.punti, PIAZZA, false);
@@ -232,22 +254,28 @@ async function costruisci() {
   await passo('Il ponte, le chiese, le torri…');
   const cantiere = new Cantiere();
   const monumenti = costruisciMonumenti(cantiere, griglia);
+  // nel 1300: il cantiere dei Priori, il guasto, la loggia del grano, il palazzo del Popolo (mondo/monumenti-1300.js)
+  if (NEL_1300) console.info('monumenti del 1300:', costruisciMonumenti1300(cantiere, griglia).join(', '));
 
   await passo('Le mura, le porte, il fossato…');
   costruisciMura(cantiere, griglia);
   ipotesiLatoSud(cantiere);
+  if (NEL_1300) { d1300.muraOltrarno1300(cantiere, griglia); d1300.porteInCantiere(cantiere, griglia); }
 
   await passo('Le case, una per una…');
   // la città casa per casa fino alle mura (dati/cerchia.js); fuori, i borghi
-  const lotti = lottizza(griglia, strade.filter(s => !s.fuori), { dentro: dentroTracciato, riquadro: RIQUADRO_CERCHIA, riempimento: 28000 });
+  // nel 1300 la città vecchia è più fitta: più tentativi di riempire gli isolati (ipotesi)
+  const lotti = lottizza(griglia, strade.filter(s => NEL_1300 ? !s.fuoriVecchia : !s.fuori), { dentro: dentroTracciato, riquadro: RIQUADRO_CERCHIA, riempimento: NEL_1300 ? RIEMPIMENTO_1300 : 28000 });
   // a blocchi, ridando la mano al browser: così la pagina non si blocca e la barra avanza
   for (let i = 0; i < lotti.length; i += 250) {
     costruisciLotti(cantiere, lotti.slice(i, i + 250));
     mostra(fatto + pesi[fase] * 0.72 * Math.min(1, (i + 250) / lotti.length)); await pausa();
   }
-  const borghi = costruisciBorghi(cantiere, griglia, strade);
+  const borghi = NEL_1300 ? await borghi1300(cantiere, griglia, strade, d1300, f => mostra(fatto + pesi[fase] * (0.72 + 0.14 * f))) : costruisciBorghi(cantiere, griglia, strade);
   mostra(fatto + pesi[fase] * 0.86); await pausa();
-  costruisciPalizzata(cantiere, griglia);
+  // nel 1300 la palizzata resta solo a est di San Felice: a ovest c'è il muro duecentesco (mondo/mura-1300.js)
+  if (NEL_1300) costruisciPalizzata(cantiere, griglia, PALIZZATA_1300);
+  else costruisciPalizzata(cantiere, griglia);
   const pozzi = KIT.pezzi ? pozziNeiCortili(cantiere, griglia, dentroTracciato, 60, RIQUADRO_CERCHIA) : [];
 
   // i mestieri dei giorni di lavoro: banchi, botteghe allestite, chi vende e chi compra
@@ -264,17 +292,19 @@ async function costruisci() {
   animali = modelli ? await bestie : null;
   const controlli = new Controlli(camera, renderer.domElement, griglia, quotaIn, opzComandi());
   const partenza = params.get('da');
-  if (partenza) { const [x, z, y] = partenza.split(',').map(Number); controlli.colloca(x, z, y || 0, 0); }
+  // ?da=x,z,direzione: da dove si parte (lo usa anche la linea del tempo); se lì c'è una casa, il posto libero più vicino
+  if (partenza) { const [x, z, y] = partenza.split(',').map(Number); const q = postoLibero(griglia, x, z) || [x, z]; controlli.colloca(q[0], q[1], y || 0, 0); }
   else if (scenaIniziale?.vista) collocaVista(controlli, scenaIniziale.vista);
   else controlli.colloca(20, -46, 2.62, -0.02);
 
   mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri, alberi };
   mondo.abitanti = creaAbitanti();
+  creaZuffa();
   impostaGiornata(giornata.id, { ora });
   impostaComposizione();
   if (qualita !== 'alta') cielo.dimensioneOmbre(2048, 80);
   controlli.movimentoRidotto = movimentoRidotto;
-  mappa = new Mappa({ vai: l => { vaiA(l); ui.apri(l); } }, LUOGHI.filter(l => mondoDi(l) === 'citta' && !l.gruppo), TAPPE.map(t => t.luogo).filter(Boolean));
+  mappa = new Mappa({ vai: l => { vaiA(l); ui.apri(l); } }, LUOGHI.filter(l => mondoDi(l) === 'citta' && !l.gruppo && dellEpoca(l, EPOCA)), TAPPE.map(t => t.luogo).filter(Boolean));
   mappa.prepara(strade);
   mappa.mostra(ui.conMappa);
   await passo('');
@@ -284,7 +314,53 @@ async function costruisci() {
     (KIT.pezzi ? ` · kit ${(cantiere.triangoliKit / 1e6).toFixed(1)} M triangoli · pozzi ${pozzi.length}` : ' · senza kit'));
   ui.pronto();
   if (params.has('subito')) entra();
+  if (params.has('visita')) apriVisita();
   if (params.get('epoca') === 'oggi') impostaEpoca('oggi');
+}
+
+/**
+ * Dalla linea del tempo, verso l'altra epoca: la pagina si ricarica nello
+ * stesso punto e con la stessa direzione (?da), e la città si ricostruisce
+ * (mondo/epoca.js). Le scene e la giornata non passano: sono dell'epoca di prima.
+ */
+function ricostruisci(e, altri = {}) {
+  const u = new URL(location.href);
+  if (e === '1216') u.searchParams.delete('epoca'); else u.searchParams.set('epoca', e);
+  for (const k of ['scena', 'racconto', 'visita', 'giorno', 'ora', 'gioco']) u.searchParams.delete(k);
+  const c = mondo?.controlli;
+  if (c && !c.volo) u.searchParams.set('da', `${c.pos.x.toFixed(1)},${c.pos.z.toFixed(1)},${c.yaw.toFixed(2)}`);
+  u.searchParams.set('subito', '');
+  for (const [k, v] of Object.entries(altri)) u.searchParams.set(k, v);
+  ui.avviso(t(altri.racconto !== undefined || altri.visita !== undefined ? 'tempo.racconto' : 'tempo.ricostruisco', { e }), 60000);
+  // con pausa() e non con un setTimeout, che il browser può rallentare fino a non partire più
+  pausa().then(() => location.assign(u));
+}
+
+/** I dati e i costruttori del 1300, in un pezzo a parte che la città del 1216 non scarica. */
+async function carica1300() {
+  const [osm, strade, cerchia, mura] = await Promise.all([
+    import('./dati/osm-1300.js'), import('./dati/strade-1300.js'), import('./dati/cerchia-1300.js'), import('./mondo/mura-1300.js')
+  ]);
+  return {
+    strade: componiStrade1300(strade, osm.STRADE),
+    dentroLimite: cerchia.dentroLimite, limite: cerchia.LIMITE,
+    muraOltrarno1300: mura.muraOltrarno1300, porteInCantiere: mura.porteInCantiere
+  };
+}
+
+/**
+ * I borghi del 1300: le case lungo le strade fra la cerchia vecchia e la
+ * nuova, sempre più rade allontanandosi dal centro (decisione del 6/11/2026).
+ * Fitte vicino alla cerchia vecchia, dove i borghi esistevano già nel 1216;
+ * verso le mura nuove orti e campi. Le proporzioni sono ipotesi.
+ */
+async function borghi1300(cantiere, griglia, strade, d1300, avanza) {
+  const lotti = lottiBorghi1300(griglia, strade, d1300.dentroLimite, d1300.limite);
+  for (let i = 0; i < lotti.length; i += 250) {
+    costruisciLotti(cantiere, lotti.slice(i, i + 250));
+    avanza(Math.min(1, (i + 250) / lotti.length)); await pausa();
+  }
+  return lotti;
 }
 
 /**
@@ -346,6 +422,22 @@ function creaAbitanti() {
   });
 }
 
+/**
+ * La zuffa di Calendimaggio (mondo/zuffa.js): solo nel 1300, il 1° maggio,
+ * con le figure e i cavalli di Blender. La sera la città ha un orologio che
+ * va da solo (un secondo vero, dodici della città): alle 18.40 la scena parte.
+ */
+function creaZuffa() {
+  mondo.zuffa = null;
+  if (!NEL_1300 || MONDO !== 'citta' || giornata.id !== 'maggio' || !modelli || !animali) return;
+  mondo.zuffa = new Zuffa(mondo.abitanti, {
+    griglia: mondo.griglia, varianti: modelli.varianti, animali,
+    avvisa: k => ui.avviso(t(k), k === 'zuffa.dopo' ? 14000 : k === 'zuffa.presto' ? 12000 : 9000)
+  });
+}
+const OROLOGIO_SERA = 12 / 3600;          // ore della città per secondo vero
+let tOrologio = 0;
+
 /** Cambia giornata (giornate.js): sole, foschia, botteghe, campane, gente. */
 function impostaGiornata(id, opz = {}) {
   const g = GIORNATE[id];
@@ -363,6 +455,7 @@ function impostaGiornata(id, opz = {}) {
   if (cambia) {
     mondo.abitanti.distruggi();
     mondo.abitanti = creaAbitanti();
+    creaZuffa();
     if (certezzaAccesa || epoca === 'oggi') mondo.abitanti.visibili(false);
   }
   impostaOra();
@@ -389,14 +482,14 @@ async function impostaEpoca(e) {
     try {
       const t0 = performance.now();
       // i luoghi della storia hanno un segno anche oggi, del colore di che cosa ne resta (dati/oggi-luoghi.js)
-      const segni = LUOGHI.filter(l => mondoDi(l) === 'citta' && !l.gruppo && oggiDi(l)).map(l => ({ pos: l.pos, colore: COLORI_RESTA[oggiDi(l).resta] }));
+      const segni = LUOGHI.filter(l => mondoDi(l) === 'citta' && !l.gruppo && dellEpoca(l, EPOCA) && oggiDi(l)).map(l => ({ pos: l.pos, colore: COLORI_RESTA[oggiDi(l).resta] }));
       oggi = await (costruendoOggi ||= costruisciOggi(scene, { pausa, segni }));
       console.info(`Firenze di oggi in ${((performance.now() - t0) / 1000).toFixed(1)} s · ${oggi.volumi.length} volumi · oggetti ${oggi.gruppo.children.length}`);
       oggi.gruppo.visible = false;
       mappa?.preparaOggi(oggi.volumi);
     } catch (err) {
       console.error(err); costruendoOggi = null;
-      ui.statoEpoca(false); ui.avviso(t('oggi.errore'), 7000);
+      ui.statoEpoca(false); ui.avviso(t('oggi.errore', { e: EPOCA }), 7000);
       return;
     }
   }
@@ -415,7 +508,7 @@ async function impostaEpoca(e) {
   if (!c.volo) { const q = postoLibero(c.griglia, c.pos.x, c.pos.z); if (q) { c.pos.x = q[0]; c.pos.z = q[1]; } }
   mappa?.epoca(adesso, l => COLORI_RESTA[oggiDi(l)?.resta]);
   ui.statoEpoca(adesso);
-  ui.avviso(t(adesso ? 'oggi.pronta' : 'oggi.torna'), adesso ? 9000 : 3000);
+  ui.avviso(t(adesso ? 'oggi.pronta' : 'oggi.torna', { e: EPOCA }), adesso ? 9000 : 3000);
 }
 
 function impostaOra() {
@@ -505,6 +598,7 @@ function impostaCertezza(on) {
 }
 
 function apriVisita() {
+  if (NEL_1300) return ricostruisci('1216', { visita: '' });
   racconto.chiudi();
   visita.apri(0);
 }
@@ -565,6 +659,12 @@ function ciclo() {
     if (c.attivo) controllaScioltezza(vero);
     mondo.cielo.segui(camera.position);
     if (mondo.acqua) mondo.acqua.material.uniforms.time.value += dt * 0.55;
+    // la sera del 1° maggio 1300 l'ora va avanti da sola, fino a dopo la zuffa
+    if (mondo.zuffa && c.attivo && ora < giornata.oraMax) {
+      ora = Math.min(giornata.oraMax, ora + dt * OROLOGIO_SERA);
+      if ((tOrologio += dt) > 1) { tOrologio = 0; impostaOra(); const r = document.querySelector('#cursore-ora'); if (r) r.value = ora; }
+    }
+    mondo.zuffa?.aggiorna(dt, ora);
     mondo.abitanti.aggiorna(dt, camera.position);
     mondo.cantiere.aggiornaLod(camera.position);
     mondo.suoni.aggiorna(dt, camera, mondo.abitanti);
@@ -573,7 +673,7 @@ function ciclo() {
       tHud = 0;
       let best = null, bd = Infinity;
       for (const l of LUOGHI) {
-        if (mondoDi(l) !== MONDO) continue;
+        if (mondoDi(l) !== MONDO || !dellEpoca(l, EPOCA)) continue;
         const d = Math.hypot(camera.position.x - l.pos[0], camera.position.z - l.pos[1]);
         if (d < l.raggio && d < bd) { bd = d; best = l; }
       }

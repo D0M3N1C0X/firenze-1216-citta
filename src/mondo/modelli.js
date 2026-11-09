@@ -1,4 +1,5 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { EPOCA } from './epoca.js';
 
 /* =====================================================================
    I MONUMENTI MODELLATI IN BLENDER (strumenti/monumenti/monumenti.py)
@@ -15,7 +16,9 @@ export const MODELLI = {};
 export let INDICE = {};
 
 export async function caricaModelli() {
-  INDICE = await fetch('./monumenti/indice.json').then(r => r.json());
+  const tutti = await fetch('./monumenti/indice.json').then(r => r.json());
+  // i modelli di un'altra epoca (monumenti1300.py: «epoca»: «1300») non si scaricano
+  INDICE = Object.fromEntries(Object.entries(tutti).filter(([, v]) => !v.epoca || v.epoca === EPOCA));
   const loader = new GLTFLoader();
   await Promise.all(Object.keys(INDICE).map(async nome => {
     const gltf = await loader.loadAsync(`./monumenti/${nome}.glb`);
@@ -38,8 +41,8 @@ export async function caricaModelli() {
  * griglia è la stessa del browser.
  */
 export function soloIndice(indice) {
-  INDICE = indice;
-  for (const nome of Object.keys(indice)) MODELLI[nome] = [];
+  INDICE = Object.fromEntries(Object.entries(indice).filter(([, v]) => !v.epoca || v.epoca === EPOCA));
+  for (const nome of Object.keys(INDICE)) MODELLI[nome] = [];
 }
 
 /** Posa un modello nel cantiere con la matrice M (da modello a mondo). */

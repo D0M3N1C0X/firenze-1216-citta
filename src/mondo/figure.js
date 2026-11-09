@@ -1,4 +1,9 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { NEL_1300 } from './epoca.js';
+
+// nel 1300 le stesse persone vestite come nel 1300 (strumenti/figure/figure.py con EPOCA=1300);
+// i movimenti sono gli stessi e restano in public/figure/
+const CARTELLA = NEL_1300 ? './figure-1300/' : './figure/';
 
 /* =====================================================================
    LE FIGURE PRODOTTE IN BLENDER
@@ -13,14 +18,14 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 export async function caricaFigure(avanzamento = () => {}) {
   const loader = new GLTFLoader();
   const [elenco, infoMov, mov] = await Promise.all([
-    fetch('./figure/figure.json').then(r => r.json()),
+    fetch(CARTELLA + 'figure.json').then(r => r.json()),
     fetch('./figure/movimenti.json').then(r => r.json()),
     loader.loadAsync('./figure/movimenti.glb')
   ]);
   const anche0 = altezzaAnche(mov.scene);
   let fatti = 0;
   const varianti = await Promise.all(elenco.map(async info => {
-    const gltf = await loader.loadAsync('./figure/' + info.file);
+    const gltf = await loader.loadAsync(CARTELLA + info.file);
     avanzamento(++fatti, elenco.length);
     gltf.scene.traverse(o => {
       if (!o.isMesh) return;

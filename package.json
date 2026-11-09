@@ -11,8 +11,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "osm": "node scripts/osm-estrai.mjs",
+    "osm-1300": "node scripts/osm-1300-estrai.mjs",
     "copione": "node scripts/copione-estrai.mjs",
-    "verifica": "node scripts/verifica.mjs",
+    "verifica": "node scripts/verifica.mjs && EPOCA=1300 node scripts/verifica-1300.mjs",
     "parametri": "node scripts/parametri-monumenti.mjs",
     "app": "npm run build && node scripts/app-www.mjs && npx cap sync ios"
   },

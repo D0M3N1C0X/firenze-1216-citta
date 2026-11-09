@@ -8,6 +8,7 @@ import { MAT } from './materiali.js';
 import { fbm, lerp, smooth } from './rumore.js';
 import { FOSSATO } from '../dati/cerchia.js';
 
+import { NEL_1300 } from './epoca.js';
 export { distanzaFiume };
 
 /* =====================================================================
@@ -186,11 +187,13 @@ function costruisci(x0, z0, lato, seg, abbassa, conPeso, q = quota, fiume = true
  * Il riquadro del terreno a maglia fine: dal 13 ottobre 2026 copre tutta la
  * cerchia del 1172–75 e i borghi fuori porta (2 km di lato, maglie di 2,2 m).
  */
-export const VICINO = { x: 100, z: -240, lato: 2000 };
+// nel 1300 la città arriva alla cerchia nuova: il riquadro fine si allarga a 3,3 km (dati/cerchia-1300.js)
+export const VICINO = NEL_1300 ? { x: 215, z: -500, lato: 3300 } : { x: 100, z: -240, lato: 2000 };
 
 export function creaTerreno(scene, qualita = 'alta', q = quota, fiume = true) {
   const mat = materialeTerreno();
-  const vicino = new Mesh(costruisci(VICINO.x, VICINO.z, VICINO.lato, qualita === 'alta' ? 900 : 540, false, true, q, fiume), mat);
+  const seg = Math.round((qualita === 'alta' ? 900 : 540) * Math.min(1.5, VICINO.lato / 2000));
+  const vicino = new Mesh(costruisci(VICINO.x, VICINO.z, VICINO.lato, seg, false, true, q, fiume), mat);
   vicino.receiveShadow = true;
   vicino.name = 'terreno';
   scene.add(vicino);

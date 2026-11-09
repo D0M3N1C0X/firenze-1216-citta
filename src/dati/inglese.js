@@ -1,3 +1,4 @@
+import { LUOGHI_1300_EN } from './trecento-luoghi.js';
 /* =====================================================================
    THE CITY IN ENGLISH (28 October 2026)
 
@@ -250,3 +251,6 @@ export const OGGI_EN = {
   'santa-reparata': 'You cannot see it from outside: it lies under the Duomo that replaced it. Its remains were excavated in six campaigns between 1965 and 1974, and today you can visit them from the right aisle of the cathedral.'
 };
 export const OGGI_PORTA_EN = 'The gate is gone [to be checked]: the circuit of 1172–75 was outgrown by the larger one begun at the end of the 13th century. The street that passed through it remains.';
+
+// le schede dei luoghi del 1300 (dati/trecento-luoghi.js)
+Object.assign(LUOGHI_EN, LUOGHI_1300_EN);

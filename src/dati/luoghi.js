@@ -16,6 +16,7 @@
    ===================================================================== */
 
 import { PORTE } from './cerchia.js';
+import { LUOGHI_1300 } from './trecento-luoghi.js';
 
 export const LUOGHI = [
   {
@@ -353,3 +354,10 @@ function schedePorte() {
     };
   });
 }
+
+
+// i luoghi nuovi del 1300 (dati/trecento-luoghi.js): hanno «epoca»: «1300» e si mostrano solo in quella città
+LUOGHI.push(...LUOGHI_1300);
+
+/** I luoghi di un'epoca: quelli senza epoca valgono sempre (nel 1300 con la parte «nel 1300»). */
+export const dellEpoca = (l, epoca) => !l.epoca || l.epoca === epoca;

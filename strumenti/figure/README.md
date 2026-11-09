@@ -45,3 +45,9 @@ Il volto di ogni variante riceve pochi modificatori MakeHuman casuali, simmetric
 
 - **MakeHuman, corpi e asset di sistema:** CC0 (pacchetto `makehuman_system_assets_cc0`). L'estensione MPFB è GPL, ma serve solo a produrre: nel progetto non entra.
 - **Movimenti:** CMU Graphics Lab Motion Capture Database, http://mocap.cs.cmu.edu, creato con il finanziamento NSF EIA-0196217. I dati si possono usare liberamente, anche in prodotti, ma non rivendere come tali; per questo i BVH grezzi non sono nel repository (`scarica-mocap.sh` li riscarica dalla conversione di B. Hahne, cgspeed, ospitata su GitHub da una-dinosauria/cmu-mocap).
+
+## Le vesti del 1300 (9 novembre)
+
+Con `EPOCA=1300` lo script fa le stesse persone vestite come nel 1300 e le scrive in `public/figure-1300/`; la città le carica con `?epoca=1300` (i movimenti restano quelli di `public/figure/`). Gli uomini portano quasi tutti il cappuccio con la mantellina; i mercanti e i cavalieri la veste lunga, la guarnacca, quasi alla caviglia; i ricchi hanno colori più vivi (`MODIFICHE` e `VIVI` in `figure.py`). Riferimento da controllare: la pittura fiorentina del primo Trecento e Muzzarelli 1999 **[da verificare]**. Livello: ipotesi.
+
+Il 9 novembre le figure del 1300 sono state fatte nell'ambiente cloud con Blender 4.5 come modulo Python (`pip install bpy==4.5.*`), MPFB 2.0.18 da extensions.blender.org e `makehuman_system_assets_cc0` da files.makehumancommunity.org. MPFB lascia un thread aperto e il modulo non esce da solo: per questo `figure.py` finisce con `os._exit(0)` quando non gira dentro Blender. Rifatta così, la figura 8 del 1216 ha gli stessi 3331 vertici di quella nel repository (il file cambia di 136 byte, la compressione delle immagini).

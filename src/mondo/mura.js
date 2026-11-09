@@ -29,7 +29,7 @@ const PORTA = { W: 9.5, D: 7 };               // la torre di porta di monumenti.
 const POSTIERLA = { W: 6, luce: 2.4, alta: 3.4 };
 
 /** Matrice di un tratto: x lungo (ux, uz), z verso dentro, origine nel centro. */
-function tratto(cx, cz, ux, uz) {
+export function tratto(cx, cz, ux, uz) {
   return new Matrix4().makeRotationY(Math.atan2(-uz, ux)).setPosition(cx, quota(cx, cz), cz);
 }
 
@@ -49,7 +49,7 @@ function varchi(a, b) {
 }
 
 /** Un pezzo di muro merlato lungo l, centrato in (cx, cz). */
-function pezzoDiMuro(cant, griglia, cx, cz, ux, uz, l) {
+export function pezzoDiMuro(cant, griglia, cx, cz, ux, uz, l) {
   const M = tratto(cx, cz, ux, uz);
   cant.aggiungi(scatola(-l / 2, -1.5, -SP / 2, l / 2, H, SP / 2), 'pietrame', 'ipotesi', M, TINTA);
   // i merli sul filo esterno; il cammino di ronda resta dentro
@@ -149,9 +149,11 @@ function portaDiLegno(cant, griglia, p) {
  * casa, il muro è la casa: le pareti verso fuori non hanno aperture (fonte).
  * Si costruisce dopo le case.
  */
-export function costruisciPalizzata(cant, griglia) {
+export function costruisciPalizzata(cant, griglia, opz = {}) {
   const R = rng(1173);
-  const porte = PORTE.filter(p => p.pos && p.lato === 'oltrarno');
+  // opz.tiene(x, z): dove la palizzata c'è ancora (nel 1300 solo a est di San Felice); opz.senzaPorte: le porte che non ci sono più
+  const tiene = opz.tiene || (() => true);
+  const porte = PORTE.filter(p => p.pos && p.lato === 'oltrarno' && !(opz.senzaPorte || []).includes(p.id));
   let pali = 0;
   for (let k = 0; k + 1 < PALIZZATA.length; k++) {
     const a = PALIZZATA[k], b = PALIZZATA[k + 1], dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz);
@@ -160,6 +162,7 @@ export function costruisciPalizzata(cant, griglia) {
     const ang = Math.atan2(-uz, ux);
     for (let s = 0.16; s < L; s += 0.32) {
       const x = a[0] + ux * s, z = a[1] + uz * s;
+      if (!tiene(x, z)) continue;
       const v = griglia.get(x, z);
       if (v === EDIFICIO || v === FIUME || v > 99) continue;
       if (porte.some(p => Math.hypot(p.pos[0] - x, p.pos[1] - z) < 2.6)) continue;

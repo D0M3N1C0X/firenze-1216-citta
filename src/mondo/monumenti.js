@@ -6,6 +6,7 @@ import { IMPRONTE, STRADE } from '../dati/osm.js';
 import { dentroTracciato } from '../dati/cerchia.js';
 import { falda, matriceLotto, muro, piramide, scatola, tamponamento, timpano, uvMetri } from './cantiere.js';
 import { torre } from './edifici.js';
+import { NEL_1300, TETTO_TORRI } from './epoca.js';
 import { MONUMENTO, PIAZZA, PONTE, STRADA } from './griglia.js';
 import { INDICE, MODELLI, posaModello } from './modelli.js';
 import { LIVELLO_ACQUA, distanzaFiume, quota } from './terreno.js';
@@ -594,7 +595,9 @@ export function costruisciMonumenti(cant, griglia) {
     const nx = -O.uz, nz = O.ux;               // fronte su un lato lungo
     const W = 2 * O.a, D = 2 * O.b;
     const L = { px: O.cx - O.ux * O.a - nx * O.b, pz: O.cz - O.uz * O.a - nz * O.b, nx, nz, W, D, seme: t.id % 9973, H: amidei ? 36 : R.tra(26, 44) };
-    if (amidei && MODELLI.amidei) {
+    // nel 1300 la torre è mozzata a 50 braccia (mondo/epoca.js): il modello di Blender è alto come nel 1216,
+    // e al suo posto si costruisce la torre generata sulla stessa impronta (senza l'interno arredato)
+    if (amidei && MODELLI.amidei && !NEL_1300) {
       // la torre modellata: facciata sul lato che dà su via Por Santa Maria
       const A = INDICE.amidei, ni = [-A.fronte.nx, -A.fronte.nz], tx = ni[1], tz = -ni[0];
       const fx = O.cx + A.fronte.nx * A.D / 2 - tx * A.W / 2, fz = O.cz + A.fronte.nz * A.D / 2 - tz * A.W / 2;
@@ -604,12 +607,12 @@ export function costruisciMonumenti(cant, griglia) {
       griglia.poligono(t.punti, MONUMENTO);
       griglia.rettangolo(O.cx, O.cz, O.ux, O.uz, O.a, O.b, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
       apriInterno(griglia, S, A, yp);
-      torriNote.push({ nome: t.nome, x: O.cx, z: O.cz, h: L.H });
+      torriNote.push({ nome: t.nome, x: O.cx, z: O.cz, h: Math.min(L.H, TETTO_TORRI) });
       continue;
     } else torre(cant, L, 'dedotto');
     griglia.poligono(t.punti, MONUMENTO);
     griglia.rettangolo(O.cx, O.cz, O.ux, O.uz, O.a, O.b, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
-    torriNote.push({ nome: t.nome, x: O.cx, z: O.cz, h: L.H });
+    torriNote.push({ nome: t.nome, x: O.cx, z: O.cz, h: Math.min(L.H, TETTO_TORRI) });
   }
   return { ...info, torriNote };
 }

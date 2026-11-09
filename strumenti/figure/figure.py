@@ -55,6 +55,29 @@ RUOLI = [
     ('ragazzo',     dict(sesso='m', eta=(0.17, 0.24), ceto='popolo',   n=2, orlo=(0.3, 0.36),  capo=['nudo', 'cappuccio'], mantello=0)),
     ('ragazza',     dict(sesso='f', eta=(0.17, 0.24), ceto='popolo',   n=2, orlo=(0.05, 0.08), capo=['trecce', 'cuffia'], mantello=0)),
 ]
+# ---------------------------------------------------------------- il 1300
+# EPOCA=1300 (variabile d'ambiente): le stesse persone, vestite come nel 1300,
+# in ../../public/figure-1300/ (la città le carica con ?epoca=1300). Decisione
+# del 9 novembre 2026: cappucci e guarnacche, per ceto. Gli uomini portano
+# quasi tutti il cappuccio con la mantellina; i mercanti e i cavalieri la veste
+# lunga (la guarnacca) quasi alla caviglia; i colori più vivi per i ricchi.
+# Riferimento da controllare: la pittura fiorentina del primo Trecento (Giotto)
+# e M. G. Muzzarelli, Guardaroba medievale, 1999 [da verificare]. Ipotesi.
+EPOCA = os.environ.get('EPOCA', '1216')
+if EPOCA == '1300':
+    USCITA = os.path.abspath(os.path.join(QUI, '..', '..', 'public', 'figure-1300'))
+    VIVI = [(168, 30, 36), (36, 68, 148), (38, 108, 72), (176, 116, 40), (120, 30, 80)]
+    MODIFICHE = {
+        'artigiano': dict(capo=['cappuccio', 'cappuccio', 'cuffia', 'nudo'], orlo=(0.38, 0.46)),
+        'popolano':  dict(capo=['cappuccio', 'cappuccio', 'cappuccio', 'nudo'], orlo=(0.3, 0.42)),
+        'mercante':  dict(capo=['cappuccio'], orlo=(0.06, 0.12), mantello=0.35),
+        'cavaliere': dict(capo=['cappuccio', 'cappuccio', 'nudo'], orlo=(0.03, 0.07), mantello=0.6),
+        'ragazzo':   dict(capo=['cappuccio', 'nudo']),
+    }
+    for _ruolo, _spec in RUOLI: _spec.update(MODIFICHE.get(_ruolo, {}))
+    TINTE = TINTE + VIVI
+    GRANA = GRANA + VIVI[:2]
+
 VARIANTI = []
 for ruolo, spec in RUOLI:
     for k in range(spec['n']):
@@ -549,3 +572,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # MPFB lascia un thread aperto e Blender come modulo Python non esce da solo
+    if not bpy.app.binary_path or 'python' in os.path.basename(sys.executable): os._exit(0)
