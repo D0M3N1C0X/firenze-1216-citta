@@ -1,0 +1,380 @@
+{
+ "casa-52-2-intonaco": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 11.1,
+  "finitura": "intonaco",
+  "piani": 2,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 116,
+   "vicino": 4764
+  }
+ },
+ "casa-52-2-legno": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 11.1,
+  "finitura": "legno",
+  "piani": 2,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 116,
+   "vicino": 2068
+  }
+ },
+ "casa-52-2-pietra": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 11.1,
+  "finitura": "pietra",
+  "piani": 2,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 116,
+   "vicino": 4668
+  }
+ },
+ "casa-52-3-intonaco": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 14.5,
+  "finitura": "intonaco",
+  "piani": 3,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 140,
+   "vicino": 6536
+  }
+ },
+ "casa-52-3-legno": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 14.5,
+  "finitura": "legno",
+  "piani": 3,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 140,
+   "vicino": 2120
+  }
+ },
+ "casa-52-3-pietra": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 14.5,
+  "finitura": "pietra",
+  "piani": 3,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 140,
+   "vicino": 6344
+  }
+ },
+ "casa-52-4-intonaco": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 17.9,
+  "finitura": "intonaco",
+  "piani": 4,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 164,
+   "vicino": 7924
+  }
+ },
+ "casa-52-4-legno": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 17.9,
+  "finitura": "legno",
+  "piani": 4,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 164,
+   "vicino": 2652
+  }
+ },
+ "casa-52-4-pietra": {
+  "D": 12.0,
+  "W": 5.2,
+  "altezza": 17.9,
+  "finitura": "pietra",
+  "piani": 4,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 120,
+   "chiusa": 288,
+   "lontano": 164,
+   "vicino": 7828
+  }
+ },
+ "casa-68-2-intonaco": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 11.1,
+  "finitura": "intonaco",
+  "piani": 2,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 140,
+   "vicino": 7248
+  }
+ },
+ "casa-68-2-legno": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 11.1,
+  "finitura": "legno",
+  "piani": 2,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 140,
+   "vicino": 3264
+  }
+ },
+ "casa-68-2-pietra": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 11.1,
+  "finitura": "pietra",
+  "piani": 2,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 140,
+   "vicino": 7344
+  }
+ },
+ "casa-68-3-intonaco": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 14.5,
+  "finitura": "intonaco",
+  "piani": 3,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 176,
+   "vicino": 9612
+  }
+ },
+ "casa-68-3-legno": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 14.5,
+  "finitura": "legno",
+  "piani": 3,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 176,
+   "vicino": 3384
+  }
+ },
+ "casa-68-3-pietra": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 14.5,
+  "finitura": "pietra",
+  "piani": 3,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 176,
+   "vicino": 9516
+  }
+ },
+ "casa-68-4-intonaco": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 17.9,
+  "finitura": "intonaco",
+  "piani": 4,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 212,
+   "vicino": 12456
+  }
+ },
+ "casa-68-4-legno": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 17.9,
+  "finitura": "legno",
+  "piani": 4,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 212,
+   "vicino": 3696
+  }
+ },
+ "casa-68-4-pietra": {
+  "D": 12.0,
+  "W": 6.8,
+  "altezza": 17.9,
+  "finitura": "pietra",
+  "piani": 4,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 312,
+   "lontano": 212,
+   "vicino": 12360
+  }
+ },
+ "casa-82-2-intonaco": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 11.1,
+  "finitura": "intonaco",
+  "piani": 2,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 140,
+   "vicino": 7284
+  }
+ },
+ "casa-82-2-legno": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 11.1,
+  "finitura": "legno",
+  "piani": 2,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 140,
+   "vicino": 3420
+  }
+ },
+ "casa-82-2-pietra": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 11.1,
+  "finitura": "pietra",
+  "piani": 2,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 140,
+   "vicino": 7092
+  }
+ },
+ "casa-82-3-intonaco": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 14.5,
+  "finitura": "intonaco",
+  "piani": 3,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 176,
+   "vicino": 9648
+  }
+ },
+ "casa-82-3-legno": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 14.5,
+  "finitura": "legno",
+  "piani": 3,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 176,
+   "vicino": 3828
+  }
+ },
+ "casa-82-3-pietra": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 14.5,
+  "finitura": "pietra",
+  "piani": 3,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 176,
+   "vicino": 9840
+  }
+ },
+ "casa-82-4-intonaco": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 17.9,
+  "finitura": "intonaco",
+  "piani": 4,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 212,
+   "vicino": 12204
+  }
+ },
+ "casa-82-4-legno": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 17.9,
+  "finitura": "legno",
+  "piani": 4,
+  "sporto": 0.9,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 212,
+   "vicino": 4044
+  }
+ },
+ "casa-82-4-pietra": {
+  "D": 12.0,
+  "W": 8.2,
+  "altezza": 17.9,
+  "finitura": "pietra",
+  "piani": 4,
+  "sporto": 0,
+  "triangoli": {
+   "aperta": 132,
+   "chiusa": 336,
+   "lontano": 212,
+   "vicino": 12204
+  }
+ }
+}

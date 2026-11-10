@@ -8,6 +8,7 @@ import { MAT } from './materiali.js';
 import { quota, distanzaFiume } from './terreno.js';
 import { rng } from './rumore.js';
 import { NEL_1300, TETTO_TORRI } from './epoca.js';
+import { daBlender } from './case-blender.js';
 
 /* =====================================================================
    LE CASE DEL 1216 — generate, non rilevate
@@ -638,6 +639,8 @@ export function pozziNeiCortili(cant, griglia, dentro, quanti = 40, riquadro = [
 export function costruisciLotti(cant, lotti) {
   let n = 0;
   for (const L of lotti) {
+    // le case con un tipo di Blender le disegna mondo/case-blender.js, per istanze
+    if (daBlender(L)) continue;
     if (L.tipo === 'torre') torre(cant, L); else casa(cant, L);
     n++;
   }

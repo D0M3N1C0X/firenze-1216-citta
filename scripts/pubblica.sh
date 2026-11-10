@@ -46,7 +46,7 @@ fi
 
 # il messaggio: i titoli dei commit privati dall'ultima pubblicazione
 DATA=$(git log -1 --format=%cI "$BASE")
-MSG=$(printf 'Città: aggiornamento dal progetto\n\n%s\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n' "$(git log --format='- %s' --since="$DATA" -- citta)")
+MSG=$(printf 'Città: aggiornamento dal progetto\n\n%s\n\nCo-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>\n' "$(git log --format='- %s' --since="$DATA" -- citta)")
 NUOVO=$(GIT_AUTHOR_NAME="$NOME" GIT_AUTHOR_EMAIL="$ANONIMA" GIT_COMMITTER_NAME="$NOME" GIT_COMMITTER_EMAIL="$ANONIMA" \
   git commit-tree "$ALBERO" -p "$BASE" -m "$MSG")
 git -c http.postBuffer=524288000 push "$PUBBLICO" "$NUOVO:refs/heads/main"

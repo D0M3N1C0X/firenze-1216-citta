@@ -1,0 +1,33 @@
+{
+ "cipresso-0": {
+  "altezza": 12.0,
+  "tipo": "cipresso",
+  "triangoli": 988
+ },
+ "cipresso-1": {
+  "altezza": 12.0,
+  "tipo": "cipresso",
+  "triangoli": 988
+ },
+ "cipresso-2": {
+  "altezza": 12.0,
+  "tipo": "cipresso",
+  "triangoli": 988
+ },
+ "ulivo-0": {
+  "tipo": "ulivo",
+  "triangoli": 2204
+ },
+ "ulivo-1": {
+  "tipo": "ulivo",
+  "triangoli": 2204
+ },
+ "ulivo-2": {
+  "tipo": "ulivo",
+  "triangoli": 2204
+ },
+ "ulivo-3": {
+  "tipo": "ulivo",
+  "triangoli": 2204
+ }
+}

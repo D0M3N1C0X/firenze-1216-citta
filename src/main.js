@@ -33,7 +33,8 @@ import { caricaModelli } from './mondo/modelli.js';
 import { PONTE_ASSE, costruisciMonumenti, quotaPavimento, sulPonte } from './mondo/monumenti.js';
 import { costruisciBorghi } from './mondo/fondale.js';
 import { costruisciMura, costruisciPalizzata, ipotesiLatoSud } from './mondo/mura.js';
-import { creaVegetazione } from './mondo/vegetazione.js';
+import { caricaAlberi, creaVegetazione } from './mondo/vegetazione.js';
+import { CaseBlender, caricaCase } from './mondo/case-blender.js';
 import { costruisciMestieri, figureDeiMestieri, grigliaDeiMestieri, suoniDeiMestieri } from './mondo/mestieri.js';
 import { Abitanti } from './mondo/abitanti.js';
 import { costruisciOggi, diradaAlberi, postoLibero } from './mondo/oggi.js';
@@ -218,8 +219,12 @@ async function costruisci() {
   const kit = params.has('senzakit') ? null : caricaKit().catch(e => { console.warn('kit edilizio non caricato:', e); return null; });
   // i monumenti modellati in Blender: senza, quelli generati
   const monumentiBlender = params.has('senzamodelli') ? null : caricaModelli().catch(e => { console.warn('monumenti di Blender non caricati:', e); return null; });
+  // gli ulivi e i cipressi di Blender: senza, le forme semplici
+  const alberiBlender = params.has('senzamodelli') ? null : caricaAlberi().catch(e => { console.warn('alberi di Blender non caricati:', e); return null; });
+  // i tipi di casa di Blender (strumenti/case/case.py): senza, le case generate
+  const caseBlender = params.has('senzamodelli') || params.has('senzacase') ? null : caricaCase().catch(e => { console.warn('case di Blender non caricate:', e); return null; });
   await Promise.all([
-    kit, monumentiBlender,
+    kit, monumentiBlender, alberiBlender, caseBlender,
     creaMateriali('alta', (k, n) => mostra(fatto + pesi[fase] * k / n)),
     MONDO === 'citta' ? preparaCampo() : null
   ]);
@@ -238,7 +243,7 @@ async function costruisci() {
   creaTerreno(scene);
   // gli alberi si ricordano: dove oggi ci sono le case, nella Firenze di oggi si tolgono
   const primaDegliAlberi = scene.children.length;
-  creaVegetazione(scene, { evita: strade.filter(s => NEL_1300 ? s.fuoriVecchia : s.fuori) });
+  const vegetazione = creaVegetazione(scene, { evita: strade.filter(s => NEL_1300 ? s.fuoriVecchia : s.fuori) });
   const alberi = scene.children.slice(primaDegliAlberi);
   const acqua = creaAcqua(scene, cielo.dir);
 
@@ -282,6 +287,9 @@ async function costruisci() {
   const mestieri = costruisciMestieri(cantiere, griglia, lotti, strade);
   console.info(`mestieri: ${mestieri.panni} botteghe di panni, ${mestieri.figure} figure ai banchi`);
 
+  // le case di Blender, per istanze, su tutti i lotti «casa» della città e dei borghi
+  const caseB = MONDO === 'citta' && await caseBlender ? new CaseBlender(scene, [...lotti, ...borghi], { festa: giornata.festa }) : null;
+
   await passo('Muro su muro…');
   cantiere.costruisci(scene);
 
@@ -297,7 +305,7 @@ async function costruisci() {
   else if (scenaIniziale?.vista) collocaVista(controlli, scenaIniziale.vista);
   else controlli.colloca(20, -46, 2.62, -0.02);
 
-  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri, alberi };
+  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri, alberi, vegetazione, case: caseB };
   mondo.abitanti = creaAbitanti();
   creaZuffa();
   impostaGiornata(giornata.id, { ora });
@@ -449,6 +457,7 @@ function impostaGiornata(id, opz = {}) {
   if (!mondo) return;
   mondo.cielo.giornata(g);
   mondo.cantiere.giornata(g);
+  mondo.case?.giornata(g.festa);
   if (epoca === 'oggi') mostra1216(false);
   mondo.suoni.giornata(g);
   if (MONDO === 'citta') { grigliaDeiMestieri(mondo.griglia, g.festa); mondo.suoni.mestieri(suoniDeiMestieri(g)); }
@@ -464,6 +473,7 @@ function impostaGiornata(id, opz = {}) {
 /** Accende o spegne tutto quello che è del 1216: case, monumenti, mura, mestieri, gente, campagna. */
 function mostra1216(on) {
   for (const m of mondo.cantiere.mesh) m.visible = on;
+  mondo.case?.visibili(on);
   if (on) { mondo.cantiere.giornata(giornata); mondo.cantiere.certezza(certezzaAccesa); }
   mondo.abitanti.visibili(on && !certezzaAccesa);
   mondo.suoni.mestieri(on ? suoniDeiMestieri(giornata) : []);
@@ -498,7 +508,8 @@ async function impostaEpoca(e) {
   epoca = e;
   mostra1216(!adesso);
   oggi.gruppo.visible = adesso;
-  diradaAlberi(mondo.alberi, oggi.riquadro, adesso);
+  // con gli alberi di Blender il riquadro lo toglie chi gestisce il dettaglio; altrimenti si diradano le istanze
+  if (mondo.vegetazione?.lod) mondo.vegetazione.escludi(adesso ? oggi.riquadro : null); else diradaAlberi(mondo.alberi, oggi.riquadro, adesso);
   // si cammina sulla griglia dell'epoca; chi si trova dentro un muro dell'altra si sposta di poco
   const c = mondo.controlli;
   c.ferma();
@@ -594,7 +605,7 @@ function entra(modo) {
 function impostaCertezza(on) {
   certezzaAccesa = on;
   ui.statoCertezza(on);
-  mondo.cantiere.certezza(on); mondo.abitanti.visibili(!on);
+  mondo.cantiere.certezza(on); mondo.case?.certezza(on); mondo.abitanti.visibili(!on);
 }
 
 function apriVisita() {
@@ -667,6 +678,8 @@ function ciclo() {
     mondo.zuffa?.aggiorna(dt, ora);
     mondo.abitanti.aggiorna(dt, camera.position);
     mondo.cantiere.aggiornaLod(camera.position);
+    mondo.vegetazione?.aggiorna?.(camera.position);
+    mondo.case?.aggiorna(camera.position);
     mondo.suoni.aggiorna(dt, camera, mondo.abitanti);
     if (mappa && c.attivo) mappa.aggiorna(camera.position.x, camera.position.z, c.yaw);
     if ((tHud += dt) > 0.25) {
