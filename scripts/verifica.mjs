@@ -28,6 +28,7 @@ import { costruisciMonumenti } from '../src/mondo/monumenti.js';
 import { soloIndice } from '../src/mondo/modelli.js';
 import { costruisciCampi } from '../src/mondo/campi.js';
 import { Griglia as G2 } from '../src/mondo/griglia.js';
+import { lottizzaCampi, stagioneDi, TIPI_CAMPO } from '../src/mondo/campagna.js';
 import { readFileSync } from 'node:fs';
 import { lottizza } from '../src/mondo/edifici.js';
 import { costruisciMura, costruisciPalizzata } from '../src/mondo/mura.js';
@@ -157,6 +158,26 @@ TAPPE.forEach((t, k) => {
   if (!t.vista.volo && !griglia.percorribile(t.vista.x, t.vista.z)) errori.push(`visita, tappa ${k + 1}: la vista (${t.vista.x}, ${t.vista.z}) non è percorribile`);
   else if (!t.vista.volo && !aPiedi(t.vista.x, t.vista.z)) errori.push(`visita, tappa ${k + 1}: la vista non si raggiunge a piedi dall'ingresso`);
 });
+
+// la campagna coltivata lungo le strade fuori porta (mondo/campagna.js): i campi ci sono, stanno solo su
+// terreno libero fuori dalla cerchia, non cambiano la pianta del suolo, e ogni giornata ha la sua stagione
+{
+  const prima = griglia.c.slice();
+  const campagna = lottizzaCampi({ strade: strade.filter(s => s.fuori), griglia });
+  if (campagna.campi.length < 100) errori.push(`campagna: solo ${campagna.campi.length} campi lungo le strade fuori porta`);
+  if (griglia.c.some((v, k) => v !== prima[k])) errori.push('campagna: la lottizzazione dei campi ha cambiato la pianta del suolo');
+  let fuoriPosto = 0;
+  for (const c of campagna.campi) {
+    if (!TIPI_CAMPO.includes(c.tipo) || !c.tipo) errori.push(`campagna: il campo ${c.n} ha un tipo sconosciuto «${c.tipo}»`);
+    for (let a = 1; a < c.w; a += 3) for (let b = c.b0 + 1; b < c.b1; b += 3) {
+      const x = c.ox + c.ux * a + c.vx * b, z = c.oz + c.uz * a + c.vz * b;
+      if (campagna.di(x, z) === c && (griglia.get(x, z) !== 0 || dentroTracciato(x, z))) fuoriPosto++;
+    }
+  }
+  if (fuoriPosto) errori.push(`campagna: ${fuoriPosto} punti dei campi stanno su una strada, su una casa o dentro la cerchia`);
+  for (const g of Object.values(GIORNATE)) if (!['inverno', 'primavera', 'maggio', 'estate'].includes(stagioneDi(g.doy))) errori.push(`campagna: la giornata «${g.id}» non ha una stagione`);
+  console.log(`campagna: ${campagna.campi.length} campi lungo le strade fuori porta (${TIPI_CAMPO.filter(Boolean).map(t => campagna.campi.filter(c => c.tipo === t).length + ' ' + t).join(', ')})`);
+}
 
 if (errori.length) {
   console.error(errori.map(e => '✗ ' + e).join('\n'));

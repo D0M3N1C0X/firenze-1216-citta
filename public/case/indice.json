@@ -9,7 +9,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 116,
+   "lontanoDx": 60,
+   "lontanoRetro": 72,
+   "lontanoSx": 60,
+   "retro": 336,
    "vicino": 4764
   }
  },
@@ -23,7 +29,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 116,
+   "lontanoDx": 60,
+   "lontanoRetro": 72,
+   "lontanoSx": 60,
+   "retro": 336,
    "vicino": 2068
   }
  },
@@ -37,7 +49,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 116,
+   "lontanoDx": 60,
+   "lontanoRetro": 72,
+   "lontanoSx": 60,
+   "retro": 336,
    "vicino": 4668
   }
  },
@@ -51,7 +69,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 140,
+   "lontanoDx": 84,
+   "lontanoRetro": 96,
+   "lontanoSx": 84,
+   "retro": 456,
    "vicino": 6536
   }
  },
@@ -65,7 +89,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 140,
+   "lontanoDx": 84,
+   "lontanoRetro": 96,
+   "lontanoSx": 84,
+   "retro": 456,
    "vicino": 2120
   }
  },
@@ -79,7 +109,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 140,
+   "lontanoDx": 84,
+   "lontanoRetro": 96,
+   "lontanoSx": 84,
+   "retro": 456,
    "vicino": 6344
   }
  },
@@ -93,7 +129,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 164,
+   "lontanoDx": 108,
+   "lontanoRetro": 120,
+   "lontanoSx": 108,
+   "retro": 576,
    "vicino": 7924
   }
  },
@@ -107,7 +149,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 164,
+   "lontanoDx": 108,
+   "lontanoRetro": 120,
+   "lontanoSx": 108,
+   "retro": 576,
    "vicino": 2652
   }
  },
@@ -121,7 +169,13 @@
   "triangoli": {
    "aperta": 120,
    "chiusa": 288,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 164,
+   "lontanoDx": 108,
+   "lontanoRetro": 120,
+   "lontanoSx": 108,
+   "retro": 576,
    "vicino": 7828
   }
  },
@@ -135,7 +189,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 140,
+   "lontanoDx": 60,
+   "lontanoRetro": 96,
+   "lontanoSx": 60,
+   "retro": 456,
    "vicino": 7248
   }
  },
@@ -149,7 +209,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 140,
+   "lontanoDx": 60,
+   "lontanoRetro": 96,
+   "lontanoSx": 60,
+   "retro": 456,
    "vicino": 3264
   }
  },
@@ -163,7 +229,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 140,
+   "lontanoDx": 60,
+   "lontanoRetro": 96,
+   "lontanoSx": 60,
+   "retro": 456,
    "vicino": 7344
   }
  },
@@ -177,7 +249,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 176,
+   "lontanoDx": 84,
+   "lontanoRetro": 132,
+   "lontanoSx": 84,
+   "retro": 636,
    "vicino": 9612
   }
  },
@@ -191,7 +269,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 176,
+   "lontanoDx": 84,
+   "lontanoRetro": 132,
+   "lontanoSx": 84,
+   "retro": 636,
    "vicino": 3384
   }
  },
@@ -205,7 +289,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 176,
+   "lontanoDx": 84,
+   "lontanoRetro": 132,
+   "lontanoSx": 84,
+   "retro": 636,
    "vicino": 9516
   }
  },
@@ -219,7 +309,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 212,
+   "lontanoDx": 108,
+   "lontanoRetro": 168,
+   "lontanoSx": 108,
+   "retro": 816,
    "vicino": 12456
   }
  },
@@ -233,7 +329,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 212,
+   "lontanoDx": 108,
+   "lontanoRetro": 168,
+   "lontanoSx": 108,
+   "retro": 816,
    "vicino": 3696
   }
  },
@@ -247,7 +349,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 312,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 212,
+   "lontanoDx": 108,
+   "lontanoRetro": 168,
+   "lontanoSx": 108,
+   "retro": 816,
    "vicino": 12360
   }
  },
@@ -261,7 +369,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 140,
+   "lontanoDx": 60,
+   "lontanoRetro": 96,
+   "lontanoSx": 60,
+   "retro": 456,
    "vicino": 7284
   }
  },
@@ -275,7 +389,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 140,
+   "lontanoDx": 60,
+   "lontanoRetro": 96,
+   "lontanoSx": 60,
+   "retro": 456,
    "vicino": 3420
   }
  },
@@ -289,7 +409,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 300,
+   "fiancoSx": 300,
    "lontano": 140,
+   "lontanoDx": 60,
+   "lontanoRetro": 96,
+   "lontanoSx": 60,
+   "retro": 456,
    "vicino": 7092
   }
  },
@@ -303,7 +429,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 176,
+   "lontanoDx": 84,
+   "lontanoRetro": 132,
+   "lontanoSx": 84,
+   "retro": 636,
    "vicino": 9648
   }
  },
@@ -317,7 +449,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 176,
+   "lontanoDx": 84,
+   "lontanoRetro": 132,
+   "lontanoSx": 84,
+   "retro": 636,
    "vicino": 3828
   }
  },
@@ -331,7 +469,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 420,
+   "fiancoSx": 420,
    "lontano": 176,
+   "lontanoDx": 84,
+   "lontanoRetro": 132,
+   "lontanoSx": 84,
+   "retro": 636,
    "vicino": 9840
   }
  },
@@ -345,7 +489,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 212,
+   "lontanoDx": 108,
+   "lontanoRetro": 168,
+   "lontanoSx": 108,
+   "retro": 816,
    "vicino": 12204
   }
  },
@@ -359,7 +509,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 212,
+   "lontanoDx": 108,
+   "lontanoRetro": 168,
+   "lontanoSx": 108,
+   "retro": 816,
    "vicino": 4044
   }
  },
@@ -373,7 +529,13 @@
   "triangoli": {
    "aperta": 132,
    "chiusa": 336,
+   "fiancoDx": 540,
+   "fiancoSx": 540,
    "lontano": 212,
+   "lontanoDx": 108,
+   "lontanoRetro": 168,
+   "lontanoSx": 108,
+   "retro": 816,
    "vicino": 12204
   }
  }

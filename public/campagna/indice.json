@@ -1,0 +1,45 @@
+{
+ "canne": {
+  "tipo": "canne",
+  "triangoli": 24
+ },
+ "canne-verdi": {
+  "tipo": "canne-verdi",
+  "triangoli": 264
+ },
+ "cavolo": {
+  "tipo": "cavolo",
+  "triangoli": 100
+ },
+ "graticcio": {
+  "lungo": 2.0,
+  "tipo": "graticcio",
+  "triangoli": 256
+ },
+ "siepe-0": {
+  "lunga": 2.0,
+  "tipo": "siepe",
+  "triangoli": 600
+ },
+ "siepe-1": {
+  "lunga": 2.0,
+  "tipo": "siepe",
+  "triangoli": 600
+ },
+ "vite-0": {
+  "tipo": "vite",
+  "triangoli": 78
+ },
+ "vite-1": {
+  "tipo": "vite",
+  "triangoli": 78
+ },
+ "vite-foglie-0": {
+  "tipo": "vite-foglie",
+  "triangoli": 198
+ },
+ "vite-foglie-1": {
+  "tipo": "vite-foglie",
+  "triangoli": 198
+ }
+}

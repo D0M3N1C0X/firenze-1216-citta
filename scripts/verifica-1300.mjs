@@ -15,6 +15,8 @@
    Esce con codice 1 se qualcosa non va.
    ===================================================================== */
 
+import { lottizzaCampi, stagioneDi, TIPI_CAMPO } from '../src/mondo/campagna.js';
+import { GIORNATE } from '../src/dati/giornate.js';
 import { readFileSync } from 'node:fs';
 import { FIUME } from '../src/dati/osm.js';
 import { STRADE, IMPRONTE } from '../src/dati/osm-1300.js';
@@ -134,6 +136,26 @@ for (const l of LUOGHI_1300) {
 
 // le torri mozzate
 if (Math.abs(TETTO_TORRI - 50 * BRACCIO) > 1e-9 || TETTO_TORRI > 30) errori.push(`torri: il tetto è ${TETTO_TORRI} m invece di 50 braccia`);
+
+// la campagna coltivata lungo le strade fuori porta (mondo/campagna.js): i campi ci sono, stanno solo su
+// terreno libero fuori dalla cerchia, non cambiano la pianta del suolo, e ogni giornata ha la sua stagione
+{
+  const prima = griglia.c.slice();
+  const campagna = lottizzaCampi({ strade: strade.filter(s => s.fuoriVecchia), griglia, dentroNuova: dentroLimite });
+  if (campagna.campi.length < 100) errori.push(`campagna: solo ${campagna.campi.length} campi lungo le strade fuori porta`);
+  if (griglia.c.some((v, k) => v !== prima[k])) errori.push('campagna: la lottizzazione dei campi ha cambiato la pianta del suolo');
+  let fuoriPosto = 0;
+  for (const c of campagna.campi) {
+    if (!TIPI_CAMPO.includes(c.tipo) || !c.tipo) errori.push(`campagna: il campo ${c.n} ha un tipo sconosciuto «${c.tipo}»`);
+    for (let a = 1; a < c.w; a += 3) for (let b = c.b0 + 1; b < c.b1; b += 3) {
+      const x = c.ox + c.ux * a + c.vx * b, z = c.oz + c.uz * a + c.vz * b;
+      if (campagna.di(x, z) === c && (griglia.get(x, z) !== 0 || dentroTracciato(x, z))) fuoriPosto++;
+    }
+  }
+  if (fuoriPosto) errori.push(`campagna: ${fuoriPosto} punti dei campi stanno su una strada, su una casa o dentro la cerchia`);
+  for (const g of Object.values(GIORNATE)) if (!['inverno', 'primavera', 'maggio', 'estate'].includes(stagioneDi(g.doy))) errori.push(`campagna: la giornata «${g.id}» non ha una stagione`);
+  console.log(`campagna: ${campagna.campi.length} campi lungo le strade fuori porta (${TIPI_CAMPO.filter(Boolean).map(t => campagna.campi.filter(c => c.tipo === t).length + ' ' + t).join(', ')})`);
+}
 
 if (errori.length) {
   console.error(errori.map(e => '✗ ' + e).join('\n'));

@@ -5,6 +5,7 @@ import { MAT, MAT_CERTEZZA } from './materiali.js';
 import { quota } from './terreno.js';
 import { rng } from './rumore.js';
 import { NEL_1300 } from './epoca.js';
+import { EDIFICIO, MONUMENTO } from './griglia.js';
 
 /* =====================================================================
    LE CASE DI BLENDER
@@ -18,14 +19,22 @@ import { NEL_1300 } from './epoca.js';
    Il dettaglio è solo vicino (decisione del 9 novembre 2026: «dettaglio
    vicino, semplice lontano»): entro VICINO_CASE metri la casa con le
    finestre, le imposte, lo sporto e la gronda; più lontano la stessa casa
-   semplificata. Le botteghe sono chiuse nei giorni di festa e aperte nei
+   semplificata. Le case che da un fianco o dal retro non hanno un vicino (nei
+   borghi quasi tutte, in città quelle d'angolo) prendono lì le finestre e,
+   sul retro, una porta: in città i muri sono in comune e restano ciechi.
+   Le botteghe sono chiuse nei giorni di festa e aperte nei
    giorni feriali, come nelle case generate. Con «Che cosa è certo» le case
    prendono il colore dell'ipotesi; con «Oggi» si nascondono. Se i modelli
    non si caricano restano le case generate.
    ===================================================================== */
 
 const VICINO_CASE = 70;
-let MODELLI = null;          // { nome: { info, parti: { vicino: [{ mat, geo }], chiusa, aperta, lontano } } }
+let MODELLI = null;          // { nome: { info, parti: { vicino: [{ mat, geo }], chiusa, aperta, lontano, … } } }
+// le parti che si vedono da vicino e quelle da lontano; quelle dei lati, solo se il lato è libero
+const DA_VICINO = ['vicino', 'chiusa', 'aperta', 'fiancoSx', 'fiancoDx', 'retro'];
+const DA_LONTANO = ['lontano', 'lontanoSx', 'lontanoDx', 'lontanoRetro'];
+const LATO = { fiancoSx: 'sx', fiancoDx: 'dx', retro: 'retro', lontanoSx: 'sx', lontanoDx: 'dx', lontanoRetro: 'retro' };
+const ha = (c, parte) => !LATO[parte] || c.liberi[LATO[parte]];
 
 export async function caricaCase() {
   const indice = await fetch('./case/indice.json').then(r => r.json());
@@ -34,10 +43,10 @@ export async function caricaCase() {
   await Promise.all(Object.entries(indice).map(async ([nome, info]) => {
     const g = await loader.loadAsync(`./case/${nome}.glb`);
     g.scene.updateMatrixWorld(true);
-    const parti = { vicino: [], chiusa: [], aperta: [], lontano: [] };
+    const parti = Object.fromEntries([...DA_VICINO, ...DA_LONTANO].map(n => [n, []]));
     g.scene.traverse(o => {
       if (!o.isMesh) return;
-      // il nodo si chiama come la parte (vicino, chiusa, aperta, lontano); le sue primitive, una per materiale
+      // il nodo si chiama come la parte (vicino, chiusa, aperta, lontano, fiancoSx…); le sue primitive, una per materiale
       let n = o; while (n && !parti[n.name]) n = n.parent;
       if (!n) return;
       const geo = o.geometry.clone(); geo.applyMatrix4(o.matrixWorld);
@@ -72,6 +81,19 @@ function tipoDi(L) {
   return { nome: `casa-${Math.round(W * 10)}-${piani}-${finitura}`, W, tinta };
 }
 
+/** Da quali lati il lotto non ha un altro edificio accanto (sulla pianta del suolo, 1,5 m fuori dal muro). */
+function latiLiberi(g, L) {
+  if (!g) return { sx: false, dx: false, retro: false };
+  const tx = L.nz, tz = -L.nx;
+  const libero = punti => punti.filter(([a, b]) => (v => v !== EDIFICIO && v !== MONUMENTO)(g.get(L.px + tx * a + L.nx * b, L.pz + tz * a + L.nz * b))).length >= punti.length * 0.75;
+  const lungo = (n, da, a) => Array.from({ length: n }, (_, k) => da + (a - da) * (k + 0.5) / n);
+  return {
+    sx: libero(lungo(5, 1, L.D - 1).map(b => [-1.5, b])),
+    dx: libero(lungo(5, 1, L.D - 1).map(b => [L.W + 1.5, b])),
+    retro: libero(lungo(4, 0.5, L.W - 0.5).map(a => [a, L.D + 1.5]))
+  };
+}
+
 export class CaseBlender {
   constructor(scene, lotti, opz = {}) {
     this.scene = scene; this.festa = opz.festa ?? true; this.t = 0; this.ultimo = null; this.visibile = true;
@@ -87,7 +109,7 @@ export class CaseBlender {
       const D = MODELLI[nome].info.D;
       const cx = L.px + L.nz * L.W / 2 + L.nx * L.D / 2, cz = L.pz - L.nx * L.W / 2 + L.nz * L.D / 2;
       const m = matriceLotto(L.px, quota(cx, cz), L.pz, L.nx, L.nz).multiply(new Matrix4().makeScale(L.W / W, 1, L.D / D));
-      const c = { nome, m, x: cx, z: cz, tinta: new Color(...tinta), i: (perTipo[nome] ||= []).length, vicina: false };
+      const c = { nome, m, x: cx, z: cz, tinta: new Color(...tinta), i: (perTipo[nome] ||= []).length, vicina: false, liberi: latiLiberi(opz.griglia, L) };
       perTipo[nome].push(c); this.case.push(c);
     }
     // per ogni tipo e parte, un InstancedMesh per materiale
@@ -96,13 +118,17 @@ export class CaseBlender {
     for (const [nome, lista] of Object.entries(perTipo)) {
       const parti = {};
       for (const [parte, geos] of Object.entries(MODELLI[nome].parti)) {
+        const lontano = DA_LONTANO.includes(parte);
         parti[parte] = geos.map(({ mat, geo }) => {
           const im = new InstancedMesh(geo, this.materiale(mat), lista.length);
-          im.userData.mat = mat; im.castShadow = true; im.receiveShadow = true;
-          im.count = parte === 'lontano' ? lista.length : 0;
-          if (parte !== 'lontano') im.frustumCulled = false;
-          lista.forEach((c, k) => { if (parte === 'lontano') im.setMatrixAt(k, c.m); im.setColorAt(k, c.tinta); });
+          im.userData.mat = mat; im.userData.lontano = lontano; im.castShadow = !LATO[parte]; im.receiveShadow = true;
+          im.count = lontano ? lista.length : 0;
+          if (!lontano) im.frustumCulled = false;
+          lista.forEach((c, k) => { if (lontano) im.setMatrixAt(k, ha(c, parte) ? c.m : zero); im.setColorAt(k, c.tinta); });
           im.computeBoundingSphere();
+          // una parte dei lati che nessuna casa di questo tipo usa non si disegna mai
+          im.userData.serve = lista.some(c => ha(c, parte));
+          im.visible = lontano && im.userData.serve;
           scene.add(im); this.mesh.push(im);
           return im;
         });
@@ -128,14 +154,14 @@ export class CaseBlender {
   certezza(on) {
     this.certo = on;
     for (const im of this.mesh) im.material = on ? MAT_CERTEZZA.ipotesi : this.materiale(im.userData.mat);
-    for (const { parti, lista } of Object.values(this.tipi)) for (const im of parti.lontano) {
+    for (const { parti, lista } of Object.values(this.tipi)) for (const p of DA_LONTANO) for (const im of parti[p]) {
       lista.forEach(c => im.setColorAt(c.i, on ? BIANCO : c.tinta));
       im.instanceColor.needsUpdate = true;
     }
     this.bottega = null; this.ultimo = null;      // le case vicine si rifanno al prossimo aggiornamento
   }
 
-  visibili(on) { this.visibile = on; for (const im of this.mesh) im.visible = on; }
+  visibili(on) { this.visibile = on; for (const im of this.mesh) im.visible = on && im.userData.serve && (im.userData.lontano || im.count > 0); }
 
   /** Vicino il dettaglio, lontano il volume: al più due volte al secondo, e solo se ci si è mossi. */
   aggiorna(cam) {
@@ -152,19 +178,20 @@ export class CaseBlender {
         const vicina = Math.hypot(c.x - cam.x, c.z - cam.z) < VICINO_CASE;
         if (vicina === c.vicina) continue;
         c.vicina = vicina; cambiato = true;
-        for (const im of parti.lontano) im.setMatrixAt(c.i, vicina ? this.zero : c.m);
+        for (const p of DA_LONTANO) if (ha(c, p)) for (const im of parti[p]) im.setMatrixAt(c.i, vicina ? this.zero : c.m);
       }
       if (!cambiato) continue;
-      for (const p of ['vicino', 'chiusa', 'aperta']) for (const im of parti[p]) im.count = 0;
+      for (const p of DA_VICINO) for (const im of parti[p]) im.count = 0;
       for (const c of lista) {
         if (!c.vicina) continue;
-        for (const p of ['vicino', bottega]) for (const im of parti[p]) {
+        for (const p of DA_VICINO) if (ha(c, p) && (p === bottega || (p !== 'chiusa' && p !== 'aperta'))) for (const im of parti[p]) {
           im.setMatrixAt(im.count, c.m);
           im.setColorAt(im.count, this.certo ? BIANCO : c.tinta);
           im.count++;
         }
       }
       for (const p of Object.keys(parti)) for (const im of parti[p]) {
+        if (!im.userData.lontano) im.visible = im.count > 0;
         im.instanceMatrix.needsUpdate = true;
         if (im.instanceColor) im.instanceColor.needsUpdate = true;
       }

@@ -20,6 +20,9 @@
 #   «aperta»   la bottega aperta: lo sportello alzato a tettoia, il banco
 #              sulla strada, la merce (giorni feriali);
 #   «lontano»  la stessa casa semplificata, per quando si guarda da lontano.
+#   «fiancoSx», «fiancoDx», «retro» (e «lontanoSx», «lontanoDx»,
+#              «lontanoRetro»): le finestre dei lati e la porta sul retro,
+#              per le case che da quel lato non hanno un vicino.
 #
 # Le misure e le forme sono quelle di mondo/edifici.js (casa), che resta per
 # le torri e le case sul fiume. Livello: ipotesi (edifici.js, in testa).
@@ -185,7 +188,49 @@ def casa(W, piani, fin, seme):
         LO.solido([(x, yy, zz + dz) for x in (-0.25, W + 0.25) for (yy, zz) in ((ya, Hm), (yb, Hm + sal)) for dz in (0, 0.12)], 'coppi', 0)
     LO.solido([(x, y, z) for x in (0, W) for (y, z) in ((zf, Hm), (-D, Hm), (ym, Hm + sal - 0.05))], sopra if fin != 'pietra' else 'conci', 0)
 
-    return [p.crea() for p in (V, CH, AP, LO)], Hm
+    # --- i lati liberi: finestre sui fianchi e sul retro, e una porta sul retro, per le case che da
+    # quel lato non hanno un vicino (mondo/case-blender.js le mostra solo lì: in città i muri sono in
+    # comune e restano ciechi). Non sono fori: un fondo scuro, il davanzale, l'architrave e le
+    # imposte, appoggiati al muro.
+    FS, FD, RE = K.Pezzo('fiancoSx'), K.Pezzo('fiancoDx'), K.Pezzo('retro')
+    LS, LD, LR = K.Pezzo('lontanoSx'), K.Pezzo('lontanoDx'), K.Pezzo('lontanoRetro')
+    cornice = 'legnoScuro' if fin == 'legno' else 'conci'
+
+    def sul_lato(P, asse, q, d0, d1, u0, u1, z0, z1, m):
+        """Un blocco appoggiato a un lato: asse 'x' = un fianco alla quota x=q (in fuori verso −x
+        se q=0, verso +x se q=W), asse 'y' = il retro a y=q (in fuori verso −y); d = quanto sporge,
+        u = lungo il muro."""
+        s = 1 if (asse == 'x' and q > 0) else -1
+        lo, hi = sorted((q + s * d0, q + s * d1))
+        if asse == 'x': P.blocco(lo, hi, z0, z1, u0, u1, m, smusso=0)
+        else: P.blocco(u0, u1, z0, z1, lo, hi, m, smusso=0)
+
+    def finestra_lato(P, LP, asse, q, c, z0, w=0.7, h=1.1):
+        sul_lato(P, asse, q, 0, 0.02, c - w / 2, c + w / 2, z0, z0 + h, 'scuro')
+        sul_lato(P, asse, q, 0, 0.1, c - w / 2 - 0.1, c + w / 2 + 0.1, z0 - 0.1, z0, cornice)
+        sul_lato(P, asse, q, 0, 0.06, c - w / 2 - 0.12, c + w / 2 + 0.12, z0 + h, z0 + h + 0.14, cornice)
+        if R.random() < 0.5:        # imposte chiuse
+            sul_lato(P, asse, q, 0.02, 0.06, c - w / 2, c - 0.01, z0, z0 + h, 'legnoScuro')
+            sul_lato(P, asse, q, 0.02, 0.06, c + 0.01, c + w / 2, z0, z0 + h, 'legnoScuro')
+        else:                       # aperte contro il muro
+            sul_lato(P, asse, q, 0.02, 0.06, c - w - 0.03, c - w / 2 - 0.03, z0, z0 + h, 'legnoScuro')
+            sul_lato(P, asse, q, 0.02, 0.06, c + w / 2 + 0.03, c + w + 0.03, z0, z0 + h, 'legnoScuro')
+        sul_lato(LP, asse, q, 0, 0.02, c - w / 2, c + w / 2, z0, z0 + h, 'scuro')
+
+    for P, LP, q in ((FS, LS, 0), (FD, LD, W)):
+        for p in range(piani):
+            for y in (-D * 0.3, -D * 0.68): finestra_lato(P, LP, 'x', q, y, H0 + p * HP + 0.95)
+        finestra_lato(P, LP, 'x', q, -D * 0.5, 2.0, w=0.45, h=0.8)             # una finestrella al piano terra
+    for p in range(piani):
+        for x in xs: finestra_lato(RE, LR, 'y', -D, x, H0 + p * HP + 0.95)
+    xp = W * 0.3                                                                 # la porta sul retro, verso l'orto
+    sul_lato(RE, 'y', -D, 0, 0.02, xp - 0.5, xp + 0.5, 0, 2.05, 'scuro')
+    sul_lato(RE, 'y', -D, 0.02, 0.07, xp - 0.47, xp + 0.47, 0, 2.0, 'legno')
+    sul_lato(RE, 'y', -D, 0, 0.1, xp - 0.65, xp + 0.65, 2.05, 2.25, 'conci')
+    sul_lato(LR, 'y', -D, 0, 0.02, xp - 0.5, xp + 0.5, 0, 2.05, 'scuro')
+    finestra_lato(RE, LR, 'y', -D, W * 0.72, 1.6, w=0.55, h=0.8)
+
+    return [p.crea() for p in (V, CH, AP, LO, FS, FD, RE, LS, LD, LR)], Hm
 
 
 def esporta(oggetti, nome):

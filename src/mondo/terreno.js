@@ -114,10 +114,10 @@ function materialeTerreno() {
     sh.uniforms.rE = { value: MAT.erba.map.repeat.x };
     sh.uniforms.rG = { value: MAT.ghiaia.map.repeat.x };
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nattribute vec3 peso;\nattribute vec2 xz;\nvarying vec3 vPeso;\nvarying vec2 vXZ;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPeso = peso;\nvXZ = xz;');
+      .replace('#include <common>', '#include <common>\nattribute vec3 peso;\nattribute vec3 tinta;\nattribute vec2 xz;\nvarying vec3 vPeso;\nvarying vec3 vTinta;\nvarying vec2 vXZ;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPeso = peso;\nvTinta = tinta;\nvXZ = xz;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform sampler2D tTerra, tErba, tGhiaia, tRuvTerra;\nuniform float rT, rE, rG;\nuniform vec3 cTerra, cGhiaia;\nvarying vec3 vPeso;\nvarying vec2 vXZ;')
+      .replace('#include <common>', '#include <common>\nuniform sampler2D tTerra, tErba, tGhiaia, tRuvTerra;\nuniform float rT, rE, rG;\nuniform vec3 cTerra, cGhiaia;\nvarying vec3 vPeso;\nvarying vec3 vTinta;\nvarying vec2 vXZ;')
       .replace('#include <map_fragment>', `
         // ogni texture letta a due scale e mescolata: spezza la ripetizione
         vec3 cT = mix(texture2D(tTerra, vXZ * rT).rgb, texture2D(tTerra, vXZ * rT * 0.23 + 0.37).rgb, 0.4);
@@ -125,7 +125,8 @@ function materialeTerreno() {
         vec3 cG = mix(texture2D(tGhiaia, vXZ * rG).rgb, texture2D(tGhiaia, vXZ * rG * 0.31 + 0.13).rgb, 0.35);
         cT *= cTerra; cG *= cGhiaia;
         vec3 w = vPeso / max(0.001, vPeso.x + vPeso.y + vPeso.z);
-        diffuseColor.rgb *= cT * w.x + cE * w.y + cG * w.z;`)
+        // la tinta dei campi (mondo/campagna.js): 1 dove non ce ne sono
+        diffuseColor.rgb *= (cT * w.x + cE * w.y + cG * w.z) * vTinta;`)
       .replace('#include <roughnessmap_fragment>', `
         float roughnessFactor = roughness;
         float ruvT = texture2D(tRuvTerra, vXZ * rT).g;
@@ -178,6 +179,7 @@ function costruisci(x0, z0, lato, seg, abbassa, conPeso, q = quota, fiume = true
     } else { peso[k * 3 + 1] = 1; }
   }
   g.setAttribute('peso', new BufferAttribute(peso, 3));
+  g.setAttribute('tinta', new BufferAttribute(new Float32Array(n * 3).fill(1), 3));
   g.setAttribute('xz', new BufferAttribute(xz, 2));
   g.computeVertexNormals();
   return g;
