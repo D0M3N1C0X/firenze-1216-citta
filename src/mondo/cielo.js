@@ -24,6 +24,23 @@ import { lerp, smooth } from './rumore.js';
    dispositivi lenti.
    ===================================================================== */
 
+/*
+ * L'ombra delle nuvole (15 novembre 2026): zone di luce e d'ombra che scorrono piano su tetti, muri
+ * e campi. La calcolano il terreno e i materiali invecchiati (materiali.js) con una versione più
+ * semplice della forma delle nuvole; non segue la direzione del sole. Con la qualità media è spenta.
+ */
+export const NUVOLE_U = { tempo: { value: 0 }, copertura: { value: 0.35 }, forza: { value: 0.3 } };
+export const GLSL_OMBRA_NUVOLE = `
+uniform float nTempo, nCopertura, nForza;
+float nH(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float nN(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(nH(i), nH(i + vec2(1, 0)), f.x), mix(nH(i + vec2(0, 1)), nH(i + vec2(1, 1)), f.x), f.y); }
+float ombraNuvole(vec2 xz) {
+  vec2 q = xz / 2600.0 + vec2(nTempo * 0.004, nTempo * 0.0015);
+  float d = nN(q) * 0.62 + nN(q * 2.03 + 17.0) * 0.38, s = 0.74 - nCopertura * 0.55;
+  return 1.0 - nForza * smoothstep(s - 0.08, s + 0.12, d);
+}`;
+export function uniformiNuvole(sh) { sh.uniforms.nTempo = NUVOLE_U.tempo; sh.uniforms.nCopertura = NUVOLE_U.copertura; sh.uniforms.nForza = NUVOLE_U.forza; }
+
 export class Cielo {
   constructor(renderer, scene) {
     this.renderer = renderer;
@@ -56,6 +73,7 @@ export class Cielo {
     c.left = -120; c.right = 120; c.top = 120; c.bottom = -120; c.near = 1; c.far = 900;
     this.sole.shadow.bias = -0.0002;
     this.sole.shadow.normalBias = 0.035;
+    this.sole.shadow.radius = 3;          // bordi delle ombre più morbidi (con PCFShadowMap, main.js)
     scene.add(this.sole, this.sole.target);
 
     // un filo di luce dal basso: il riflesso del suolo e dei muri chiari
@@ -64,7 +82,7 @@ export class Cielo {
 
     this.nuvole = new Mesh(new PlaneGeometry(46000, 46000), new ShaderMaterial({
       transparent: true, depthWrite: false, side: DoubleSide, fog: false,
-      uniforms: { tempo: { value: 0 }, copertura: { value: 0.35 }, luce: { value: new Color(1, 1, 1) }, ombra: { value: new Color(0.55, 0.6, 0.68) }, centro: { value: new Vector3() } },
+      uniforms: { tempo: NUVOLE_U.tempo, copertura: NUVOLE_U.copertura, luce: { value: new Color(1, 1, 1) }, ombra: { value: new Color(0.55, 0.6, 0.68) }, centro: { value: new Vector3() } },
       vertexShader: `varying vec3 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
       fragmentShader: `
         uniform float tempo, copertura; uniform vec3 luce, ombra, centro; varying vec3 vP;
@@ -116,7 +134,9 @@ export class Cielo {
 
     // colore e forza del sole: più caldo e debole quando è basso
     const alto = smooth(0, 0.6, el);
-    const col = new Color().setRGB(1, lerp(0.62, 0.95, alto), lerp(0.38, 0.88, alto));
+    // la mattina la luce è più fredda e pallida, la sera più dorata (15 novembre 2026: più differenza tra le ore, ma credibile)
+    const sera = ora > 12;
+    const col = sera ? new Color().setRGB(1, lerp(0.56, 0.95, alto), lerp(0.28, 0.88, alto)) : new Color().setRGB(1, lerp(0.74, 0.95, alto), lerp(0.58, 0.88, alto));
     this.sole.color.copy(col);
     this.sole.intensity = lerp(0.5, this.forzaSole, smooth(-0.02, 0.35, el));
     // le nuvole prendono la luce del sole: bianche di giorno, calde al tramonto, grigio-azzurre in ombra
@@ -127,15 +147,21 @@ export class Cielo {
 
     // la foschia si scalda all'alba e si dirada salendo
     const nebbia = this.scene.fog;
-    nebbia.color.setRGB(lerp(0.80, 0.78, alto), lerp(0.74, 0.79, alto), lerp(0.66, 0.80, alto));
-    nebbia.density = lerp(0.0021, 0.0009, alto) * this.foschia;
+    // la foschia: grigio-azzurra e fitta la mattina, calda e più rada la sera, quasi niente a mezzogiorno
+    if (sera) nebbia.color.setRGB(lerp(0.86, 0.78, alto), lerp(0.72, 0.79, alto), lerp(0.56, 0.80, alto));
+    else nebbia.color.setRGB(lerp(0.76, 0.78, alto), lerp(0.77, 0.79, alto), lerp(0.79, 0.80, alto));
+    nebbia.density = lerp(sera ? 0.0017 : 0.0025, 0.0008, alto) * this.foschia;
 
     if (this.envRT) this.envRT.dispose();
     this.envRT = this.pmrem.fromScene(this.envScene, 0.02);
     this.scene.environment = this.envRT.texture;
-    this.scene.environmentIntensity = lerp(0.6, 1, alto) * this.forzaCielo;
+    // con il sole basso il cielo rischiara meno: le ombre lunghe restano scure; a mezzogiorno la luce è più piatta
+    this.scene.environmentIntensity = lerp(0.5, 1.15, alto) * this.forzaCielo;
     this.rimbalzo.intensity = lerp(0.12, 0.3, alto);
   }
+
+  /** Nuvole e loro ombra: solo con la qualità alta. */
+  nuvoleAccese(on) { this.nuvole.visible = on; NUVOLE_U.forza.value = on ? 0.3 : 0; }
 
   /** Le nuvole si muovono piano. */
   passa(dt) { this.nuvole.material.uniforms.tempo.value += dt; }

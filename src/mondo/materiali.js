@@ -3,6 +3,7 @@ import {
   NoColorSpace, RGBAFormat, RepeatWrapping, SRGBColorSpace, TextureLoader, UnsignedByteType
 } from 'three';
 import { GENERATORI } from './texture-gen.js';
+import { GLSL_OMBRA_NUVOLE, uniformiNuvole } from './cielo.js';
 
 /* =====================================================================
    MATERIALI — fotografie CC0 dove le abbiamo, texture generate per il resto.
@@ -114,6 +115,7 @@ export function invecchia(m, tipo = '', seconda = null) {
   m.userData.seconda = seconda && ZONA[tipo] ? seconda : null;
   const due = m.userData.seconda;
   m.onBeforeCompile = sh => {
+    uniformiNuvole(sh);
     if (due) { sh.uniforms.tSeconda = { value: due.map }; sh.uniforms.scalaSeconda = { value: due.scala }; sh.uniforms.tintaSeconda = { value: due.tinta }; }
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec3 vPosMondo;')
@@ -130,6 +132,7 @@ vPosMondo = (modelMatrix * pMondo).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 varying vec3 vPosMondo;
+${GLSL_OMBRA_NUVOLE}
 ${due ? 'uniform sampler2D tSeconda; uniform float scalaSeconda; uniform vec3 tintaSeconda;' : ''}
 float hashT(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float rumoreT(vec2 p) {
@@ -142,7 +145,8 @@ float rumoreT(vec2 p) {
         #endif` : ''}
         vec2 qT = vPosMondo.xz * 0.21 + vec2(vPosMondo.y * 0.13, -vPosMondo.y * 0.09);
         float nT = rumoreT(qT) * 0.6 + rumoreT(qT * 2.7 + 5.3) * 0.4;
-        diffuseColor.rgb *= 0.8 + 0.34 * nT;${INVECCHIA[tipo] || ''}`);
+        diffuseColor.rgb *= 0.8 + 0.34 * nT;${INVECCHIA[tipo] || ''}
+        diffuseColor.rgb *= ombraNuvole(vPosMondo.xz);`);
   };
   m.customProgramCacheKey = () => 'invecchia-' + tipo + (due ? '-2' : '');
 }

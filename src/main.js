@@ -1,5 +1,5 @@
 import {
-  AgXToneMapping, Clock, PCFSoftShadowMap, PerspectiveCamera, SRGBColorSpace, Scene, WebGLRenderer
+  AgXToneMapping, Clock, PCFShadowMap, PerspectiveCamera, SRGBColorSpace, Scene, WebGLRenderer
 } from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -21,7 +21,7 @@ import { figureNegliInterni } from './dati/interni.js';
 import { COPIONE } from './dati/copione.js';
 import { creaMateriali, impostaAnisotropia } from './mondo/materiali.js';
 import { Cielo } from './mondo/cielo.js';
-import { creaAcqua, creaTerreno, quota, quotaPianura } from './mondo/terreno.js';
+import { creaAcqua, creaTerreno, quota, quotaPianura, impostaStrade } from './mondo/terreno.js';
 import { costruisciCampi } from './mondo/campi.js';
 import { MONDO, mondoDi } from './mondo/dove.js';
 import { preparaCampo } from './mondo/fiume.js';
@@ -35,6 +35,7 @@ import { costruisciBorghi } from './mondo/fondale.js';
 import { costruisciMura, costruisciPalizzata, ipotesiLatoSud } from './mondo/mura.js';
 import { caricaAlberi, creaVegetazione } from './mondo/vegetazione.js';
 import { CaseBlender, caricaCase } from './mondo/case-blender.js';
+import { mascheraStrade } from './mondo/strade-suolo.js';
 import { Campagna, caricaCampagna, lottizzaCampi, segnaRecinti, stagioneDi } from './mondo/campagna.js';
 import { costruisciMestieri, figureDeiMestieri, grigliaDeiMestieri, suoniDeiMestieri } from './mondo/mestieri.js';
 import { Abitanti } from './mondo/abitanti.js';
@@ -99,7 +100,7 @@ renderer.outputColorSpace = SRGBColorSpace;
 renderer.toneMapping = AgXToneMapping;
 renderer.toneMappingExposure = 1.0;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = PCFSoftShadowMap;
+renderer.shadowMap.type = PCFShadowMap;            // con il raggio dell'ombra (cielo.js): bordi più morbidi
 document.getElementById('app').appendChild(renderer.domElement);
 
 const scene = new Scene();
@@ -258,6 +259,9 @@ async function costruisci() {
     if (s.area) griglia.poligono(s.punti, PIAZZA, false);
     else griglia.spezzata(s.punti, s.larghezza, STRADA, false);
   }
+
+  // il suolo delle strade: terra con i solchi dei carri; nel 1300 il lastrico (mondo/strade-suolo.js)
+  impostaStrade(mascheraStrade(strade, { lato: qualita === 'alta' ? 4096 : 2048, lastre: s => NEL_1300 && !s.porta && (!s.fuoriVecchia || (s.larghezza || 0) >= 5 && s.livello !== 'ipotesi') }));
 
   await passo('Il ponte, le chiese, le torri…');
   const cantiere = new Cantiere();
@@ -565,7 +569,7 @@ function cambiaQualita() {
   qualita = qualita === 'alta' ? 'media' : 'alta';
   renderer.setPixelRatio(qualita === 'alta' ? Math.min(devicePixelRatio, 2) : 1);
   mondo.cielo.dimensioneOmbre(qualita === 'alta' ? 4096 : 2048, qualita === 'alta' ? 120 : 80);
-  mondo.cielo.nuvole.visible = qualita === 'alta';       // le nuvole solo con la qualità alta
+  mondo.cielo.nuvoleAccese(qualita === 'alta');          // le nuvole e la loro ombra solo con la qualità alta
   impostaComposizione();
   return qualita;
 }
