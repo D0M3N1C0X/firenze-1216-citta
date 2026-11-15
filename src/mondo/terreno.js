@@ -113,17 +113,27 @@ function materialeTerreno() {
     sh.uniforms.cGhiaia = { value: MAT.ghiaia.color };
     sh.uniforms.rE = { value: MAT.erba.map.repeat.x };
     sh.uniforms.rG = { value: MAT.ghiaia.map.repeat.x };
+    // il fango (la seconda foto della terra, materiali.js): si mescola alla terra battuta a zone
+    const fango = MAT.terra.userData.seconda;
+    sh.uniforms.tFango = { value: fango ? fango.map : MAT.terra.map };
+    sh.uniforms.rF = { value: fango ? MAT.terra.map.repeat.x * fango.scala : MAT.terra.map.repeat.x };
+    sh.uniforms.cFango = { value: fango ? fango.tinta : MAT.terra.color };
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nattribute vec3 peso;\nattribute vec3 tinta;\nattribute vec2 xz;\nvarying vec3 vPeso;\nvarying vec3 vTinta;\nvarying vec2 vXZ;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPeso = peso;\nvTinta = tinta;\nvXZ = xz;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform sampler2D tTerra, tErba, tGhiaia, tRuvTerra;\nuniform float rT, rE, rG;\nuniform vec3 cTerra, cGhiaia;\nvarying vec3 vPeso;\nvarying vec3 vTinta;\nvarying vec2 vXZ;')
+      .replace('#include <common>', '#include <common>\nuniform sampler2D tTerra, tErba, tGhiaia, tRuvTerra, tFango;\nuniform float rT, rE, rG, rF;\nuniform vec3 cTerra, cGhiaia, cFango;\nfloat hashS(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }\nfloat rumoreS(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(hashS(i), hashS(i + vec2(1, 0)), f.x), mix(hashS(i + vec2(0, 1)), hashS(i + vec2(1, 1)), f.x), f.y); }\nvarying vec3 vPeso;\nvarying vec3 vTinta;\nvarying vec2 vXZ;')
       .replace('#include <map_fragment>', `
         // ogni texture letta a due scale e mescolata: spezza la ripetizione
         vec3 cT = mix(texture2D(tTerra, vXZ * rT).rgb, texture2D(tTerra, vXZ * rT * 0.23 + 0.37).rgb, 0.4);
         vec3 cE = mix(texture2D(tErba, vXZ * rE).rgb, texture2D(tErba, vXZ * rE * 0.27 + 0.61).rgb, 0.4);
         vec3 cG = mix(texture2D(tGhiaia, vXZ * rG).rgb, texture2D(tGhiaia, vXZ * rG * 0.31 + 0.13).rgb, 0.35);
         cT *= cTerra; cG *= cGhiaia;
+        // la terra delle strade non è tutta uguale: zone di fango, e chiazze scure dove ristagna l'acqua
+        vec3 cF = mix(texture2D(tFango, vXZ * rF).rgb, texture2D(tFango, vXZ * rF * 0.29 + 0.43).rgb, 0.35) * cFango;
+        cT = mix(cT, cF, smoothstep(0.35, 0.7, rumoreS(vXZ * 0.13 + 3.0)));
+        float bagnato = rumoreS(vXZ * 0.45 + 41.0) * 0.6 + rumoreS(vXZ * 1.9) * 0.4;
+        cT *= 1.0 - 0.28 * smoothstep(0.55, 0.75, bagnato);
         vec3 w = vPeso / max(0.001, vPeso.x + vPeso.y + vPeso.z);
         // la tinta dei campi (mondo/campagna.js): 1 dove non ce ne sono
         diffuseColor.rgb *= (cT * w.x + cE * w.y + cG * w.z) * vTinta;`)

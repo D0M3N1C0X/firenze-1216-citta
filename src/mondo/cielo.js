@@ -1,5 +1,5 @@
 import {
-  Color, DirectionalLight, FogExp2, HemisphereLight, PMREMGenerator, Scene, Vector3
+  Color, DirectionalLight, DoubleSide, FogExp2, HemisphereLight, Mesh, PMREMGenerator, PlaneGeometry, Scene, ShaderMaterial, Vector3
 } from 'three';
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import { direzioneSole, posizioneSole } from './sole.js';
@@ -16,6 +16,12 @@ import { lerp, smooth } from './rumore.js';
    dato: non sappiamo che tempo facesse il 10 aprile 1216. Le fonti
    dicono solo «la mattina di Pasqua». Il 10 febbraio la foschia è più
    densa (giornate.js): è la mattina d'inverno, non il meteo di quel giorno.
+
+   Le nuvole (15 novembre 2026) sono un velo calcolato, a 1.500 m, che si
+   muove piano e prende il colore del sole: più coperto d'inverno, più
+   sereno a Pasqua e a maggio (giornate.js, «nuvole»). Anche queste sono
+   una scelta d'atmosfera. Si spengono con la qualità media, per i
+   dispositivi lenti.
    ===================================================================== */
 
 export class Cielo {
@@ -56,6 +62,31 @@ export class Cielo {
     this.rimbalzo = new HemisphereLight(0x9fb2c8, 0x6b5a45, 0.25);
     scene.add(this.rimbalzo);
 
+    this.nuvole = new Mesh(new PlaneGeometry(46000, 46000), new ShaderMaterial({
+      transparent: true, depthWrite: false, side: DoubleSide, fog: false,
+      uniforms: { tempo: { value: 0 }, copertura: { value: 0.35 }, luce: { value: new Color(1, 1, 1) }, ombra: { value: new Color(0.55, 0.6, 0.68) }, centro: { value: new Vector3() } },
+      vertexShader: `varying vec3 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+      fragmentShader: `
+        uniform float tempo, copertura; uniform vec3 luce, ombra, centro; varying vec3 vP;
+        float h(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float n(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h(i), h(i + vec2(1, 0)), f.x), mix(h(i + vec2(0, 1)), h(i + vec2(1, 1)), f.x), f.y); }
+        float fbm(vec2 p) { float a = 0.5, s = 0.0; for (int i = 0; i < 5; i++) { s += a * n(p); p = p * 2.03 + 17.0; a *= 0.5; } return s; }
+        void main() {
+          vec2 q = vP.xz / 2600.0 + vec2(tempo * 0.004, tempo * 0.0015);
+          float d = fbm(q) * 0.75 + fbm(q * 2.7 - tempo * 0.002) * 0.25;
+          float soglia = 0.74 - copertura * 0.55;
+          float a = smoothstep(soglia, soglia + 0.16, d);
+          // il cuore della nuvola è più in ombra dei bordi; verso l'orizzonte svanisce nella foschia
+          vec3 c = mix(luce, ombra, smoothstep(soglia + 0.1, soglia + 0.38, d) * 0.75);
+          float lontano = 1.0 - smoothstep(9000.0, 22000.0, length(vP.xz - centro.xz));
+          gl_FragColor = vec4(c, a * 0.9 * lontano);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }`
+    }));
+    this.nuvole.rotation.x = -Math.PI / 2; this.nuvole.position.y = 1500; this.nuvole.frustumCulled = false; this.nuvole.renderOrder = -1;
+    scene.add(this.nuvole);
+
     scene.fog = new FogExp2(0xc8c6bc, 0.0016);
     this.dir = new Vector3();
     this.ora = -1;
@@ -70,6 +101,7 @@ export class Cielo {
   /** Giorno dell'anno (gregoriano) e foschia della giornata; poi ricalcola l'ora corrente. */
   giornata(g) {
     this.doy = g.doy; this.foschia = g.foschia ?? 1;
+    this.nuvole.material.uniforms.copertura.value = g.nuvole ?? 0.35;
     if (this.ora >= 0) this.imposta(this.ora);
   }
 
@@ -87,6 +119,11 @@ export class Cielo {
     const col = new Color().setRGB(1, lerp(0.62, 0.95, alto), lerp(0.38, 0.88, alto));
     this.sole.color.copy(col);
     this.sole.intensity = lerp(0.5, this.forzaSole, smooth(-0.02, 0.35, el));
+    // le nuvole prendono la luce del sole: bianche di giorno, calde al tramonto, grigio-azzurre in ombra
+    const un = this.nuvole.material.uniforms;
+    // (valori sopra 1: il cielo di Preetham è molto luminoso, e una nuvola al sole lo è di più)
+    un.luce.value.setRGB(col.r, col.g, col.b).multiplyScalar(lerp(1.6, 2.6, alto));
+    un.ombra.value.setRGB(lerp(0.5, 0.6, alto), lerp(0.48, 0.64, alto), lerp(0.52, 0.72, alto)).multiplyScalar(lerp(1.0, 1.5, alto));
 
     // la foschia si scalda all'alba e si dirada salendo
     const nebbia = this.scene.fog;
@@ -100,8 +137,12 @@ export class Cielo {
     this.rimbalzo.intensity = lerp(0.12, 0.3, alto);
   }
 
+  /** Le nuvole si muovono piano. */
+  passa(dt) { this.nuvole.material.uniforms.tempo.value += dt; }
+
   /** L'ombra segue chi guarda, agganciata alla griglia dei texel per non tremolare. */
   segui(pos) {
+    this.nuvole.position.x = pos.x; this.nuvole.position.z = pos.z; this.nuvole.material.uniforms.centro.value.copy(pos);
     const cam = this.sole.shadow.camera;
     const passo = (cam.right - cam.left) / this.sole.shadow.mapSize.x;
     const t = this.sole.target.position;

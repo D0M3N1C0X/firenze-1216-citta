@@ -15,7 +15,7 @@
    Esce con codice 1 se qualcosa non va.
    ===================================================================== */
 
-import { lottizzaCampi, stagioneDi, TIPI_CAMPO } from '../src/mondo/campagna.js';
+import { lottizzaCampi, segnaRecinti, stagioneDi, TIPI_CAMPO } from '../src/mondo/campagna.js';
 import { GIORNATE } from '../src/dati/giornate.js';
 import { readFileSync } from 'node:fs';
 import { FIUME } from '../src/dati/osm.js';
@@ -63,11 +63,16 @@ const borghi = lottiBorghi1300(griglia, strade, dentroLimite, LIMITE);
 costruisciMestieri(cant, griglia, lotti, strade);
 grigliaDeiMestieri(griglia, false);
 costruisciPalizzata(cant, griglia, PALIZZATA_1300);
+// la campagna: i campi lungo le strade fuori porta, e le siepi e i graticci che fermano chi cammina (mondo/campagna.js)
+const primaDeiCampi = griglia.c.slice();
+const campagna = lottizzaCampi({ strade: strade.filter(s => s.fuoriVecchia), griglia, dentroNuova: dentroLimite });
+const cambiata = griglia.c.some((v, k) => v !== primaDeiCampi[k]);
+const recinti = segnaRecinti(griglia, campagna);
 console.log(`pianta del 1300 pronta in ${((Date.now() - t0) / 1000).toFixed(1)} s · ${strade.length} strade · ${lotti.length} lotti · ${borghi.length} case nei borghi`);
 for (const a of AVVISI) errori.push('mura del 1300: ' + a);
 
 // dove si arriva a piedi dall'ingresso (main.js: 20, −46), cella per cella
-const passabile = v => v !== EDIFICIO && v !== MONUMENTO && v !== C_FIUME && v < 100;
+const passabile = v => v !== EDIFICIO && v !== MONUMENTO && v !== C_FIUME && v !== 8 && v < 100;   // 8: siepi e graticci
 const raggiunta = new Uint8Array(griglia.n * griglia.n);
 {
   const coda = new Int32Array(griglia.n * griglia.n);
@@ -140,21 +145,20 @@ if (Math.abs(TETTO_TORRI - 50 * BRACCIO) > 1e-9 || TETTO_TORRI > 30) errori.push
 // la campagna coltivata lungo le strade fuori porta (mondo/campagna.js): i campi ci sono, stanno solo su
 // terreno libero fuori dalla cerchia, non cambiano la pianta del suolo, e ogni giornata ha la sua stagione
 {
-  const prima = griglia.c.slice();
-  const campagna = lottizzaCampi({ strade: strade.filter(s => s.fuoriVecchia), griglia, dentroNuova: dentroLimite });
   if (campagna.campi.length < 100) errori.push(`campagna: solo ${campagna.campi.length} campi lungo le strade fuori porta`);
-  if (griglia.c.some((v, k) => v !== prima[k])) errori.push('campagna: la lottizzazione dei campi ha cambiato la pianta del suolo');
+  if (cambiata) errori.push('campagna: la lottizzazione dei campi ha cambiato la pianta del suolo');
+  if (!recinti) errori.push('campagna: nessuna siepe e nessun graticcio sulla pianta del suolo');
   let fuoriPosto = 0;
   for (const c of campagna.campi) {
     if (!TIPI_CAMPO.includes(c.tipo) || !c.tipo) errori.push(`campagna: il campo ${c.n} ha un tipo sconosciuto «${c.tipo}»`);
     for (let a = 1; a < c.w; a += 3) for (let b = c.b0 + 1; b < c.b1; b += 3) {
       const x = c.ox + c.ux * a + c.vx * b, z = c.oz + c.uz * a + c.vz * b;
-      if (campagna.di(x, z) === c && (griglia.get(x, z) !== 0 || dentroTracciato(x, z))) fuoriPosto++;
+      if (campagna.di(x, z) === c && ((griglia.get(x, z) !== 0 && griglia.get(x, z) !== 8) || dentroTracciato(x, z))) fuoriPosto++;
     }
   }
   if (fuoriPosto) errori.push(`campagna: ${fuoriPosto} punti dei campi stanno su una strada, su una casa o dentro la cerchia`);
   for (const g of Object.values(GIORNATE)) if (!['inverno', 'primavera', 'maggio', 'estate'].includes(stagioneDi(g.doy))) errori.push(`campagna: la giornata «${g.id}» non ha una stagione`);
-  console.log(`campagna: ${campagna.campi.length} campi lungo le strade fuori porta (${TIPI_CAMPO.filter(Boolean).map(t => campagna.campi.filter(c => c.tipo === t).length + ' ' + t).join(', ')})`);
+  console.log(`campagna: ${recinti} pezzi di siepe e di graticcio fermano chi cammina · ${campagna.campi.length} campi lungo le strade fuori porta (${TIPI_CAMPO.filter(Boolean).map(t => campagna.campi.filter(c => c.tipo === t).length + ' ' + t).join(', ')})`);
 }
 
 if (errori.length) {

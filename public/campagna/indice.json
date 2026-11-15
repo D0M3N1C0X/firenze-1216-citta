@@ -19,12 +19,12 @@
  "siepe-0": {
   "lunga": 2.0,
   "tipo": "siepe",
-  "triangoli": 600
+  "triangoli": 556
  },
  "siepe-1": {
   "lunga": 2.0,
   "tipo": "siepe",
-  "triangoli": 600
+  "triangoli": 556
  },
  "vite-0": {
   "tipo": "vite",

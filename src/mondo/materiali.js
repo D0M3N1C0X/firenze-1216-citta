@@ -72,12 +72,49 @@ function sfasaCopie(m) {
 }
 
 /**
- * Una variazione di tono su larga scala (qualche metro), calcolata dalla
- * posizione nel mondo: sporco, dilavamento, pietre di cave diverse. Rompe
- * la ripetizione delle foto sulle pareti grandi.
+ * L'invecchiamento, calcolato dalla posizione nel mondo (niente texture in più):
+ * - su tutti: una variazione di tono larga qualche metro (sporco, pietre di cave diverse),
+ *   che rompe la ripetizione delle foto sulle pareti grandi;
+ * - sui muri ('muro'): le colature scure che scendono dai tetti e dai davanzali;
+ * - sull'intonaco ('intonaco'): in più le chiazze dove è caduto e si vede il muro sotto;
+ * - sui coppi ('tetto'): coppi di toni diversi da fila a fila, zone di coppi vecchi e
+ *   anneriti, licheni giallo-grigi.
+ * Scelte d'aspetto, non dati (decisione del 15 novembre 2026: muri e tetti meno uniformi).
+ * Vale anche per le copie per istanze (le case di Blender) e per i pezzi del kit.
  */
-function variaTono(m) {
+const INVECCHIA = {
+  muro: `
+        float colT = rumoreT(vec2((vPosMondo.x + vPosMondo.z) * 1.7, vPosMondo.y * 0.11 + 3.1));
+        diffuseColor.rgb *= 1.0 - 0.22 * smoothstep(0.55, 0.9, colT);`,
+  intonaco: `
+        float colT = rumoreT(vec2((vPosMondo.x + vPosMondo.z) * 1.7, vPosMondo.y * 0.11 + 3.1));
+        diffuseColor.rgb *= 1.0 - 0.2 * smoothstep(0.55, 0.9, colT);
+        float chT = rumoreT(qT * 3.1 + 11.0) * 0.65 + rumoreT(qT * 9.0 + 2.0) * 0.35;
+        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.62, 0.55, 0.48), smoothstep(0.62, 0.7, chT));`,
+  tetto: `
+        float filaT = hashT(floor(vPosMondo.xz * 2.6));
+        diffuseColor.rgb *= 0.86 + 0.24 * filaT;
+        float vecT = rumoreT(vPosMondo.xz * 0.33 + 7.0);
+        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.6, 0.56, 0.54), smoothstep(0.5, 0.8, vecT));
+        float licT = rumoreT(vPosMondo.xz * 2.3 + 19.0) * rumoreT(vPosMondo.xz * 7.1);
+        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.4, 0.39, 0.28) * (0.5 + 0.5 * nT), smoothstep(0.38, 0.6, licT) * 0.4);`,
+  // le strade di terra: zone di fango, e le chiazze scure dove ristagna l'acqua
+  strada: `
+        float bagT = rumoreT(vPosMondo.xz * 0.45 + 41.0) * 0.6 + rumoreT(vPosMondo.xz * 1.9) * 0.4;
+        diffuseColor.rgb *= 1.0 - 0.3 * smoothstep(0.55, 0.75, bagT);`
+};
+// dove si mescola la seconda foto (SECONDE): a zone larghe, così cambia da una casa all'altra e da un tratto di strada all'altro
+const ZONA = {
+  tetto: 'smoothstep(0.42, 0.62, rumoreT(vPosMondo.xz * 0.11 + 7.0))',
+  intonaco: 'smoothstep(0.45, 0.6, rumoreT(vPosMondo.xz * 0.06 + 31.0))',
+  strada: 'smoothstep(0.35, 0.7, rumoreT(vPosMondo.xz * 0.13 + 3.0))'
+};
+export function invecchia(m, tipo = '', seconda = null) {
+  m.userData.invecchia = tipo;
+  m.userData.seconda = seconda && ZONA[tipo] ? seconda : null;
+  const due = m.userData.seconda;
   m.onBeforeCompile = sh => {
+    if (due) { sh.uniforms.tSeconda = { value: due.map }; sh.uniforms.scalaSeconda = { value: due.scala }; sh.uniforms.tintaSeconda = { value: due.tinta }; }
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec3 vPosMondo;')
       .replace('#include <batching_vertex>', SFASA)
@@ -86,21 +123,28 @@ vec4 pMondo = vec4(transformed, 1.0);
 #ifdef USE_BATCHING
 pMondo = batchingMatrix * pMondo;
 #endif
+#ifdef USE_INSTANCING
+pMondo = instanceMatrix * pMondo;
+#endif
 vPosMondo = (modelMatrix * pMondo).xyz;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
 varying vec3 vPosMondo;
+${due ? 'uniform sampler2D tSeconda; uniform float scalaSeconda; uniform vec3 tintaSeconda;' : ''}
 float hashT(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float rumoreT(vec2 p) {
   vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(hashT(i), hashT(i + vec2(1, 0)), f.x), mix(hashT(i + vec2(0, 1)), hashT(i + vec2(1, 1)), f.x), f.y);
 }`)
       .replace('#include <map_fragment>', `#include <map_fragment>
+        ${due ? `#ifdef USE_MAP
+        diffuseColor.rgb = mix(diffuseColor.rgb, texture2D(tSeconda, vMapUv * scalaSeconda).rgb * tintaSeconda, ${ZONA[tipo]});
+        #endif` : ''}
         vec2 qT = vPosMondo.xz * 0.21 + vec2(vPosMondo.y * 0.13, -vPosMondo.y * 0.09);
         float nT = rumoreT(qT) * 0.6 + rumoreT(qT * 2.7 + 5.3) * 0.4;
-        diffuseColor.rgb *= 0.8 + 0.34 * nT;`);
+        diffuseColor.rgb *= 0.8 + 0.34 * nT;${INVECCHIA[tipo] || ''}`);
   };
-  m.customProgramCacheKey = () => 'variaTono';
+  m.customProgramCacheKey = () => 'invecchia-' + tipo + (due ? '-2' : '');
 }
 
 // risoluzione delle texture generate: piena per quelle che si vedono da vicino
@@ -116,12 +160,31 @@ const FOTO = {
   conci: { tinta: [0.96, 0.9, 0.86] },
   pietrame: { tinta: [0.95, 0.92, 0.9] },
   intonaco: {},
-  coppi: { tinta: [1.0, 0.92, 0.86] },
+  coppi: { tinta: [0.92, 0.84, 0.78] },      // meno acceso (15 novembre 2026)
   terra: { scala: 2.2, tinta: [0.78, 0.74, 0.7] },
   legno: {},
   lastre: { tinta: [0.88, 0.84, 0.78] },
   ghiaia: { tinta: [0.9, 0.88, 0.84] }
 };
+
+/*
+ * Le seconde foto (15 novembre 2026: muri, tetti e strade meno uniformi): solo il colore, mescolato a
+ * zone alla foto principale. Coppi vecchi e muschiosi sui tetti, intonaco di terra su parte dei muri,
+ * fango sulle strade. CC0, Poly Haven (FONTI.json).
+ */
+const SECONDE = {
+  coppi: { nome: 'coppiVecchi', tinta: [1.2, 0.98, 0.82] },      // la foto è grigia: scaldata verso il cotto
+  intonaco: { nome: 'intonacoTerra', tinta: [1, 0.97, 0.92] },
+  terra: { nome: 'fango', tinta: [0.82, 0.78, 0.74] }
+};
+async function caricaSeconda(prima, fonti, tex) {
+  const { nome, tinta } = SECONDE[prima];
+  if (!fonti[nome] || !fonti[prima] || !tex[prima]) return null;
+  const map = await new TextureLoader().loadAsync(`./texture/${nome}/colore.jpg`);
+  map.wrapS = map.wrapT = RepeatWrapping; map.anisotropy = ANISO; map.colorSpace = SRGBColorSpace;
+  // le coordinate arrivano già divise per i metri della foto principale: qui il rapporto tra le due
+  return { map, scala: tex[prima].dim / (fonti[nome].dimensioni_mm[0] / 1000), tinta: new Color(...tinta) };
+}
 
 async function caricaFoto(nome, info) {
   const loader = new TextureLoader();
@@ -180,6 +243,8 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
     try { tex[nome] = await caricaFoto(nome, fonti[nome]); passo(); }
     catch (e) { console.warn('foto non caricata, la genero:', nome, e); }
   }));
+  const seconde = {};
+  await Promise.all(Object.keys(SECONDE).map(async n => { try { seconde[n] = await caricaSeconda(n, fonti, tex); } catch (e) { console.warn('seconda foto non caricata:', n, e); } }));
   // il legno scuro, se c'è la foto del legno, sono le stesse assi più scure
   const mancanti = Object.keys(GENERATORI).filter(n => !tex[n] && !(n === 'legnoScuro' && tex.legno));
   Object.assign(tex, await generaProcedurali(mancanti, S, passo));
@@ -188,7 +253,8 @@ export async function creaMateriali(qualita = 'alta', avanzamento = () => {}) {
     if (nome === 'legnoScuro' && tex.legno && !tex.legnoScuro) { MAT.legnoScuro = materiale(tex.legno, { color: new Color(0.5, 0.4, 0.33) }); sfasaCopie(MAT.legnoScuro); continue; }
     const t = FOTO[nome]?.tinta;
     MAT[nome] = materiale(tex[nome], t ? { color: new Color(...t) } : {});
-    if (['conci', 'pietrame', 'intonaco', 'coppi', 'lastre'].includes(nome)) variaTono(MAT[nome]);
+    const vecchio = { conci: 'muro', pietrame: 'muro', intonaco: 'intonaco', coppi: 'tetto', lastre: '', terra: 'strada' }[nome];
+    if (vecchio !== undefined) invecchia(MAT[nome], vecchio, seconde[nome]);
     else sfasaCopie(MAT[nome]);
   }
   // il porfido delle colonne del Battistero e il cotto del pavimento di Santa Reparata

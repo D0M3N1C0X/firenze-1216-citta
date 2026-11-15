@@ -7,7 +7,7 @@
    camminando, e far camminare gli abitanti dove si cammina.
    ===================================================================== */
 
-export const LIBERO = 0, STRADA = 1, PIAZZA = 2, FIUME = 3, EDIFICIO = 4, MONUMENTO = 5, PONTE = 6, ORTO = 7;
+export const LIBERO = 0, STRADA = 1, PIAZZA = 2, FIUME = 3, EDIFICIO = 4, MONUMENTO = 5, PONTE = 6, ORTO = 7, RECINTO = 8;   // RECINTO: siepi e graticci della campagna (mondo/campagna.js)
 
 export class Griglia {
   constructor(min = -640, max = 640, cella = 0.5) {   // fino a Santa Reparata (circa 600 m)
@@ -89,7 +89,7 @@ export class Griglia {
   percorribile(x, z, r = 0.3) {
     for (const [dx, dz] of [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]]) {
       const v = this.get(x + dx, z + dz);
-      if (v === EDIFICIO || v === MONUMENTO || v === FIUME || v > 99) return false;
+      if (v === EDIFICIO || v === MONUMENTO || v === FIUME || v === RECINTO || v > 99) return false;
     }
     return true;
   }

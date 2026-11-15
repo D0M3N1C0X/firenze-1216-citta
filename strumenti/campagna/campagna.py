@@ -77,13 +77,16 @@ def siepe(seme):
     for k in range(5):
         x = -0.85 + k * 0.42 + R.uniform(-0.08, 0.08)
         V.tubo(P, [(x, R.uniform(-0.1, 0.1), -0.2), (x + R.uniform(-0.1, 0.1), R.uniform(-0.15, 0.15), 0.55)], [0.035, 0.02], CORTECCIA, R, n=4)
-    # una massa piena dal piede in su: ciuffi bassi e larghi, e sopra altri più piccoli
+    # una massa irregolare dal piede in su: ciuffi di grandezze diverse, sfalsati, e rami che spuntano
+    for k in range(5):
+        x = -0.84 + k * 0.42 + R.uniform(-0.08, 0.08)
+        V.ciuffo(P, (x, R.uniform(-0.16, 0.16), R.uniform(0.28, 0.5)), R.uniform(0.36, 0.48), verde, R, schiaccia=R.uniform(0.85, 1.2), suddivisioni=2)
     for k in range(4):
-        x = -0.78 + k * 0.52 + R.uniform(-0.06, 0.06)
-        V.ciuffo(P, (x, R.uniform(-0.08, 0.08), 0.42), R.uniform(0.5, 0.6), verde, R, schiaccia=0.95, suddivisioni=2)
-    for k in range(3):
-        x = -0.55 + k * 0.55 + R.uniform(-0.1, 0.1)
-        V.ciuffo(P, (x, R.uniform(-0.12, 0.12), R.uniform(0.85, 1.0)), R.uniform(0.36, 0.46), verde, R, schiaccia=0.9, suddivisioni=2)
+        x = -0.7 + k * 0.47 + R.uniform(-0.12, 0.12)
+        V.ciuffo(P, (x, R.uniform(-0.12, 0.12), R.uniform(0.7, 0.9)), R.uniform(0.22, 0.32), verde, R, schiaccia=0.9, suddivisioni=1)
+    for k in range(6):
+        x = R.uniform(-0.9, 0.9); y = R.uniform(-0.15, 0.15)
+        V.tubo(P, [(x, y, 0.5), (x + R.uniform(-0.15, 0.15), y + R.uniform(-0.1, 0.1), R.uniform(1.05, 1.35))], [0.014, 0.006], CORTECCIA, R, n=3)
     return P
 
 

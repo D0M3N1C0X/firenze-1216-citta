@@ -102,5 +102,48 @@
   ],
   "licenza": "CC0",
   "url": "https://polyhaven.com/a/gravelly_sand"
+ },
+ "coppiVecchi": {
+  "id": "roof_tiles_14",
+  "nome": "Roof Tiles 14",
+  "dimensioni_mm": [
+   1500,
+   1500
+  ],
+  "autori": [
+   "Rob Tuytel"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/roof_tiles_14",
+  "nota": "solo il colore: si mescola ai coppi a zone"
+ },
+ "intonacoTerra": {
+  "id": "clay_plaster",
+  "nome": "Clay Plaster",
+  "dimensioni_mm": [
+   2000,
+   2000
+  ],
+  "autori": [
+   "Amal Kumar"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/clay_plaster",
+  "nota": "solo il colore: si mescola all'intonaco a zone"
+ },
+ "fango": {
+  "id": "dry_mud_field_001",
+  "nome": "Dry Mud Field 001",
+  "dimensioni_mm": [
+   3000,
+   3000
+  ],
+  "autori": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/dry_mud_field_001",
+  "nota": "solo il colore: si mescola alla terra delle strade a zone"
  }
 }

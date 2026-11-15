@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MAT_CERTEZZA } from './materiali.js';
 import { VICINO, distanzaFiume, fosso, quota } from './terreno.js';
 import { dentroCerchia } from './fondale.js';
-import { LIBERO } from './griglia.js';
+import { LIBERO, RECINTO } from './griglia.js';
 import { rng } from './rumore.js';
 
 /* =====================================================================
@@ -34,7 +34,8 @@ import { rng } from './rumore.js';
    pianta dei campi: la divisione in strisce lungo le strade, le
    proporzioni tra le colture, la vite bassa a palo e non maritata agli
    alberi sono scelte di leggibilità [da verificare: studi sul paesaggio
-   agrario toscano]. Siepi e graticci non fermano chi cammina.
+   agrario toscano]. Siepi e graticci fermano chi cammina (decisione del
+   14 novembre 2026): ogni orto e ogni siepe sul fronte ha un varco di 2 m.
    ===================================================================== */
 
 export const TIPI_CAMPO = ['', 'grano', 'maggese', 'prato', 'vigna', 'orto'];
@@ -152,6 +153,36 @@ export function lottizzaCampi({ strade, griglia, dentroNuova = null }) {
   return { campi, di };
 }
 
+/**
+ * Dove stanno i graticci degli orti e le siepi di un campo: [tipo, a, b, verso] nelle coordinate
+ * del campo (a lungo la strada, b in profondità; verso 'u' o 'v'). Lo usano sia il disegno sia la
+ * pianta del suolo, così quello che si vede è quello che ferma. Il secondo pezzo del fronte manca: è il varco.
+ */
+export function recintiDi(c) {
+  const out = [];
+  if (c.tipo === 'orto') {
+    for (let a = 1, k = 0; a < c.w; a += 2, k++) { if (k !== 1) out.push(['graticcio', a, c.b0 + 0.4, 'u']); out.push(['graticcio', a, c.b1 - 0.4, 'u']); }
+    for (let b = c.b0 + 1.4; b < c.b1 - 1; b += 2) { out.push(['graticcio', 0.4, b, 'v']); out.push(['graticcio', c.w - 0.4, b, 'v']); }
+  } else {
+    if (c.siepeFronte) for (let a = 1, k = 0; a < c.w - 0.5; a += 1.9, k++) if (k !== 1) out.push(['siepe', a, c.b0 + 0.5, 'u']);
+    if (c.siepeLato) for (let b = c.b0 + 1.5; b < c.b1 - 1; b += 1.9) out.push(['siepe', 0.6, b, 'v']);
+  }
+  return out;
+}
+
+/** Segna siepi e graticci sulla pianta del suolo: lì non si passa. Rende quanti pezzi ha segnato. */
+export function segnaRecinti(griglia, lott) {
+  let n = 0;
+  for (const c of lott.campi) for (const [tipo, a, b, verso] of recintiDi(c)) {
+    const x = c.ox + c.ux * a + c.vx * b, z = c.oz + c.uz * a + c.vz * b;
+    if (lott.di(x, z) !== c) continue;
+    const dx = verso === 'u' ? c.ux : c.vx, dz = verso === 'u' ? c.uz : c.vz;
+    griglia.rettangolo(x, z, dx, dz, 1.0, tipo === 'siepe' ? 0.45 : 0.25, (i, j) => { const k = j * griglia.n + i; if (griglia.c[k] === LIBERO) griglia.c[k] = RECINTO; });
+    n++;
+  }
+  return n;
+}
+
 /* ------------------------------------------------- i modelli di Blender */
 let MODELLI = null;        // { vite: [geo, geo], 'vite-foglie': […], siepe: […], graticcio: [geo], cavolo, canne, 'canne-verdi' }
 
@@ -176,12 +207,12 @@ export async function caricaCampagna() {
 const SUOLO = {
   // il grano seminato in autunno a gennaio e febbraio è già un velo verde
   inverno: { grano: [0.55, 0.45, [0.82, 0.95, 0.62]], maggese: [1, 0, [0.72, 0.64, 0.56]], prato: [0.15, 0.85, [0.9, 0.86, 0.66]], vigna: [0.75, 0.25, [0.9, 0.84, 0.72]], orto: [0.9, 0.1, [0.68, 0.62, 0.55]] },
-  primavera: { grano: [0.1, 0.9, [0.8, 1.12, 0.55]], maggese: [0.7, 0.3, [0.8, 0.76, 0.62]], prato: [0, 1, [0.95, 1.05, 0.75]], vigna: [0.6, 0.4, [0.92, 0.9, 0.72]], orto: [0.85, 0.15, [0.7, 0.66, 0.56]] },
+  primavera: { grano: [0, 1, [0.72, 1.08, 0.5]], maggese: [0.7, 0.3, [0.8, 0.76, 0.62]], prato: [0, 1, [0.95, 1.05, 0.75]], vigna: [0.6, 0.4, [0.92, 0.9, 0.72]], orto: [0.85, 0.15, [0.7, 0.66, 0.56]] },
   maggio: { grano: [0, 1, [1, 1.12, 0.55]], maggese: [0.5, 0.5, [0.85, 0.85, 0.62]], prato: [0, 1, [1, 1.08, 0.72]], vigna: [0.55, 0.45, [0.92, 0.94, 0.7]], orto: [0.8, 0.2, [0.72, 0.7, 0.56]] },
   estate: { grano: [0.15, 0.85, [1.7, 1.35, 0.6]], maggese: [0.6, 0.4, [0.95, 0.88, 0.62]], prato: [0.1, 0.9, [1.2, 1.1, 0.7]], vigna: [0.6, 0.4, [0.95, 0.92, 0.7]], orto: [0.8, 0.2, [0.75, 0.7, 0.56]] }
 };
 // il grano: quanto è alto e di che colore
-const GRANO = { inverno: null, primavera: [0.32, 0x5c8a34], maggio: [0.85, 0x7f9440], estate: [1.0, 0xc9ac55] };
+const GRANO = { inverno: null, primavera: [0.32, 0x7da05a], maggio: [0.85, 0x7f9440], estate: [1.0, 0xc9ac55] };
 
 function steli() {
   const c = document.createElement('canvas'); c.width = 512; c.height = 128;
@@ -355,18 +386,18 @@ export class Campagna {
       for (let a = 1.1; a < c.w - 0.6; a += 2.0) for (let b = c.b0 + 1; b < c.b1 - 0.8; b += 1.25) metti(o.vite, a, b + R.tra(-0.12, 0.12), R.tra(0, 6.28), R.tra(0.85, 1.05));
     }
     if (c.tipo === 'orto') {
-      // il recinto di graticci, con un varco sul fronte
-      for (let a = 1, k = 0; a < c.w; a += 2, k++) { if (k !== 1) metti(o.graticcio, a, c.b0 + 0.4, lungoU, 1); metti(o.graticcio, a, c.b1 - 0.4, lungoU, 1); }
-      for (let b = c.b0 + 1.4; b < c.b1 - 1; b += 2) { metti(o.graticcio, 0.4, b, lungoV, 1); metti(o.graticcio, c.w - 0.4, b, lungoV, 1); }
       // le prode: cavoli, canne, o terra nuda
       for (let b = c.b0 + 3; b < c.b1 - 2.5; b += 2.2) {
         const r = R();
         if (r < 0.55) { for (let a = 2; a < c.w - 2; a += 0.9) if (R.vero(0.9)) metti(o.cavolo, a + R.tra(-0.1, 0.1), b + R.tra(-0.1, 0.1), R.tra(0, 6.28), R.tra(0.8, 1.25)); }
         else if (r < 0.75) { for (let a = 2.2; a < c.w - 2; a += 1.5) metti(o.canne, a, b, R.tra(0, 6.28), 1, R.tra(0.9, 1.1)); }
       }
-    } else {
-      if (c.siepeFronte) for (let a = 1; a < c.w - 0.5; a += 1.9) metti(o.siepe, a, c.b0 + 0.5 + R.tra(-0.15, 0.15), lungoU + R.tra(-0.12, 0.12), 1, R.tra(0.9, 1.35));
-      if (c.siepeLato) for (let b = c.b0 + 1.5; b < c.b1 - 1; b += 1.9) metti(o.siepe, 0.6 + R.tra(-0.15, 0.15), b, lungoV + R.tra(-0.12, 0.12), 1, R.tra(0.9, 1.35));
+    }
+    // il recinto di graticci degli orti e le siepi dei campi, con il varco (recintiDi)
+    for (const [tipo, a, b, verso] of recintiDi(c)) {
+      const rot = verso === 'u' ? lungoU : lungoV;
+      if (tipo === 'graticcio') metti(o.graticcio, a, b, rot, 1);
+      else metti(o.siepe, a, b, rot + R.tra(-0.1, 0.1), 1, R.tra(0.85, 1.15));
     }
     this.cache.set(c.n, o);
     return o;

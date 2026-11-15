@@ -1,7 +1,7 @@
 import { Color, InstancedMesh, Matrix4 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { matriceLotto } from './cantiere.js';
-import { MAT, MAT_CERTEZZA } from './materiali.js';
+import { MAT, MAT_CERTEZZA, invecchia } from './materiali.js';
 import { quota } from './terreno.js';
 import { rng } from './rumore.js';
 import { NEL_1300 } from './epoca.js';
@@ -143,6 +143,8 @@ export class CaseBlender {
     if (!this.materiali[nome]) {
       const base = MAT[nome] || MAT.conci;
       const m = base.clone(); m.vertexColors = false; m.needsUpdate = true;
+      // la copia di un materiale non porta con sé l'invecchiamento (macchie, colature, coppi di toni diversi): lo si rimette
+      if (base.userData.invecchia !== undefined) invecchia(m, base.userData.invecchia, base.userData.seconda);
       this.materiali[nome] = m;
     }
     return this.materiali[nome];

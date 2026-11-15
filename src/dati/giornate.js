@@ -35,6 +35,7 @@ export const GIORNATE = {
     festa: true,
     rondini: false,
     foschia: 1.5,
+    nuvole: 0.6,                // cielo d'inverno, più coperto: scelta d'atmosfera, non un dato
     campane: 'ore',
     gente: 0,
     ora: 12.5,
@@ -49,6 +50,7 @@ export const GIORNATE = {
     gregoriano: '17 febbraio',
     festa: false,               // botteghe aperte, banchi al mercato
     rondini: false,             // in Toscana arrivano tra marzo e aprile [da verificare]
+    nuvole: 0.5,
     foschia: 1.35,              // mattina d'inverno sull'Arno: scelta d'atmosfera, non un dato
     campane: 'ore',             // solo i rintocchi delle ore canoniche
     gente: 280,                 // 190 fino al 13 ottobre 2026, quando la città è arrivata alle mura
@@ -66,6 +68,7 @@ export const GIORNATE = {
     festa: true,                // botteghe chiuse per la festa
     rondini: true,
     foschia: 1,
+    nuvole: 0.32,
     campane: 'festa',
     gente: 220,                 // 150 fino al 13 ottobre 2026
     ora: 8.5,
@@ -99,6 +102,7 @@ GIORNATE.maggio = {
   gregoriano: '9 maggio',
   festa: true,                // domenica: botteghe chiuse
   rondini: true,
+  nuvole: 0.28,
   foschia: 0.8,               // una sera di maggio: scelta d'atmosfera, non un dato
   campane: 'ore',
   gente: 320,

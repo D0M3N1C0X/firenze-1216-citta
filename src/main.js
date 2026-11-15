@@ -35,7 +35,7 @@ import { costruisciBorghi } from './mondo/fondale.js';
 import { costruisciMura, costruisciPalizzata, ipotesiLatoSud } from './mondo/mura.js';
 import { caricaAlberi, creaVegetazione } from './mondo/vegetazione.js';
 import { CaseBlender, caricaCase } from './mondo/case-blender.js';
-import { Campagna, caricaCampagna, lottizzaCampi, stagioneDi } from './mondo/campagna.js';
+import { Campagna, caricaCampagna, lottizzaCampi, segnaRecinti, stagioneDi } from './mondo/campagna.js';
 import { costruisciMestieri, figureDeiMestieri, grigliaDeiMestieri, suoniDeiMestieri } from './mondo/mestieri.js';
 import { Abitanti } from './mondo/abitanti.js';
 import { costruisciOggi, diradaAlberi, postoLibero } from './mondo/oggi.js';
@@ -298,6 +298,7 @@ async function costruisci() {
     lott: lottizzaCampi({ strade: strade.filter(s => NEL_1300 ? s.fuoriVecchia : s.fuori), griglia, dentroNuova: d1300?.dentroLimite }),
     terreno: terreno.vicino, griglia, stagione: stagioneDi(giornata.doy)
   }) : null;
+  if (campagna) segnaRecinti(griglia, campagna.lott);      // siepi e graticci fermano chi cammina
 
   await passo('Muro su muro…');
   cantiere.costruisci(scene);
@@ -564,6 +565,7 @@ function cambiaQualita() {
   qualita = qualita === 'alta' ? 'media' : 'alta';
   renderer.setPixelRatio(qualita === 'alta' ? Math.min(devicePixelRatio, 2) : 1);
   mondo.cielo.dimensioneOmbre(qualita === 'alta' ? 4096 : 2048, qualita === 'alta' ? 120 : 80);
+  mondo.cielo.nuvole.visible = qualita === 'alta';       // le nuvole solo con la qualità alta
   impostaComposizione();
   return qualita;
 }
@@ -680,6 +682,7 @@ function ciclo() {
     c.aggiorna(dt, Math.min(vero, 0.5));
     if (c.attivo) controllaScioltezza(vero);
     mondo.cielo.segui(camera.position);
+    mondo.cielo.passa(dt);
     if (mondo.acqua) mondo.acqua.material.uniforms.time.value += dt * 0.55;
     // la sera del 1° maggio 1300 l'ora va avanti da sola, fino a dopo la zuffa
     if (mondo.zuffa && c.attivo && ora < giornata.oraMax) {
