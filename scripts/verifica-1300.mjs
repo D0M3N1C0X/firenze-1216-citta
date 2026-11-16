@@ -17,6 +17,7 @@
 
 import { lottizzaCampi, segnaRecinti, stagioneDi, TIPI_CAMPO } from '../src/mondo/campagna.js';
 import { GIORNATE } from '../src/dati/giornate.js';
+import { segnaArredo, vitaDiStrada } from '../src/mondo/vita.js';
 import { readFileSync } from 'node:fs';
 import { FIUME } from '../src/dati/osm.js';
 import { STRADE, IMPRONTE } from '../src/dati/osm-1300.js';
@@ -68,6 +69,10 @@ const primaDeiCampi = griglia.c.slice();
 const campagna = lottizzaCampi({ strade: strade.filter(s => s.fuoriVecchia), griglia, dentroNuova: dentroLimite });
 const cambiata = griglia.c.some((v, k) => v !== primaDeiCampi[k]);
 const recinti = segnaRecinti(griglia, campagna);
+// e l'arredo della vita di strada (?vita, mondo/vita.js): anche con quello ogni luogo deve restare raggiungibile
+const vitaDati = vitaDiStrada({ lotti, borghi, strade, griglia, campi: campagna.campi, luoghi: LUOGHI.filter(l => (l.mondo || 'citta') === 'citta') });
+const arredoSegnato = segnaArredo(griglia, vitaDati);
+console.log(`vita di strada: ${vitaDati.arredo.length} oggetti (${arredoSegnato} a terra), ${vitaDati.gente.length} persone con un gesto`);
 console.log(`pianta del 1300 pronta in ${((Date.now() - t0) / 1000).toFixed(1)} s · ${strade.length} strade · ${lotti.length} lotti · ${borghi.length} case nei borghi`);
 for (const a of AVVISI) errori.push('mura del 1300: ' + a);
 

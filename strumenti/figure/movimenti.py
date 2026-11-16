@@ -38,6 +38,33 @@ CLIP = {
     'guarda': ('77_01.bvh', 'tratto'),
     'parla': ('18_08.bvh', 'tratto'),
 }
+# I movimenti in più per l'app Unity (16 novembre 2026: la gente che lavora, si saluta, sta seduta).
+# Si aggiungono con GENTE=unity; la città nel browser, ferma, resta con gli otto di sopra.
+# I nomi dicono che cosa si vede, non che cosa faceva l'attore: «strofina» era lavare i vetri,
+# «beve» una bibita, «dirige» il traffico. Che cosa farne nel 1216 è un'ipotesi da dichiarare.
+CLIP_UNITY = {
+    # lavori
+    'sega': ('62_03.bvh', 'tratto'), 'martella': ('62_07.bvh', 'tratto'), 'spazza': ('13_23.bvh', 'tratto'),
+    'strofina': ('13_20.bvh', 'tratto'), 'zappa': ('79_04.bvh', 'tratto'), 'spacca_legna': ('79_01.bvh', 'tratto'),
+    'cuce': ('79_05.bvh', 'tratto'), 'trita': ('79_10.bvh', 'tratto'), 'solleva': ('26_10.bvh', 'tratto'),
+    'sposta_cassa': ('79_25.bvh', 'tratto'), 'raccoglie': ('111_17.bvh', 'tratto'),
+    # portare
+    'porta': ('113_26.bvh', 'ciclo'),
+    # incontrarsi
+    'stretta_di_mano': ('18_01.bvh', 'tratto'), 'ascolta': ('19_08.bvh', 'tratto'), 'discute': ('22_21.bvh', 'tratto'),
+    'inchino': ('113_02.bvh', 'tratto'), 'saluta': ('113_27.bvh', 'tratto'), 'ride': ('13_14.bvh', 'tratto'), 'indica': ('13_27.bvh', 'tratto'),
+    # stare
+    'seduto': ('13_04.bvh', 'tratto'), 'si_alza': ('13_01.bvh', 'tratto'), 'mangia': ('79_42.bvh', 'tratto'), 'beve': ('13_09.bvh', 'tratto'),
+    'tiene_un_bimbo': ('79_89.bvh', 'tratto'), 'piange': ('79_72.bvh', 'tratto'), 'sbadiglia': ('113_23.bvh', 'tratto'),
+    # andature
+    # («triste» da 91_13 e «ubriaco» da 91_09 camminavano a otto: il passo scelto non era un passo; tolti il 16 novembre)
+    'zoppica': ('91_16.bvh', 'ciclo'), 'triste': ('82_10.bvh', 'ciclo'), 'vecchio': ('17_05.bvh', 'ciclo'), 'lento': ('07_04.bvh', 'ciclo'),
+    # la zuffa
+    'tira': ('18_03.bvh', 'tratto'), 'resiste': ('19_03.bvh', 'tratto'),
+}
+if os.environ.get('GENTE') == 'unity':
+    CLIP.update(CLIP_UNITY)
+    USCITA = os.path.abspath(os.path.join(QUI, '..', '..', '..', 'unity', 'Firenze1216', 'Assets', 'Modelli', 'Gente'))
 
 
 def pulisci():
@@ -155,10 +182,10 @@ def ritaglia(fot, tipo):
     chiave = ['Hips', 'LeftUpLeg', 'RightUpLeg', 'LeftLeg', 'RightLeg', 'LeftArm', 'RightArm', 'Spine', 'Head']
     n = len(fot)
     if tipo == 'ciclo':
-        lmin, lmax = int(0.9 * FPS), int(1.5 * FPS)
+        lmin, lmax = min(int(0.9 * FPS), max(2, n // 3)), int(1.5 * FPS)
         inizio = range(int(n * 0.15), max(int(n * 0.15) + 1, n - lmax))
     else:
-        lmin, lmax = int(4 * FPS), int(9 * FPS)
+        lmin, lmax = min(int(4 * FPS), max(2, n - 3)), int(9 * FPS)      # le registrazioni corte si prendono quasi intere
         inizio = range(0, max(1, n - lmin))
     best = None
     for i in inizio:
@@ -248,6 +275,9 @@ def main():
         info[nome]['fonte'] = 'CMU ' + file.replace('.bvh', '')
         info[nome]['scarto_chiusura'] = round(d, 3)
         bpy.data.objects.remove(src, do_unlink=True)
+        # via anche l'azione grezza del BVH: altrimenti finisce nel file accanto a quella trasferita, e lo raddoppia
+        for az in list(bpy.data.actions):
+            if az.name not in CLIP: bpy.data.actions.remove(az)
         print('CLIP', nome, info[nome])
     # via il corpo: nel file restano solo lo scheletro e le azioni
     for o in list(bpy.data.objects):

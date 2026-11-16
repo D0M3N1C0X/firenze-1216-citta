@@ -29,6 +29,7 @@ import { soloIndice } from '../src/mondo/modelli.js';
 import { costruisciCampi } from '../src/mondo/campi.js';
 import { Griglia as G2 } from '../src/mondo/griglia.js';
 import { lottizzaCampi, segnaRecinti, stagioneDi, TIPI_CAMPO } from '../src/mondo/campagna.js';
+import { segnaArredo, vitaDiStrada } from '../src/mondo/vita.js';
 import { readFileSync } from 'node:fs';
 import { lottizza } from '../src/mondo/edifici.js';
 import { costruisciMura, costruisciPalizzata } from '../src/mondo/mura.js';
@@ -64,6 +65,10 @@ const primaDeiCampi = griglia.c.slice();
 const campagna = lottizzaCampi({ strade: strade.filter(s => s.fuori), griglia });
 const cambiata = griglia.c.some((v, k) => v !== primaDeiCampi[k]);
 const recinti = segnaRecinti(griglia, campagna);
+// e l'arredo della vita di strada (?vita, mondo/vita.js): anche con quello ogni luogo deve restare raggiungibile
+const vitaDati = vitaDiStrada({ lotti, borghi, strade, griglia, campi: campagna.campi, luoghi: LUOGHI.filter(l => (l.mondo || 'citta') === 'citta') });
+const arredoSegnato = segnaArredo(griglia, vitaDati);
+console.log(`vita di strada: ${vitaDati.arredo.length} oggetti (${arredoSegnato} a terra), ${vitaDati.gente.length} persone con un gesto`);
 console.log(`pianta pronta in ${((Date.now() - t0) / 1000).toFixed(1)} s · ${strade.length} strade · ${lotti.length} lotti · ${borghi.length} case nei borghi`);
 for (const a of AVVISI) console.warn('! ' + a);
 

@@ -3,7 +3,10 @@ import { NEL_1300 } from './epoca.js';
 
 // nel 1300 le stesse persone vestite come nel 1300 (strumenti/figure/figure.py con EPOCA=1300);
 // i movimenti sono gli stessi e restano in public/figure/
-const CARTELLA = NEL_1300 ? './figure-1300/' : './figure/';
+// con ?vita (la prova della vita di strada, mondo/vita.js): le 87 persone e i 40 movimenti preparati per l'app Unity
+const VITA = typeof location !== 'undefined' && new URLSearchParams(location.search).has('vita');
+const CARTELLA = VITA ? `./vita/gente/${NEL_1300 ? '1300' : '1216'}/` : NEL_1300 ? './figure-1300/' : './figure/';
+const MOVIMENTI = VITA ? './vita/gente/movimenti' : './figure/movimenti';
 
 /* =====================================================================
    LE FIGURE PRODOTTE IN BLENDER
@@ -19,8 +22,8 @@ export async function caricaFigure(avanzamento = () => {}) {
   const loader = new GLTFLoader();
   const [elenco, infoMov, mov] = await Promise.all([
     fetch(CARTELLA + 'figure.json').then(r => r.json()),
-    fetch('./figure/movimenti.json').then(r => r.json()),
-    loader.loadAsync('./figure/movimenti.glb')
+    fetch(MOVIMENTI + '.json').then(r => r.json()),
+    loader.loadAsync(MOVIMENTI + '.glb')
   ]);
   const anche0 = altezzaAnche(mov.scene);
   let fatti = 0;

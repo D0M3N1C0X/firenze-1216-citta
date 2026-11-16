@@ -36,6 +36,7 @@ import { costruisciMura, costruisciPalizzata, ipotesiLatoSud } from './mondo/mur
 import { caricaAlberi, creaVegetazione } from './mondo/vegetazione.js';
 import { CaseBlender, caricaCase } from './mondo/case-blender.js';
 import { mascheraStrade } from './mondo/strade-suolo.js';
+import { Vita, caricaVita, segnaArredo, vitaDiStrada } from './mondo/vita.js';
 import { Campagna, caricaCampagna, lottizzaCampi, segnaRecinti, stagioneDi } from './mondo/campagna.js';
 import { costruisciMestieri, figureDeiMestieri, grigliaDeiMestieri, suoniDeiMestieri } from './mondo/mestieri.js';
 import { Abitanti } from './mondo/abitanti.js';
@@ -227,8 +228,10 @@ async function costruisci() {
   const caseBlender = params.has('senzamodelli') || params.has('senzacase') ? null : caricaCase().catch(e => { console.warn('case di Blender non caricate:', e); return null; });
   // viti, siepi, graticci e ortaggi (strumenti/campagna/campagna.py): senza, restano i colori dei campi e il grano
   const modelliCampagna = params.has('senzamodelli') ? null : caricaCampagna().catch(e => { console.warn('modelli della campagna non caricati:', e); return null; });
+  // la prova della vita di strada (?vita): attrezzi e arredo preparati per l'app Unity
+  const modelliVita = params.has('vita') ? caricaVita().catch(e => { console.warn('vita di strada non caricata:', e); return null; }) : null;
   await Promise.all([
-    kit, monumentiBlender, alberiBlender, caseBlender, modelliCampagna,
+    kit, monumentiBlender, alberiBlender, caseBlender, modelliCampagna, modelliVita,
     creaMateriali('alta', (k, n) => mostra(fatto + pesi[fase] * k / n)),
     MONDO === 'citta' ? preparaCampo() : null
   ]);
@@ -303,6 +306,13 @@ async function costruisci() {
     terreno: terreno.vicino, griglia, stagione: stagioneDi(giornata.doy)
   }) : null;
   if (campagna) segnaRecinti(griglia, campagna.lott);      // siepi e graticci fermano chi cammina
+  // la vita di strada (?vita): arredo lungo le facciate, gente con un gesto, insegne, stemmi (mondo/vita.js)
+  let vita = null;
+  if (MONDO === 'citta' && await modelliVita) {
+    const dati = vitaDiStrada({ lotti, borghi, strade, griglia, campi: campagna?.lott.campi, luoghi: LUOGHI.filter(l => mondoDi(l) === 'citta') });
+    segnaArredo(griglia, dati);
+    vita = new Vita(scene, dati);
+  }
 
   await passo('Muro su muro…');
   cantiere.costruisci(scene);
@@ -319,7 +329,7 @@ async function costruisci() {
   else if (scenaIniziale?.vista) collocaVista(controlli, scenaIniziale.vista);
   else controlli.colloca(20, -46, 2.62, -0.02);
 
-  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri, alberi, vegetazione, case: caseB, campagna };
+  mondo = { cielo, acqua, griglia, cantiere, monumenti, lotti, strade, controlli, quotaIn, suoni: new Suoni(), mestieri, alberi, vegetazione, case: caseB, campagna, vita };
   mondo.abitanti = creaAbitanti();
   creaZuffa();
   impostaGiornata(giornata.id, { ora });
@@ -427,7 +437,7 @@ function creaAbitanti() {
       fermi: C.fermi, cavalliFermi: C.cavalli
     });
   }
-  return new Abitanti(scene, mondo.strade, mondo.griglia, mondo.quotaIn, {
+  const abitanti = new Abitanti(scene, mondo.strade, mondo.griglia, mondo.quotaIn, {
     modelli,
     animali,
     // muli, asini e cavalli: più nei giorni di lavoro che a Pasqua (ipotesi)
@@ -438,10 +448,12 @@ function creaAbitanti() {
     extra: [{ punti: [PONTE_ASSE.A, PONTE_ASSE.B], larghezza: 5.5 }],
     gruppi: giornata.gruppi,
     // in chiesa e nella torre degli Amidei (dati/interni.js); ai banchi nei giorni di lavoro (mondo/mestieri.js)
-    fermi: [...figureNegliInterni(giornata), ...figureDeiMestieri(giornata).fermi],
+    fermi: [...figureNegliInterni(giornata), ...figureDeiMestieri(giornata).fermi, ...(modelli && mondo.vita ? mondo.vita.persone(giornata.festa) : [])],
     seduti: figureDeiMestieri(giornata).seduti,
     cavalliFermi: figureDeiMestieri(giornata).cavalliFermi
   });
+  if (modelli && mondo.vita) { mondo.vita.attacca(abitanti, giornata.festa); mondo.vita.portano(abitanti); }      // gli attrezzi in mano
+  return abitanti;
 }
 
 /**
@@ -490,6 +502,7 @@ function mostra1216(on) {
   for (const m of mondo.cantiere.mesh) m.visible = on;
   mondo.case?.visibili(on);
   mondo.campagna?.visibili(on);
+  mondo.vita?.visibili(on);
   if (on) { mondo.cantiere.giornata(giornata); mondo.cantiere.certezza(certezzaAccesa); }
   mondo.abitanti.visibili(on && !certezzaAccesa);
   mondo.suoni.mestieri(on ? suoniDeiMestieri(giornata) : []);
@@ -699,6 +712,7 @@ function ciclo() {
     mondo.vegetazione?.aggiorna?.(camera.position);
     mondo.case?.aggiorna(camera.position);
     mondo.campagna?.aggiorna(camera.position);
+    mondo.vita?.aggiorna(camera.position);
     mondo.suoni.aggiorna(dt, camera, mondo.abitanti);
     if (mappa && c.attivo) mappa.aggiorna(camera.position.x, camera.position.z, c.yaw);
     if ((tHud += dt) > 0.25) {

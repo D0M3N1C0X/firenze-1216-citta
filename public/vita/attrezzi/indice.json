@@ -1,0 +1,146 @@
+{
+ "sega": {
+  "mano": "destra",
+  "movimenti": [
+   "sega"
+  ],
+  "come": "impugnata",
+  "presa": "impugnato",
+  "testa": 0,
+  "asse": "x",
+  "triangoli": 60
+ },
+ "martello": {
+  "mano": "destra",
+  "movimenti": [
+   "martella"
+  ],
+  "come": "impugnato",
+  "presa": "impugnato",
+  "testa": 0,
+  "asse": "x",
+  "triangoli": 24
+ },
+ "zappa": {
+  "mano": "due mani",
+  "movimenti": [
+   "zappa"
+  ],
+  "come": "impugnata",
+  "presa": "due mani",
+  "testa": 1,
+  "asse": "",
+  "triangoli": 24
+ },
+ "scure": {
+  "mano": "due mani",
+  "movimenti": [
+   "spacca_legna"
+  ],
+  "come": "impugnata",
+  "presa": "due mani",
+  "testa": 1,
+  "asse": "",
+  "triangoli": 24
+ },
+ "scopa": {
+  "mano": "due mani",
+  "movimenti": [
+   "spazza"
+  ],
+  "come": "impugnata",
+  "presa": "due mani",
+  "testa": -1,
+  "asse": "",
+  "triangoli": 84
+ },
+ "cesta": {
+  "mano": "sinistra",
+  "movimenti": [
+   "cammina",
+   "cammina_lento",
+   "passeggia",
+   "fermo",
+   "porta"
+  ],
+  "come": "appesa al braccio o alla mano",
+  "presa": "appeso",
+  "testa": 0,
+  "asse": "",
+  "triangoli": 772
+ },
+ "secchio": {
+  "mano": "destra",
+  "movimenti": [
+   "cammina_lento",
+   "fermo",
+   "porta"
+  ],
+  "come": "appeso alla mano",
+  "presa": "appeso",
+  "testa": 0,
+  "asse": "",
+  "triangoli": 764
+ },
+ "sacco": {
+  "mano": "destra",
+  "movimenti": [
+   "porta",
+   "cammina_lento"
+  ],
+  "come": "in spalla",
+  "presa": "appeso",
+  "testa": 0,
+  "asse": "",
+  "triangoli": 332
+ },
+ "brocca": {
+  "mano": "destra",
+  "movimenti": [
+   "beve",
+   "fermo"
+  ],
+  "come": "impugnata per il manico",
+  "presa": "impugnato",
+  "testa": 0,
+  "asse": "x",
+  "triangoli": 116
+ },
+ "ciotola": {
+  "mano": "sinistra",
+  "movimenti": [
+   "mangia"
+  ],
+  "come": "tenuta nel palmo",
+  "presa": "palmo",
+  "testa": 0,
+  "asse": "",
+  "triangoli": 372
+ },
+ "bastone": {
+  "mano": "destra",
+  "movimenti": [
+   "vecchio",
+   "zoppica",
+   "lento"
+  ],
+  "come": "impugnato in cima",
+  "presa": "verticale",
+  "testa": 0,
+  "asse": "",
+  "triangoli": 36
+ },
+ "sgabello": {
+  "mano": "",
+  "movimenti": [
+   "seduto",
+   "si_alza",
+   "discute"
+  ],
+  "come": "per terra, sotto chi siede",
+  "presa": "sedile",
+  "testa": 0,
+  "asse": "",
+  "triangoli": 282
+ }
+}

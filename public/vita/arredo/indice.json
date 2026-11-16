@@ -1,0 +1,186 @@
+{
+ "botte": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "davanti alle botteghe e ai fondaci",
+  "triangoli": 1452
+ },
+ "tino": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "cortili, tintori, vinattieri",
+  "triangoli": 852
+ },
+ "cassa": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "botteghe e fondaci",
+  "triangoli": 36
+ },
+ "sacchi": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "mercato, mulini, fondaci",
+  "triangoli": 320
+ },
+ "ceste": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "mercato e botteghe",
+  "triangoli": 608
+ },
+ "carro": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "strade larghe e piazze; fermo",
+  "triangoli": 390
+ },
+ "carretto": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "ovunque",
+  "triangoli": 200
+ },
+ "catasta": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "contro i muri, nei cortili",
+  "triangoli": 440
+ },
+ "paglia": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "stalle, cortili, mercato",
+  "triangoli": 240
+ },
+ "banco": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "davanti alle botteghe nei giorni di lavoro, al mercato",
+  "triangoli": 178
+ },
+ "panca": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "davanti alle case",
+  "triangoli": 36
+ },
+ "panni-stesi": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "tra due case, in alto, nei vicoli",
+  "triangoli": 60
+ },
+ "abbeveratoio": {
+  "tipo": "oggetto",
+  "livello": "ipotesi",
+  "dove": "piazze e porte",
+  "triangoli": 72
+ },
+ "insegna-forbici": {
+  "tipo": "insegna",
+  "livello": "invenzione dichiarata",
+  "dove": "sopra la porta di una bottega",
+  "triangoli": 236
+ },
+ "insegna-scarpa": {
+  "tipo": "insegna",
+  "livello": "invenzione dichiarata",
+  "dove": "sopra la porta di una bottega",
+  "triangoli": 236
+ },
+ "insegna-pane": {
+  "tipo": "insegna",
+  "livello": "invenzione dichiarata",
+  "dove": "sopra la porta di una bottega",
+  "triangoli": 236
+ },
+ "insegna-botte": {
+  "tipo": "insegna",
+  "livello": "invenzione dichiarata",
+  "dove": "sopra la porta di una bottega",
+  "triangoli": 236
+ },
+ "insegna-pesce": {
+  "tipo": "insegna",
+  "livello": "invenzione dichiarata",
+  "dove": "sopra la porta di una bottega",
+  "triangoli": 236
+ },
+ "insegna-chiave": {
+  "tipo": "insegna",
+  "livello": "invenzione dichiarata",
+  "dove": "sopra la porta di una bottega",
+  "triangoli": 236
+ },
+ "stemma-buondelmonti": {
+  "tipo": "stemma",
+  "famiglia": "buondelmonti",
+  "blasone": "troncato d'azzurro e d'argento",
+  "nota": "lo stemma originario; quello con il monte e la croce è più tardo",
+  "fonte": "Wikipedia in italiano, voce della famiglia, letta il 17 novembre 2026",
+  "livello": "da verificare",
+  "dove": "sulle case e sulle torri della famiglia",
+  "triangoli": 64
+ },
+ "stemma-amidei": {
+  "tipo": "stemma",
+  "famiglia": "amidei",
+  "blasone": "d'oro, a tre fasce di rosso",
+  "nota": "la voce dice: «uno scudo d'oro fasciato da tre barre rosse»; la lettura è incerta",
+  "fonte": "Wikipedia in italiano, voce della famiglia, letta il 17 novembre 2026",
+  "livello": "da verificare",
+  "dove": "sulle case e sulle torri della famiglia",
+  "triangoli": 64
+ },
+ "stemma-uberti": {
+  "tipo": "stemma",
+  "famiglia": "uberti",
+  "blasone": "partito: nel 1° d'oro all'aquila di nero uscente dalla partizione; nel 2° scaccato d'oro e d'azzurro",
+  "nota": "ramo di Firenze",
+  "fonte": "Wikipedia in italiano, voce della famiglia, letta il 17 novembre 2026",
+  "livello": "da verificare",
+  "dove": "sulle case e sulle torri della famiglia",
+  "triangoli": 64
+ },
+ "stemma-donati": {
+  "tipo": "stemma",
+  "famiglia": "donati",
+  "blasone": "troncato di rosso e d'argento",
+  "nota": "",
+  "fonte": "Wikipedia in italiano, voce della famiglia, letta il 17 novembre 2026",
+  "livello": "da verificare",
+  "dove": "sulle case e sulle torri della famiglia",
+  "triangoli": 64
+ },
+ "stemma-fifanti": {
+  "tipo": "stemma",
+  "famiglia": "fifanti",
+  "blasone": "di rosso, alla ruota d'argento",
+  "nota": "",
+  "fonte": "Wikipedia in italiano, voce della famiglia, letta il 17 novembre 2026",
+  "livello": "da verificare",
+  "dove": "sulle case e sulle torri della famiglia",
+  "triangoli": 64
+ },
+ "stemma-lamberti": {
+  "tipo": "stemma",
+  "famiglia": "lamberti",
+  "blasone": "d'azzurro, a sei palle d'oro",
+  "nota": "Crollalanza, p. 4; la disposizione qui è 3, 2, 1",
+  "fonte": "Wikipedia in italiano, voce della famiglia, letta il 17 novembre 2026",
+  "livello": "da verificare",
+  "dove": "sulle case e sulle torri della famiglia",
+  "triangoli": 64
+ },
+ "stemma-cerchi": {
+  "tipo": "stemma",
+  "famiglia": "cerchi",
+  "blasone": "d'azzurro, a tre anelletti d'oro, legati di rosso, posti 2 e 1",
+  "nota": "Raccolta Ceramelli Papiani, Archivio di Stato di Firenze",
+  "fonte": "Wikipedia in italiano, voce della famiglia, letta il 17 novembre 2026",
+  "livello": "da verificare",
+  "dove": "sulle case e sulle torri della famiglia",
+  "triangoli": 64
+ }
+}

@@ -78,6 +78,25 @@ if EPOCA == '1300':
     TINTE = TINTE + VIVI
     GRANA = GRANA + VIVI[:2]
 
+# ---------------------------------------------------------------- l'app Unity
+# GENTE=unity (16 novembre 2026: più volti e più vesti): alle 36 persone di sempre, che restano le
+# stesse, se ne aggiungono altre 44: un secondo giro di ogni ruolo con un altro seme, e cinque ruoli
+# nuovi (vecchi, contadini, bambini). Escono in unity/Firenze1216/Assets/Modelli/Gente/<epoca>/.
+# I ruoli nuovi sono ipotesi come gli altri: età, orli e copricapi scelti a occhio.
+IN_PIU = []
+if os.environ.get('GENTE') == 'unity':
+    USCITA = os.path.abspath(os.path.join(QUI, '..', '..', '..', 'unity', 'Firenze1216', 'Assets', 'Modelli', 'Gente', EPOCA))
+    if os.environ.get('USCITA_PROVA'): USCITA = os.environ['USCITA_PROVA']
+    IN_PIU = [(r, dict(s)) for r, s in RUOLI] + [
+        ('vecchio',    dict(sesso='m', eta=(0.92, 0.99), ceto='popolo',   n=3, orlo=(0.3, 0.42),  capo=['nudo', 'nudo', 'cappuccio'], mantello=0.5)),
+        ('vecchia',    dict(sesso='f', eta=(0.92, 0.99), ceto='popolo',   n=3, orlo=(0.03, 0.05), capo=['velo'], mantello=0.5)),
+        ('contadino',  dict(sesso='m', eta=(0.5, 0.85),  ceto='popolo',   n=3, orlo=(0.46, 0.54), capo=['cappuccio', 'nudo', 'cuffia'], mantello=0)),
+        ('contadina',  dict(sesso='f', eta=(0.5, 0.85),  ceto='popolo',   n=2, orlo=(0.06, 0.1),  grembiule=0.8, capo=['cuffia', 'velo'], mantello=0)),
+        # 8-10 anni (nella scala di MakeHuman 0,19 sono dieci anni): più piccoli hanno la testa da bimbo di tre anni
+        ('bambino',    dict(sesso='m', eta=(0.155, 0.19), ceto='popolo',   n=2, orlo=(0.36, 0.44), capo=['nudo'], mantello=0)),
+        ('bambina',    dict(sesso='f', eta=(0.155, 0.19), ceto='popolo',   n=2, orlo=(0.06, 0.1),  capo=['trecce', 'cuffia'], mantello=0)),
+    ]
+
 VARIANTI = []
 for ruolo, spec in RUOLI:
     for k in range(spec['n']):
@@ -85,7 +104,14 @@ for ruolo, spec in RUOLI:
         r = random.Random(1216 + i * 31)
         VARIANTI.append({'n': i, 'ruolo': ruolo, 'sesso': spec['sesso'], 'eta': round(r.uniform(*spec['eta']), 3),
                          'ceto': spec['ceto'], 'seme': 1216 + i * 31})
+for ruolo, spec in IN_PIU:
+    for k in range(spec['n']):
+        i = len(VARIANTI)
+        r = random.Random(7919 + i * 53)
+        VARIANTI.append({'n': i, 'ruolo': ruolo, 'sesso': spec['sesso'], 'eta': round(r.uniform(*spec['eta']), 3),
+                         'ceto': spec['ceto'], 'seme': 7919 + i * 53})
 SPEC = dict(RUOLI)
+SPEC.update(dict(IN_PIU[len(RUOLI):]))
 
 
 def pulisci():
@@ -248,7 +274,7 @@ def crea(var):
     m = var['sesso'] == 'm'
     macro = {'gender': r.uniform(0.92, 1.0) if m else r.uniform(0.0, 0.08), 'age': var['eta'],
              'muscle': r.uniform(0.4, 0.6), 'weight': r.uniform(0.3, 0.55), 'proportions': r.uniform(0.4, 0.6),
-             'height': r.uniform(0.3, 0.55), 'cupsize': 0.45, 'firmness': 0.5,
+             'height': r.uniform(0.3, 0.55) if var['eta'] <= 0.9 else r.uniform(0.18, 0.34), 'cupsize': 0.45, 'firmness': 0.5,
              'race': {'caucasian': 0.92, 'african': 0.03, 'asian': 0.05}}
     base = HumanService.create_human(macro_detail_dict=macro)
     volto(base, r)
@@ -277,6 +303,7 @@ def crea(var):
     mantello = r.random() < sp.get('mantello', 0)
     pelle_tinta = r.choice(PELLI)
     capelli_tinta = (0.42, 0.4, 0.38) if var['eta'] > 0.78 and r.random() < 0.7 else r.choice(CAPELLI_COL)
+    if var['eta'] > 0.9: capelli_tinta = r.choice([(0.78, 0.77, 0.74), (0.62, 0.61, 0.59)])      # i vecchi: bianchi o grigi, sempre
 
     # --- pelle: la texture MakeHuman adatta all'età
     eta_pelle = 'young' if var['eta'] < 0.62 else 'middleage' if var['eta'] < 0.78 else 'old'
@@ -496,8 +523,12 @@ def crea(var):
     if capo == 'nudo':
         # gli uomini del Duecento portano la zazzera, i capelli al mento
         capelli = 'short02' if sp.get('tonsura') else r.choice(['bob01', 'bob02', 'bob01', 'short02']) if m else 'braid01'
+        # per l'app (16 novembre 2026): «bob01» e «bob02» hanno il ciuffo sull'occhio, un taglio di oggi. Tra i modelli
+        # liberi una zazzera pari al mento non c'è: capelli corti pari, e qualcuno lunghi
+        if os.environ.get('GENTE') == 'unity' and m and capelli.startswith('bob'): capelli = r.choice(['short02', 'short02', 'short01', 'long01'])
     elif capo == 'trecce':
         capelli = r.choice(['braid01', 'braid01', 'ponytail01'])
+    if capelli and os.environ.get('CAPELLI'): capelli = os.environ['CAPELLI']      # per provare un modello di capelli
     if capelli:
         HumanService.add_mhclo_asset(os.path.join(DATI('hair'), capelli, capelli + '.mhclo'), base, asset_type='Hair', subdiv_levels=0, material_type='MAKESKIN')
     if sp.get('tonsura'):

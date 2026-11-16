@@ -1,0 +1,282 @@
+{
+ "cammina": {
+  "durata": 1.0,
+  "velocita": 1.594,
+  "fotogrammi": 31,
+  "fonte": "CMU 08_01",
+  "scarto_chiusura": 0.873
+ },
+ "cammina2": {
+  "durata": 1.033,
+  "velocita": 1.104,
+  "fotogrammi": 32,
+  "fonte": "CMU 35_01",
+  "scarto_chiusura": 0.344
+ },
+ "cammina_lento": {
+  "durata": 1.267,
+  "velocita": 0.803,
+  "fotogrammi": 39,
+  "fonte": "CMU 37_01",
+  "scarto_chiusura": 0.201
+ },
+ "passeggia": {
+  "durata": 1.233,
+  "velocita": 1.045,
+  "fotogrammi": 38,
+  "fonte": "CMU 104_19",
+  "scarto_chiusura": 0.271
+ },
+ "fermo": {
+  "durata": 4.933,
+  "velocita": 0,
+  "fotogrammi": 149,
+  "fonte": "CMU 77_02",
+  "scarto_chiusura": 0.152
+ },
+ "attesa": {
+  "durata": 4.8,
+  "velocita": 0,
+  "fotogrammi": 145,
+  "fonte": "CMU 141_20",
+  "scarto_chiusura": 2.384
+ },
+ "guarda": {
+  "durata": 4.6,
+  "velocita": 0,
+  "fotogrammi": 139,
+  "fonte": "CMU 77_01",
+  "scarto_chiusura": 0.695
+ },
+ "parla": {
+  "durata": 8.767,
+  "velocita": 0,
+  "fotogrammi": 264,
+  "fonte": "CMU 18_08",
+  "scarto_chiusura": -0.246
+ },
+ "sega": {
+  "durata": 4.333,
+  "velocita": 0,
+  "fotogrammi": 131,
+  "fonte": "CMU 62_03",
+  "scarto_chiusura": 0.26
+ },
+ "martella": {
+  "durata": 9.0,
+  "velocita": 0,
+  "fotogrammi": 271,
+  "fonte": "CMU 62_07",
+  "scarto_chiusura": -0.105
+ },
+ "spazza": {
+  "durata": 5.6,
+  "velocita": 0,
+  "fotogrammi": 169,
+  "fonte": "CMU 13_23",
+  "scarto_chiusura": 0.45
+ },
+ "strofina": {
+  "durata": 7.833,
+  "velocita": 0,
+  "fotogrammi": 236,
+  "fonte": "CMU 13_20",
+  "scarto_chiusura": 0.355
+ },
+ "zappa": {
+  "durata": 7.533,
+  "velocita": 0,
+  "fotogrammi": 227,
+  "fonte": "CMU 79_04",
+  "scarto_chiusura": -0.137
+ },
+ "spacca_legna": {
+  "durata": 4.667,
+  "velocita": 0,
+  "fotogrammi": 141,
+  "fonte": "CMU 79_01",
+  "scarto_chiusura": 0.426
+ },
+ "cuce": {
+  "durata": 8.133,
+  "velocita": 0,
+  "fotogrammi": 245,
+  "fonte": "CMU 79_05",
+  "scarto_chiusura": -0.146
+ },
+ "trita": {
+  "durata": 5.6,
+  "velocita": 0,
+  "fotogrammi": 169,
+  "fonte": "CMU 79_10",
+  "scarto_chiusura": -0.062
+ },
+ "solleva": {
+  "durata": 4.833,
+  "velocita": 0,
+  "fotogrammi": 146,
+  "fonte": "CMU 26_10",
+  "scarto_chiusura": 0.198
+ },
+ "sposta_cassa": {
+  "durata": 4.933,
+  "velocita": 0,
+  "fotogrammi": 149,
+  "fonte": "CMU 79_25",
+  "scarto_chiusura": 0.226
+ },
+ "raccoglie": {
+  "durata": 4.6,
+  "velocita": 0,
+  "fotogrammi": 139,
+  "fonte": "CMU 111_17",
+  "scarto_chiusura": 1.647
+ },
+ "porta": {
+  "durata": 1.1,
+  "velocita": 0.814,
+  "fotogrammi": 34,
+  "fonte": "CMU 113_26",
+  "scarto_chiusura": 0.764
+ },
+ "stretta_di_mano": {
+  "durata": 2.433,
+  "velocita": 0,
+  "fotogrammi": 74,
+  "fonte": "CMU 18_01",
+  "scarto_chiusura": 6.191
+ },
+ "ascolta": {
+  "durata": 8.833,
+  "velocita": 0,
+  "fotogrammi": 266,
+  "fonte": "CMU 19_08",
+  "scarto_chiusura": 0.243
+ },
+ "discute": {
+  "durata": 3.233,
+  "velocita": 0,
+  "fotogrammi": 98,
+  "fonte": "CMU 22_21",
+  "scarto_chiusura": 1.416
+ },
+ "inchino": {
+  "durata": 4.0,
+  "velocita": 0,
+  "fotogrammi": 121,
+  "fonte": "CMU 113_02",
+  "scarto_chiusura": 0.186
+ },
+ "saluta": {
+  "durata": 2.9,
+  "velocita": 0,
+  "fotogrammi": 88,
+  "fonte": "CMU 113_27",
+  "scarto_chiusura": 0.117
+ },
+ "ride": {
+  "durata": 6.833,
+  "velocita": 0,
+  "fotogrammi": 206,
+  "fonte": "CMU 13_14",
+  "scarto_chiusura": 0.622
+ },
+ "indica": {
+  "durata": 6.567,
+  "velocita": 0,
+  "fotogrammi": 198,
+  "fonte": "CMU 13_27",
+  "scarto_chiusura": 1.008
+ },
+ "seduto": {
+  "durata": 5.733,
+  "velocita": 0,
+  "fotogrammi": 173,
+  "fonte": "CMU 13_04",
+  "scarto_chiusura": 0.55
+ },
+ "si_alza": {
+  "durata": 5.733,
+  "velocita": 0,
+  "fotogrammi": 173,
+  "fonte": "CMU 13_01",
+  "scarto_chiusura": 0.761
+ },
+ "mangia": {
+  "durata": 5.367,
+  "velocita": 0,
+  "fotogrammi": 162,
+  "fonte": "CMU 79_42",
+  "scarto_chiusura": -0.025
+ },
+ "beve": {
+  "durata": 5.767,
+  "velocita": 0,
+  "fotogrammi": 174,
+  "fonte": "CMU 13_09",
+  "scarto_chiusura": -0.096
+ },
+ "tiene_un_bimbo": {
+  "durata": 7.167,
+  "velocita": 0,
+  "fotogrammi": 216,
+  "fonte": "CMU 79_89",
+  "scarto_chiusura": -0.006
+ },
+ "piange": {
+  "durata": 7.5,
+  "velocita": 0,
+  "fotogrammi": 226,
+  "fonte": "CMU 79_72",
+  "scarto_chiusura": 0.063
+ },
+ "sbadiglia": {
+  "durata": 6.733,
+  "velocita": 0,
+  "fotogrammi": 203,
+  "fonte": "CMU 113_23",
+  "scarto_chiusura": 0.287
+ },
+ "zoppica": {
+  "durata": 0.9,
+  "velocita": 1.199,
+  "fotogrammi": 28,
+  "fonte": "CMU 91_16",
+  "scarto_chiusura": 0.955
+ },
+ "triste": {
+  "durata": 1.167,
+  "velocita": 0.954,
+  "fotogrammi": 36,
+  "fonte": "CMU 82_10",
+  "scarto_chiusura": 0.512
+ },
+ "vecchio": {
+  "durata": 1.133,
+  "velocita": 0.425,
+  "fotogrammi": 35,
+  "fonte": "CMU 17_05",
+  "scarto_chiusura": 0.338
+ },
+ "lento": {
+  "durata": 1.433,
+  "velocita": 0.899,
+  "fotogrammi": 44,
+  "fonte": "CMU 07_04",
+  "scarto_chiusura": 0.735
+ },
+ "tira": {
+  "durata": 4.867,
+  "velocita": 0,
+  "fotogrammi": 147,
+  "fonte": "CMU 18_03",
+  "scarto_chiusura": 3.46
+ },
+ "resiste": {
+  "durata": 4.3,
+  "velocita": 0,
+  "fotogrammi": 130,
+  "fonte": "CMU 19_03",
+  "scarto_chiusura": 3.41
+ }
+}

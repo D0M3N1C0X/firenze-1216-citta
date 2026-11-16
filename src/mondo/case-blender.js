@@ -70,7 +70,7 @@ const TINTE = {
 };
 
 /** Il tipo di un lotto: finitura, larghezza e piani, dal seme del lotto (come edifici.js, ipotesi). */
-function tipoDi(L) {
+export function tipoDi(L) {
   const R = rng(L.seme * 7 + 3);
   const f = R();
   const finitura = f < 0.35 ? 'pietra' : f < 0.68 ? 'intonaco' : 'legno';
