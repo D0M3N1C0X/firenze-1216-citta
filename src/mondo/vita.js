@@ -80,7 +80,7 @@ export function vitaDiStrada({ lotti, borghi = [], strade, griglia, campi = [], 
       const [ax, az] = s.punti[k], [bx, bz] = s.punti[k + 1], l = Math.hypot(bx - ax, bz - az);
       for (let d = R.tra(6, 20); d < l - 3; d += R.tra(16, 28)) {
         const x = ax + (bx - ax) * d / l, z = az + (bz - az) * d / l;
-        arredo.push({ nome: 'panni-stesi', x, z, y: quota(x, z) + R.tra(5, 6.2), dir: Math.atan2(-(bx - ax) / l, -(bz - az) / l) + Math.PI / 2, scala: Math.min(1.1, (s.larghezza + 1.2) / 4), appeso: true });
+        arredo.push({ nome: 'panni-stesi', x, z, y: quota(x, z) + R.tra(5, 6.2), dir: Math.atan2(-(bx - ax) / l, -(bz - az) / l), scala: Math.min(1.1, (s.larghezza + 1.2) / 4), appeso: true });
       }
     }
   }
