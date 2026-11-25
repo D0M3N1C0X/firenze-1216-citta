@@ -19,6 +19,7 @@ import { GIORNATE } from '../src/dati/giornate.js';
 import { SCENE, TIPI_NOTA } from '../src/dati/scene.js';
 import { COPIONE } from '../src/dati/copione.js';
 import { DOMANDE, TAPPE } from '../src/dati/visita.js';
+import { percorso } from '../src/mondo/percorso.js';
 import { DOMANDE_EN, LUOGHI_EN, OGGI_EN, TAPPE_EN } from '../src/dati/inglese.js';
 import { COLORI_RESTA, OGGI_LUOGHI } from '../src/dati/oggi-luoghi.js';
 import { EDIFICI_OGGI, RIQUADRO_OGGI } from '../src/dati/oggi.js';
@@ -163,6 +164,11 @@ for (const o of EDIFICI_OGGI) {
 if (oz0 >= oz1 || ox0 >= ox1) errori.push('oggi: riquadro non valido');
 
 // la visita guidata: ogni tappa in un luogo che esiste, da un punto dove si può stare
+// la visita guidata nell'app: tra una tappa e la successiva c'è un percorso a piedi per le strade (mondo/percorso.js)
+for (let k = 1; k < TAPPE.length; k++) {
+  const a = TAPPE[k - 1].vista, b = TAPPE[k].vista;
+  if (!b.volo && !percorso(griglia, [a.x, a.z], [b.x, b.z])) errori.push(`visita: nessun percorso a piedi dalla tappa ${k} alla ${k + 1}`);
+}
 TAPPE.forEach((t, k) => {
   if (t.luogo && !ids.has(t.luogo)) errori.push(`visita, tappa ${k + 1}: luogo «${t.luogo}» inesistente`);
   if (!t.vista.volo && !griglia.percorribile(t.vista.x, t.vista.z)) errori.push(`visita, tappa ${k + 1}: la vista (${t.vista.x}, ${t.vista.z}) non è percorribile`);

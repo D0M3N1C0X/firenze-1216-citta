@@ -97,6 +97,36 @@ if os.environ.get('GENTE') == 'unity':
         ('bambina',    dict(sesso='f', eta=(0.155, 0.19), ceto='popolo',   n=2, orlo=(0.06, 0.1),  capo=['trecce', 'cuffia'], mantello=0)),
     ]
 
+# ---------------------------------------------------------------- i personaggi del racconto
+# PERSONAGGI=1 (17 novembre 2026, scene recitate nell'app): una figura per ogni persona con un nome nel copione
+# (citta/src/dati/copione.js), in unity/Firenze1216/Assets/Modelli/Gente/personaggi/. Il ruolo dà la forma della veste;
+# «forza» fissa i colori (RGB 0-255) e le scelte. I colori delle casate vengono dagli stemmi (lacuna 82, da verificare):
+# che nel 1216 le famiglie vestissero i propri colori è un'IPOTESI, scelta solo per riconoscerle. Buondelmonte è in
+# bianco perché così lo descrive Villani la mattina di Pasqua («vestito nobilemente di nuovo di roba tutta bianca»,
+# VI, 38); la ghirlanda è nel copione («forse una ghirlanda»).
+BIANCO, ORO_, ROSSO_, AZZURRO_, ARGENTO_, NERO_ = (226, 222, 210), (196, 152, 52), (150, 30, 32), (40, 62, 132), (196, 196, 190), (36, 32, 30)
+PERSONAGGI = [
+    ('buondelmonte',  'cavaliere', 0.58, dict(veste=BIANCO, mantello=BIANCO, calze=BIANCO, capo='nudo', spada=True, ghirlanda=True)),
+    ('oddo-arrighi',  'cavaliere', 0.66, dict(veste=ROSSO_, mantello=ARGENTO_, calze=ROSSO_, capo='nudo', spada=True)),              # Fifanti: di rosso alla ruota d'argento
+    ('uberto-infangati', 'cavaliere', 0.6, dict(veste=(70, 104, 120), mantello=(110, 74, 46), capo='cappuccio', cappuccio=(110, 74, 46))),   # stemma non trovato: colori neutri
+    ('mazzingo-mazzinghi', 'cavaliere', 0.62, dict(veste=(62, 92, 56), mantello=(156, 112, 56), capo='nudo', spada=True)),          # stemma non trovato
+    ('lambertuccio-amidei', 'cavaliere', 0.72, dict(veste=ROSSO_, mantello=ORO_, calze=ORO_, capo='nudo', spada=True)),                # Amidei: d'oro a fasce rosse
+    ('figlia-amidei', 'fanciulla', 0.33, dict(veste=ORO_, calze=ROSSO_, capo='trecce', ghirlanda=True)),
+    ('gualdrada-donati', 'nobildonna', 0.74, dict(veste=ROSSO_, mantello=ARGENTO_, capo='velo')),                                    # Donati: troncato di rosso e d'argento
+    ('figlia-donati', 'fanciulla', 0.34, dict(veste=BIANCO, calze=ROSSO_, capo='trecce', ghirlanda=True)),
+    ('schiatta-uberti', 'cavaliere', 0.64, dict(veste=NERO_, mantello=AZZURRO_, calze=ORO_, capo='nudo', spada=True)),               # Uberti: oro, nero, azzurro
+    ('mosca-lamberti', 'cavaliere', 0.6, dict(veste=AZZURRO_, mantello=ORO_, calze=AZZURRO_, capo='nudo', spada=True)),              # Lamberti: d'azzurro a palle d'oro
+    ('sanzanome', 'mercante', 0.8, dict(orlo=0.04, veste=(52, 40, 34), mantello=(34, 30, 30), capo='cappuccio', cappuccio=(34, 30, 30))),     # giudice e notaio: veste lunga scura (ipotesi)
+    ('cilia', 'fantesca', 0.5, dict(veste=(110, 74, 46), capo='cuffia')),
+    ('giullare', 'popolano', 0.55, dict(veste=(176, 116, 40), calze=(62, 92, 56), capo='cappuccio', cappuccio=(150, 30, 32))),
+    ('messo-podesta', 'popolano', 0.6, dict(veste=(40, 52, 88), mantello=(150, 30, 32), capo='cappuccio', cappuccio=(150, 30, 32))),
+    ('sagrestano', 'chierico', 0.78, dict(veste=NERO_, capo='nudo')),
+    ('servitore', 'popolano', 0.45, dict(veste=(120, 110, 90), capo='nudo')),
+    # chi gioca (24 novembre 2026, terza persona): l'allievo più giovane di Sanzanome, sui diciott'anni; veste al
+    # ginocchio da chi lavora al banco, il cappuccio, la borsa per il quaderno. Colori sobri, senza casata (ipotesi).
+    ('allievo', 'mercante', 0.36, dict(statura=0.63, orlo=0.32, veste=(58, 74, 98), calze=(74, 56, 40), capo='cappuccio', cappuccio=(96, 70, 46))),
+]
+
 VARIANTI = []
 for ruolo, spec in RUOLI:
     for k in range(spec['n']):
@@ -110,6 +140,10 @@ for ruolo, spec in IN_PIU:
         r = random.Random(7919 + i * 53)
         VARIANTI.append({'n': i, 'ruolo': ruolo, 'sesso': spec['sesso'], 'eta': round(r.uniform(*spec['eta']), 3),
                          'ceto': spec['ceto'], 'seme': 7919 + i * 53})
+if os.environ.get('PERSONAGGI'):
+    USCITA = os.path.abspath(os.path.join(QUI, '..', '..', '..', 'unity', 'Firenze1216', 'Assets', 'Modelli', 'Gente', 'personaggi'))
+    VARIANTI = [{'n': i, 'ruolo': ruolo, 'nome': nome, 'sesso': dict(RUOLI)[ruolo]['sesso'], 'eta': eta, 'ceto': dict(RUOLI)[ruolo]['ceto'], 'seme': 4000 + i * 97, 'forza': forza}
+                for i, (nome, ruolo, eta, forza) in enumerate(PERSONAGGI)]
 SPEC = dict(RUOLI)
 SPEC.update(dict(IN_PIU[len(RUOLI):]))
 
@@ -270,11 +304,12 @@ def volto(base, r):
 
 def crea(var):
     r = random.Random(var['seme'])
+    forza = var.get('forza', {})
     pulisci()
     m = var['sesso'] == 'm'
     macro = {'gender': r.uniform(0.92, 1.0) if m else r.uniform(0.0, 0.08), 'age': var['eta'],
              'muscle': r.uniform(0.4, 0.6), 'weight': r.uniform(0.3, 0.55), 'proportions': r.uniform(0.4, 0.6),
-             'height': r.uniform(0.3, 0.55) if var['eta'] <= 0.9 else r.uniform(0.18, 0.34), 'cupsize': 0.45, 'firmness': 0.5,
+             'height': forza.get('statura') or (r.uniform(0.3, 0.55) if var['eta'] <= 0.9 else r.uniform(0.18, 0.34)), 'cupsize': 0.45, 'firmness': 0.5,
              'race': {'caucasian': 0.92, 'african': 0.03, 'asian': 0.05}}
     base = HumanService.create_human(macro_detail_dict=macro)
     volto(base, r)
@@ -292,15 +327,17 @@ def crea(var):
     # --- chi è e come veste: lo decide il ruolo
     sp = SPEC[var['ruolo']]
     ceto = var['ceto']
-    if 'colori' in sp: veste = lin(r.choice(sp['colori']))
+    if 'veste' in forza: veste = lin(forza['veste'])
+    elif 'colori' in sp: veste = lin(r.choice(sp['colori']))
     elif ceto == 'popolo': veste = lin(r.choice(LANA) if r.random() < 0.6 else tuple(int(c * 0.8) for c in r.choice(TINTE)))
     elif ceto == 'mercante': veste = lin(r.choice(TINTE) if r.random() < 0.8 else r.choice(LANA))
     else: veste = lin(r.choice(GRANA) if r.random() < 0.5 else r.choice(TINTE))
     calze = lin(r.choice(GRANA) if ceto == 'nobile' and r.random() < 0.5 else r.choice(NERO) if ceto == 'clero' else r.choice(LANA + TINTE[:3]))
+    if 'calze' in forza: calze = lin(forza['calze'])
     scarpe = lin(r.choice(CUOIO))
-    orlo = r.uniform(*sp['orlo'])
-    capo = r.choice(sp['capo'])
-    mantello = r.random() < sp.get('mantello', 0)
+    orlo = forza.get('orlo') or r.uniform(*sp['orlo'])
+    capo = forza.get('capo') or r.choice(sp['capo'])
+    mantello = ('mantello' in forza) if forza else r.random() < sp.get('mantello', 0)
     pelle_tinta = r.choice(PELLI)
     capelli_tinta = (0.42, 0.4, 0.38) if var['eta'] > 0.78 and r.random() < 0.7 else r.choice(CAPELLI_COL)
     if var['eta'] > 0.9: capelli_tinta = r.choice([(0.78, 0.77, 0.74), (0.62, 0.61, 0.59)])      # i vecchi: bianchi o grigi, sempre
@@ -428,7 +465,7 @@ def crea(var):
     zs = B['LeftArm'].head_local.z
     zc = B['Neck'].head_local.z
     if mantello:
-        colore = lin(r.choice(TINTE + GRANA) if ceto == 'nobile' else r.choice(LANA + TINTE))
+        colore = lin(forza['mantello']) if 'mantello' in forza else lin(r.choice(TINTE + GRANA) if ceto == 'nobile' else r.choice(LANA + TINTE))
         fino = (0.3 if not m else r.uniform(0.35, 0.6)) * altezza / 1.7
         fs = fetta(zs - 0.03, 0.03)
         prof = [(zc + 0.02, 0.075, 0.07), (zs + 0.01, fs[2] + 0.03, fs[3] + 0.04)]
@@ -473,7 +510,7 @@ def crea(var):
         facce = [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)]
         nuova_mesh('scarsella', rig, verts, facce, [[('Hips', 1)]] * 8, materiale('scarsella', lin(r.choice(CUOIO)), 0.6))
         accessori.append('scarsella')
-    if r.random() < sp.get('spada', 0):
+    if (forza.get('spada') if forza else r.random() < sp.get('spada', 0)):
         # la spada nel fodero, appesa a sinistra e inclinata all'indietro
         x0 = cx0 + fv[2] + 0.04
         alto, basso = Vector((x0, cy0 + 0.02, zv - 0.02)), Vector((x0 + 0.03, cy0 + 0.3, zv - 0.82))
@@ -500,7 +537,7 @@ def crea(var):
         return nuova_mesh(nome, rig, verts, facce, pesi, mat)
 
     if capo == 'cappuccio':
-        col = lin(r.choice(LANA + TINTE))
+        col = lin(forza['cappuccio']) if 'cappuccio' in forza else lin(r.choice(LANA + TINTE))
         mat = materiale('cappuccio', col, 0.92)
         guscio('cappuccio', tc + Vector((0, 0.012, 0.01)), tr + Vector((0.018, 0.02, 0.02)), tc.z - tr.z * 0.85, True, mat)
         fs = fetta(zs - 0.02, 0.03)
@@ -536,7 +573,7 @@ def crea(var):
         guscio('tonsura', tc + Vector((0, 0.01, 0.022)), tr + Vector((0.016, 0.016, 0.014)), tc.z + tr.z * 0.72, False,
                materiale('tonsura', (pelle_tinta[0] * 0.62, pelle_tinta[1] * 0.42, pelle_tinta[2] * 0.32, 1), 0.5), 'Head')
         accessori.append('tonsura')
-    if r.random() < sp.get('ghirlanda', 0):
+    if (forza.get('ghirlanda') if forza else r.random() < sp.get('ghirlanda', 0)):
         # la ghirlanda delle fanciulle: un serto di foglie e fiori
         zg2 = tc.z + tr.z * 0.42
         verts, facce = [], []
@@ -562,7 +599,7 @@ def crea(var):
                 o.modifiers.remove(mod)
     info = dict(var, capo=capo, mantello=mantello, accessori=accessori, capelli=capelli,
                 pelle=pelle_tinta, colore_capelli=capelli_tinta, orlo=round(orlo, 2), altezza=round(altezza, 3),
-                anche=round(zh, 4), file=f'figura-{var["n"]:02d}.glb',
+                anche=round(zh, 4), file=f'{var["nome"]}.glb' if var.get('nome') else f'figura-{var["n"]:02d}.glb',
                 vertici=sum(len(o.data.vertices) for o in rig.children if o.type == 'MESH'))
     return rig, info
 

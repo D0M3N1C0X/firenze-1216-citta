@@ -331,6 +331,8 @@ function materiali() {
     conci: MAT.conci,
     lastre
   };
+  // il nome di ciascuno, per l'esportazione verso Unity (scripts/esporta-oggi.mjs)
+  for (const [k, m] of Object.entries(MAT_OGGI)) m.userData.chiaveOggi ??= k;
   return MAT_OGGI;
 }
 

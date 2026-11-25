@@ -1,6 +1,7 @@
 import {
   AgXToneMapping, Clock, PCFShadowMap, PerspectiveCamera, SRGBColorSpace, Scene, WebGLRenderer
 } from 'three';
+import { creaPioggia } from './collana/pioggia.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
@@ -20,7 +21,7 @@ import { SCENE } from './dati/scene.js';
 import { figureNegliInterni } from './dati/interni.js';
 import { COPIONE } from './dati/copione.js';
 import { creaMateriali, impostaAnisotropia } from './mondo/materiali.js';
-import { Cielo } from './mondo/cielo.js';
+import { Cielo, NUVOLE_U } from './mondo/cielo.js';
 import { creaAcqua, creaTerreno, quota, quotaPianura, impostaStrade } from './mondo/terreno.js';
 import { costruisciCampi } from './mondo/campi.js';
 import { MONDO, mondoDi } from './mondo/dove.js';
@@ -121,6 +122,7 @@ let giornata = giornataDellEpoca(GIORNATE[params.get('giorno')]) || giornataDell
 let ora = +(params.get('ora') || scenaIniziale?.ora || giornata.ora);
 let qualita = 'alta';         // dalle impostazioni ricordate, sotto
 let movimentoRidotto = false;
+let piove = false, coperturaAsciutta = null;   // la pioggia (collana), vedi impostaPioggia
 let mondo = null;
 let modelli = null;          // le figure di Blender, caricate una volta sola
 let animali = null;          // cavalli, muli e asini di Blender
@@ -143,7 +145,8 @@ const ui = new Interfaccia({
   racconto: () => { if (NEL_1300) return ricostruisci('1216', { racconto: '' }); visita.chiudi(false); racconto.alterna(); },
   movimentoRidotto: on => { movimentoRidotto = on; if (mondo) mondo.controlli.movimentoRidotto = on; },
   leggiTappe: on => { visita.leggiDaSola = on; },
-  mappa: on => mappa?.mostra(on)
+  mappa: on => mappa?.mostra(on),
+  pioggia: on => impostaPioggia(on)
 });
 qualita = ui.qualitaRicordata === 'media' ? 'media' : 'alta';
 renderer.setPixelRatio(qualita === 'alta' ? Math.min(devicePixelRatio, 2) : 1);
@@ -482,6 +485,7 @@ function impostaGiornata(id, opz = {}) {
   ui.giornata(g, alba(g.doy), ora);
   if (!mondo) return;
   mondo.cielo.giornata(g);
+  if (piove) { coperturaAsciutta = NUVOLE_U.copertura.value; NUVOLE_U.copertura.value = 0.9; }   // la giornata riporta le sue nuvole: con la pioggia restano coperte
   mondo.cantiere.giornata(g);
   mondo.case?.giornata(g.festa);
   mondo.campagna?.stagione(stagioneDi(g.doy));
@@ -689,6 +693,19 @@ function controllaScioltezza(vero) {
   }
 }
 
+/* La pioggia (collana, src/collana/pioggia.js): dalle impostazioni, per
+   qualsiasi giornata. Copre il cielo e ne scurisce l'ombra delle nuvole;
+   è una scelta d'atmosfera [disegno], come la foschia. */
+const pioggia = creaPioggia(5000, { metri: 1 });
+scene.add(pioggia.mesh);
+function impostaPioggia(on){
+  piove = on;
+  pioggia.accendi(on ? 1 : 0);
+  if (on) { coperturaAsciutta ??= NUVOLE_U.copertura.value; NUVOLE_U.copertura.value = 0.9; }
+  else if (coperturaAsciutta !== null) { NUVOLE_U.copertura.value = coperturaAsciutta; coperturaAsciutta = null; }
+}
+if (ui.pioggia) impostaPioggia(true);
+
 const orologio = new Clock();
 let tHud = 0;
 function ciclo() {
@@ -700,6 +717,7 @@ function ciclo() {
     if (c.attivo) controllaScioltezza(vero);
     mondo.cielo.segui(camera.position);
     mondo.cielo.passa(dt);
+    pioggia.update(dt, camera);
     if (mondo.acqua) mondo.acqua.material.uniforms.time.value += dt * 0.55;
     // la sera del 1° maggio 1300 l'ora va avanti da sola, fino a dopo la zuffa
     if (mondo.zuffa && c.attivo && ora < giornata.oraMax) {

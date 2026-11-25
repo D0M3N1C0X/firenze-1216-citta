@@ -6,6 +6,10 @@ import { voce } from './voce.js';
 import { applicaTesti, fase as faseL, giornata as giornataL, impostaLingua, inglese, lang, ora as oraL, scheda as schedaL, schedaOggi, suLingua, t } from './lingua.js';
 import { COLORI_RESTA } from '../dati/oggi-luoghi.js';
 import { EPOCA } from '../mondo/epoca.js';
+import { creaAnnunci } from '../collana/annunci.js';
+
+// per i lettori di schermo (collana): il luogo vicino si annuncia
+const annuncia = creaAnnunci('annuncio');
 
 // i luoghi del mondo in cui si è: la città, oppure un luogo a parte (Campi)
 const LUOGHI = TUTTI.filter(l => mondoDi(l) === MONDO && dellEpoca(l, EPOCA));
@@ -88,6 +92,11 @@ export class Interfaccia {
     };
     testo.addEventListener('change', () => { ricorda('testoGrande', testo.checked); applica(); this.misuraBarra?.(); });
     // leggere da sola ogni tappa; la mappa nell'angolo
+    // la pioggia (collana): una scelta d'atmosfera, non il meteo di quel giorno
+    const pioggia = $('#i-pioggia');
+    pioggia.checked = ricordato('pioggia', false);
+    pioggia.addEventListener('change', () => { ricorda('pioggia', pioggia.checked); az.pioggia?.(pioggia.checked); });
+    this.pioggia = pioggia.checked;
     const leggi = $('#i-voce'), mappa = $('#i-mappa');
     if (!voce.disponibile) $('#riga-voce').hidden = true;
     leggi.checked = ricordato('leggiTappe', false);
@@ -327,6 +336,7 @@ export class Interfaccia {
     const v = $('#vicino');
     if (!l) { v.hidden = true; return; }
     v.hidden = false;
+    annuncia(t('vicino.annuncio', { nome: schedaL(l).nome }));
     const o = this.inOggi ? schedaOggi(l) : null;
     v.innerHTML = `<b>${esc(schedaL(l).nome)}</b>${o ? badgeResta(o.resta) : badge(l.forma.livello)}<button class="leggi" title="I">${esc(t('vicino.leggi'))}</button>`;
   }

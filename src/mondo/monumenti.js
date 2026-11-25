@@ -246,7 +246,7 @@ function chiesa(cant, griglia, imp, opz) {
     posaModello(cant, opz.modello, matriceLotto(px, yp, pz, nx, nz), LIV);
     griglia.poligono(imp, MONUMENTO);
     griglia.rettangolo(O.cx, O.cz, O.ux, O.uz, O.a + 0.3, O.b + 0.3, (i, j) => { const k = j * griglia.n + i; if (griglia.c[k] === 0) griglia.c[k] = MONUMENTO; });
-    apriInterno(griglia, S, info, yp);
+    apriInterno(griglia, S, info, yp, opz.modello, true);
     return;
   }
   const t = 0.9, H = opz.altezza || R.tra(12, 15);
@@ -455,6 +455,9 @@ function battistero(cant, griglia, [x, z]) {
 // che quota. Il terreno sotto il pavimento resta più basso.
 const PAVIMENTI = [];
 
+/** Gli interni in cui si entra, per l'app (scripts/esporta-unity.mjs): nome, quota, rettangoli del pavimento nel mondo. */
+export const interni = () => PAVIMENTI.map(p => ({ nome: p.nome, chiesa: Boolean(p.chiesa), y: p.y, poligoni: p.poligoni }));
+
 /** Quota del pavimento dove si cammina dentro un edificio, altrimenti null. */
 export function quotaPavimento(x, z) {
   for (const p of PAVIMENTI) if (p.dentro(x, z)) return p.y;
@@ -485,12 +488,13 @@ function quotaMassima(S, x0, x1, y0, y1) {
  * percorribili, quelli degli ostacoli (mobili, battenti) no; il pavimento
  * entra in quotaPavimento. Rettangoli [x0, x1, y0, y1] del modello.
  */
-function apriInterno(griglia, S, info, y) {
+function apriInterno(griglia, S, info, y, nome = '', chiesa = false) {
   const rett = ([x0, x1, y0, y1], v) => griglia.poligono([S.mondo(x0, y0), S.mondo(x1, y0), S.mondo(x1, y1), S.mondo(x0, y1)], v);
   for (const r of info.pavimento || []) rett(r, PIAZZA);
   for (const r of info.ostacoli || []) rett(r, MONUMENTO);
   const pav = info.pavimento || [];
-  PAVIMENTI.push({ y, dentro: (x, z) => { const [bx, by] = S.modello(x, z); return pav.some(r => bx > r[0] && bx < r[1] && by > r[2] && by < r[3]); } });
+  PAVIMENTI.push({ y, nome, chiesa, poligoni: pav.map(([x0, x1, y0, y1]) => [S.mondo(x0, y0), S.mondo(x1, y0), S.mondo(x1, y1), S.mondo(x0, y1)]),
+    dentro: (x, z) => { const [bx, by] = S.modello(x, z); return pav.some(r => bx > r[0] && bx < r[1] && by > r[2] && by < r[3]); } });
 }
 
 function santaReparata(cant, griglia) {
@@ -504,7 +508,8 @@ function santaReparata(cant, griglia) {
     for (let d = -S.portico; d <= S.fondo; d += 1.5) for (let b = 0; b <= S.W; b += 1.5) y = Math.max(y, quota(px + d, pz - b));
     y += 0.03;
     posaModello(cant, 'santa_reparata', matriceLotto(px, y, pz, 1, 0), 'dedotto');
-    PAVIMENTI.push({ y, dentro: (x, z) => { const bx = pz - z, d = x - px; return bx > 0 && bx < S.W && d > -S.portico && d < S.presbiterio; } });
+    PAVIMENTI.push({ y, nome: 'santa-reparata', chiesa: true, poligoni: [[[px - S.portico, pz], [px + S.presbiterio, pz], [px + S.presbiterio, pz - S.W], [px - S.portico, pz - S.W]]],
+      dentro: (x, z) => { const bx = pz - z, d = x - px; return bx > 0 && bx < S.W && d > -S.portico && d < S.presbiterio; } });
     const rett = (b0, b1, d0, d1, v) => griglia.poligono([[px + d0, pz - b0], [px + d1, pz - b0], [px + d1, pz - b1], [px + d0, pz - b1]], v);
     const CAP = S.presbiterio - S.passo / 2, xc = S.W / 2;
     // l'ingombro: corpo, abside, cappelle laterali, campanile, con una fascia
@@ -606,7 +611,7 @@ export function costruisciMonumenti(cant, griglia) {
       posaModello(cant, 'amidei', matriceLotto(fx, yp, fz, ni[0], ni[1]), 'dedotto');
       griglia.poligono(t.punti, MONUMENTO);
       griglia.rettangolo(O.cx, O.cz, O.ux, O.uz, O.a, O.b, (i, j) => { griglia.c[j * griglia.n + i] = MONUMENTO; });
-      apriInterno(griglia, S, A, yp);
+      apriInterno(griglia, S, A, yp, 'amidei', false);
       torriNote.push({ nome: t.nome, x: O.cx, z: O.cz, h: Math.min(L.H, TETTO_TORRI) });
       continue;
     } else torre(cant, L, 'dedotto');

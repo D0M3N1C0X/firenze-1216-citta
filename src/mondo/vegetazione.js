@@ -55,8 +55,8 @@ function vicinoA(pts, x, z, r) {
   return false;
 }
 
-export function creaVegetazione(scene, opz = {}) {
-  const R = rng(1209);
+/** Dove stanno ulivi e cipressi (pura: la usa anche scripts/esporta-cantiere.mjs per Unity). */
+export function posizioniAlberi(opz = {}, R = rng(1209)) {
   const ulivi = [], cipressi = [];
   const tenta = opz.tentativi || 22000;
   const qT = opz.pianura?.quota || quota;
@@ -79,6 +79,11 @@ export function creaVegetazione(scene, opz = {}) {
     if (R.vero(0.025)) cipressi.push([x, y, z]); else ulivi.push([x, y, z]);
   }
 
+  return { ulivi, cipressi, R };
+}
+
+export function creaVegetazione(scene, opz = {}) {
+  const { ulivi, cipressi, R } = posizioniAlberi(opz);
   const m = new Matrix4(), q = new Quaternion(), s = new Vector3(), p = new Vector3(), up = new Vector3(0, 1, 0);
   const c = new Color();
 

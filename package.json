@@ -13,9 +13,12 @@
     "osm": "node scripts/osm-estrai.mjs",
     "osm-1300": "node scripts/osm-1300-estrai.mjs",
     "copione": "node scripts/copione-estrai.mjs",
-    "verifica": "node scripts/verifica.mjs && EPOCA=1300 node scripts/verifica-1300.mjs",
+    "verifica": "node src/collana/collana.mjs verifica && node scripts/verifica.mjs && EPOCA=1300 node scripts/verifica-1300.mjs",
     "parametri": "node scripts/parametri-monumenti.mjs",
-    "unity": "node scripts/esporta-unity.mjs && EPOCA=1300 node scripts/esporta-unity.mjs",
+    "racconto": "node scripts/verifica-regia.mjs && node scripts/esporta-racconto.mjs",
+    "oggi": "node scripts/esporta-oggi.mjs",
+    "vedute": "node scripts/vedute.mjs",
+    "unity": "node scripts/esporta-racconto.mjs && node scripts/esporta-unity.mjs && EPOCA=1300 node scripts/esporta-unity.mjs && node scripts/esporta-cantiere.mjs && EPOCA=1300 node scripts/esporta-cantiere.mjs && node scripts/esporta-oggi.mjs",
     "app": "npm run build && node scripts/app-www.mjs && npx cap sync ios"
   },
   "dependencies": {
@@ -25,6 +28,7 @@
     "@capacitor/cli": "8.5.2",
     "@capacitor/core": "8.5.2",
     "@capacitor/ios": "8.5.2",
+    "playwright": "^1.63.0",
     "vite": "^7.3.6"
   }
 }

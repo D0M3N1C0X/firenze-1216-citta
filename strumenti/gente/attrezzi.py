@@ -108,6 +108,40 @@ def sgabello(R, P):      # tre gambe e un sedile tondo, alto mezzo metro: l'orig
         V.tubo(P, [(math.cos(a) * 0.1, math.sin(a) * 0.1, -0.04), (math.cos(a) * 0.2, math.sin(a) * 0.2, -0.5)], [0.02, 0.016], LEGNO, R, n=5)
 
 
+# --- gli oggetti del racconto (regia.js, scene recitate del 17 novembre 2026)
+def tagliere(R, P):      # il tagliere di legno con la carne sopra (I2): lo si tiene in mano, piatto
+    cassa(P, -0.2, 0.2, -0.14, 0.14, -0.012, 0.012, LEGNO, R)
+    for k in range(4):
+        V.ciuffo(P, (R.uniform(-0.12, 0.12), R.uniform(-0.07, 0.07), 0.03), 0.045, (0.5, 0.24, 0.16), R, schiaccia=0.5, suddivisioni=1)
+
+
+def coltello(R, P):      # il coltello di Buondelmonte dopo il colpo (I3): manico di legno, lama di ferro
+    cassa(P, -0.012, 0.012, -0.01, 0.01, -0.06, 0.05, LEGNO, R)
+    cassa(P, -0.03, 0.03, -0.012, 0.012, 0.05, 0.06, FERRO, R)
+    cassa(P, -0.014, 0.014, -0.003, 0.003, 0.06, 0.25, (0.62, 0.62, 0.64), R)
+
+
+def mazza(R, P):         # la mazza di Schiatta degli Uberti (IV2b, «con una mazza in mano»): manico e testa di ferro
+    manico(P, R, 0.62, r=0.017, z0=-0.12)
+    V.ciuffo(P, (0, 0, 0.5), 0.055, FERRO, R, schiaccia=1.4, suddivisioni=1)
+    for a in range(6):
+        c, s_ = math.cos(a * math.pi / 3), math.sin(a * math.pi / 3)
+        cassa(P, c * 0.05 - 0.008, c * 0.05 + 0.008, s_ * 0.05 - 0.008, s_ * 0.05 + 0.008, 0.44, 0.56, FERRO, R)
+
+
+def registro(R, P):      # il registro dei morti di Santa Reparata (IV4): coperta di cuoio, fogli di pergamena, tenuto aperto
+    for lato in (-1, 1):
+        x0, x1 = (-0.2, 0.0) if lato < 0 else (0.0, 0.2)
+        cassa(P, x0, x1, -0.14, 0.14, -0.006, 0.0, (0.36, 0.22, 0.14), R)
+        cassa(P, x0 + lato * 0.008 if lato > 0 else x0 + 0.008, x1 - 0.008 if lato > 0 else x1, -0.13, 0.13, 0.0, 0.018, (0.86, 0.8, 0.66), R)
+
+
+def bara(R, P):          # la bara del corteo (IV4): un piano di assi su due stanghe, a spalla di quattro uomini; l'origine al centro del piano
+    cassa(P, -0.3, 0.3, -1.0, 1.0, -0.04, 0.0, LEGNO, R)
+    for x in (-0.36, 0.36): V.tubo(P, [(x, -1.5, -0.03), (x, 1.5, -0.03)], [0.03, 0.03], LEGNO, R, n=6, nodoso=0.05)
+    for y in (-0.8, 0.0, 0.8): cassa(P, -0.38, 0.38, y - 0.03, y + 0.03, -0.07, -0.04, LEGNO, R)
+
+
 # nome: (funzione, mano, a quali movimenti serve, come si porta). La «presa» è la regola con cui l'attrezzo segue la persona
 # (la usano gesti.py per le anteprime e, in Unity, lo script della gente):
 #   due mani   l'asse dell'attrezzo passa per le due mani, con la testa lontano dal petto; l'origine alla mano destra
@@ -130,9 +164,15 @@ ATTREZZI = {
     'ciotola': (ciotola, 'sinistra', ['mangia'], 'tenuta nel palmo'),
     'bastone': (bastone, 'destra', ['vecchio', 'zoppica', 'lento'], 'impugnato in cima'),
     'sgabello': (sgabello, '', ['seduto', 'si_alza', 'discute'], 'per terra, sotto chi siede'),
+    'tagliere': (tagliere, 'destra', ['getta', 'porta', 'fermo'], 'tenuto piatto'),
+    'coltello': (coltello, 'destra', ['fermo', 'guarda'], 'impugnato'),
+    'mazza': (mazza, 'destra', ['fermo', 'attesa', 'cammina'], 'impugnata'),
+    'registro': (registro, 'due mani', ['fermo', 'indica'], 'aperto sulle mani'),
+    'bara': (bara, '', ['lento'], 'a spalla di quattro uomini'),
 }
 PRESA = {'sega': 'impugnato', 'martello': 'impugnato', 'zappa': 'due mani', 'scure': 'due mani', 'scopa': 'due mani', 'cesta': 'appeso', 'secchio': 'appeso',
-         'sacco': 'appeso', 'brocca': 'impugnato', 'ciotola': 'palmo', 'bastone': 'verticale', 'sgabello': 'sedile'}
+         'sacco': 'appeso', 'brocca': 'impugnato', 'ciotola': 'palmo', 'bastone': 'verticale', 'sgabello': 'sedile',
+         'tagliere': 'palmo', 'coltello': 'impugnato', 'mazza': 'impugnato', 'registro': 'palmo', 'bara': 'a spalla'}
 # dove sta la parte che lavora rispetto all'origine: +1 in cima (zappa, scure), -1 in fondo (scopa)
 TESTA = {'zappa': 1, 'scure': 1, 'scopa': -1}
 

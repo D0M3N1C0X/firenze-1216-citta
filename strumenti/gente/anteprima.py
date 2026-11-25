@@ -30,8 +30,8 @@ sc = bpy.context.scene
 sole = bpy.data.objects.new('sole', bpy.data.lights.new('sole', 'SUN')); sole.data.energy = 3.5; sole.rotation_euler = (math.radians(50), 0, math.radians(35)); sc.collection.objects.link(sole)
 sc.world = bpy.data.worlds.new('cielo'); sc.world.use_nodes = True; sc.world.node_tree.nodes['Background'].inputs[0].default_value = (0.75, 0.82, 0.95, 1); sc.world.node_tree.nodes['Background'].inputs[1].default_value = 0.9
 cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
-d = max(x * 1.15, alto * 1.3) + 1.2
-cam.location = (x / 2 + d * 0.2, -d, alto * 0.7); cam.data.lens = 50
+d = max(x * 1.55, alto * 1.3) + 1.5      # 50 mm: il campo largo è circa 0,72 volte la distanza
+cam.location = (x / 2 + d * 0.5, -d, alto * 0.9); cam.data.lens = 50
 dir = Vector((x / 2, 0, alto * 0.5)) - cam.location; cam.rotation_euler = dir.to_track_quat('-Z', 'Y').to_euler()
 sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = 24; sc.cycles.use_denoising = False
 sc.render.resolution_x, sc.render.resolution_y = 1500, 700; sc.render.filepath = uscita

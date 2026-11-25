@@ -183,6 +183,40 @@ export function segnaRecinti(griglia, lott) {
   return n;
 }
 
+/**
+ * Gli oggetti di un campo, sempre gli stessi: { vite, siepe, graticcio, cavolo, canne }, ognuno una lista di
+ * [x, y, z, rotazione attorno alla verticale, scala orizzontale, scala verticale]. Pura: la usano la città
+ * (Campagna.oggettiDi) e l'esportazione per Unity (scripts/esporta-unity.mjs).
+ */
+export function oggettiDelCampo(c, lott) {
+  const o = { vite: [], siepe: [], graticcio: [], cavolo: [], canne: [] };
+  const R = rng(c.n * 31 + 7);
+  const lungoU = Math.atan2(-c.uz, c.ux), lungoV = Math.atan2(-c.vz, c.vx);
+  const metti = (lista, a, b, rot, sx, sy = sx) => {
+    const x = c.ox + c.ux * a + c.vx * b, z = c.oz + c.uz * a + c.vz * b;
+    if (lott.di(x, z) !== c) return;
+    lista.push([x, quota(x, z), z, rot, sx, sy]);
+  };
+  if (c.tipo === 'vigna') {
+    for (let a = 1.1; a < c.w - 0.6; a += 2.0) for (let b = c.b0 + 1; b < c.b1 - 0.8; b += 1.25) metti(o.vite, a, b + R.tra(-0.12, 0.12), R.tra(0, 6.28), R.tra(0.85, 1.05));
+  }
+  if (c.tipo === 'orto') {
+    // le prode: cavoli, canne, o terra nuda
+    for (let b = c.b0 + 3; b < c.b1 - 2.5; b += 2.2) {
+      const r = R();
+      if (r < 0.55) { for (let a = 2; a < c.w - 2; a += 0.9) if (R.vero(0.9)) metti(o.cavolo, a + R.tra(-0.1, 0.1), b + R.tra(-0.1, 0.1), R.tra(0, 6.28), R.tra(0.8, 1.25)); }
+      else if (r < 0.75) { for (let a = 2.2; a < c.w - 2; a += 1.5) metti(o.canne, a, b, R.tra(0, 6.28), 1, R.tra(0.9, 1.1)); }
+    }
+  }
+  // il recinto di graticci degli orti e le siepi dei campi, con il varco (recintiDi)
+  for (const [tipo, a, b, verso] of recintiDi(c)) {
+    const rot = verso === 'u' ? lungoU : lungoV;
+    if (tipo === 'graticcio') metti(o.graticcio, a, b, rot, 1);
+    else metti(o.siepe, a, b, rot + R.tra(-0.1, 0.1), 1, R.tra(0.85, 1.15));
+  }
+  return o;
+}
+
 /* ------------------------------------------------- i modelli di Blender */
 let MODELLI = null;        // { vite: [geo, geo], 'vite-foglie': […], siepe: […], graticcio: [geo], cavolo, canne, 'canne-verdi' }
 
@@ -374,31 +408,10 @@ export class Campagna {
   oggettiDi(c) {
     let o = this.cache.get(c.n);
     if (o) return o;
-    o = { vite: [], siepe: [], graticcio: [], cavolo: [], canne: [] };
-    const R = rng(c.n * 31 + 7), q = new Quaternion(), su = new Vector3(0, 1, 0), p = new Vector3(), s = new Vector3();
-    const lungoU = Math.atan2(-c.uz, c.ux), lungoV = Math.atan2(-c.vz, c.vx);
-    const metti = (lista, a, b, rot, sx, sy = sx) => {
-      const x = c.ox + c.ux * a + c.vx * b, z = c.oz + c.uz * a + c.vz * b;
-      if (this.lott.di(x, z) !== c) return;
-      lista.push(new Matrix4().compose(p.set(x, quota(x, z), z), q.setFromAxisAngle(su, rot), s.set(sx, sy, sx)));
-    };
-    if (c.tipo === 'vigna') {
-      for (let a = 1.1; a < c.w - 0.6; a += 2.0) for (let b = c.b0 + 1; b < c.b1 - 0.8; b += 1.25) metti(o.vite, a, b + R.tra(-0.12, 0.12), R.tra(0, 6.28), R.tra(0.85, 1.05));
-    }
-    if (c.tipo === 'orto') {
-      // le prode: cavoli, canne, o terra nuda
-      for (let b = c.b0 + 3; b < c.b1 - 2.5; b += 2.2) {
-        const r = R();
-        if (r < 0.55) { for (let a = 2; a < c.w - 2; a += 0.9) if (R.vero(0.9)) metti(o.cavolo, a + R.tra(-0.1, 0.1), b + R.tra(-0.1, 0.1), R.tra(0, 6.28), R.tra(0.8, 1.25)); }
-        else if (r < 0.75) { for (let a = 2.2; a < c.w - 2; a += 1.5) metti(o.canne, a, b, R.tra(0, 6.28), 1, R.tra(0.9, 1.1)); }
-      }
-    }
-    // il recinto di graticci degli orti e le siepi dei campi, con il varco (recintiDi)
-    for (const [tipo, a, b, verso] of recintiDi(c)) {
-      const rot = verso === 'u' ? lungoU : lungoV;
-      if (tipo === 'graticcio') metti(o.graticcio, a, b, rot, 1);
-      else metti(o.siepe, a, b, rot + R.tra(-0.1, 0.1), 1, R.tra(0.85, 1.15));
-    }
+    const q = new Quaternion(), su = new Vector3(0, 1, 0), p = new Vector3(), s = new Vector3();
+    o = {};
+    for (const [tipo, lista] of Object.entries(oggettiDelCampo(c, this.lott)))
+      o[tipo] = lista.map(([x, y, z, rot, sx, sy]) => new Matrix4().compose(p.set(x, y, z), q.setFromAxisAngle(su, rot), s.set(sx, sy, sx)));
     this.cache.set(c.n, o);
     return o;
   }

@@ -95,5 +95,63 @@
    "durata": 0.72,
    "velocita": 3.6
   }
+ },
+ "cane": {
+  "_misure": {
+   "altezza": 0.55,
+   "lunghezza": 0.85
+  },
+  "passo": {
+   "durata": 0.5,
+   "velocita": 1.3
+  },
+  "fermo": {
+   "durata": 3.0,
+   "velocita": 0
+  },
+  "annusa": {
+   "durata": 2.0,
+   "velocita": 0
+  }
+ },
+ "gallina": {
+  "_misure": {
+   "altezza": 0.48,
+   "lunghezza": 0.64
+  },
+  "passo": {
+   "durata": 0.5,
+   "velocita": 0.56
+  },
+  "becca": {
+   "durata": 1.5,
+   "velocita": 0
+  },
+  "fermo": {
+   "durata": 2.5,
+   "velocita": 0
+  }
+ },
+ "piccione": {
+  "_misure": {
+   "altezza": 0.3,
+   "lunghezza": 0.4
+  },
+  "passo": {
+   "durata": 0.5,
+   "velocita": 0.35
+  },
+  "becca": {
+   "durata": 1.5,
+   "velocita": 0
+  },
+  "fermo": {
+   "durata": 2.5,
+   "velocita": 0
+  },
+  "vola": {
+   "durata": 1.0,
+   "velocita": 6.0
+  }
  }
 }

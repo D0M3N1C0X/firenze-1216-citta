@@ -61,6 +61,13 @@ CLIP_UNITY = {
     'zoppica': ('91_16.bvh', 'ciclo'), 'triste': ('82_10.bvh', 'ciclo'), 'vecchio': ('17_05.bvh', 'ciclo'), 'lento': ('07_04.bvh', 'ciclo'),
     # la zuffa
     'tira': ('18_03.bvh', 'tratto'), 'resiste': ('19_03.bvh', 'tratto'),
+    # il racconto (17 novembre 2026, scene recitate): azioni che si fanno una volta e finiscono in un'altra posa.
+    # «evento:a-b» = da a a b secondi della registrazione, scelti guardando la velocità della mano e l'altezza delle
+    # anche; non si ripetono. Il lancio del tagliere (I2), il colpo, la caduta (IV3), chi si china sul ferito.
+    'getta': ('113_24.bvh', 'evento:1.6-4.4'), 'colpisce': ('02_05.bvh', 'evento:0.8-3.0'),
+    'cade': ('90_16.bvh', 'evento:1.6-6.0'), 'si_inginocchia': ('23_03.bvh', 'evento:0.0-6.8'),
+    # chi gioca, in terza persona (24 novembre 2026): la corsa e la corsetta, a cicli come la camminata
+    'corre': ('09_01.bvh', 'ciclo'), 'corsetta': ('16_35.bvh', 'ciclo'),
 }
 if os.environ.get('GENTE') == 'unity':
     CLIP.update(CLIP_UNITY)
@@ -181,6 +188,9 @@ def ritaglia(fot, tipo):
     """Sceglie un tratto che si possa ripetere senza scatti."""
     chiave = ['Hips', 'LeftUpLeg', 'RightUpLeg', 'LeftLeg', 'RightLeg', 'LeftArm', 'RightArm', 'Spine', 'Head']
     n = len(fot)
+    if tipo.startswith('evento'):
+        a, b = map(float, tipo.split(':')[1].split('-'))
+        return fot[int(a * FPS):min(n, int(b * FPS) + 1)], 0.0
     if tipo == 'ciclo':
         lmin, lmax = min(int(0.9 * FPS), max(2, n // 3)), int(1.5 * FPS)
         inizio = range(int(n * 0.15), max(int(n * 0.15) + 1, n - lmax))
@@ -208,7 +218,7 @@ def raddrizza(fot, tipo, rest_root):
         fx, fy = v.x, v.y
     else:
         fx = fy = 0
-        for f in fot:
+        for f in (fot[:max(2, int(0.3 * FPS))] if tipo.startswith('evento') else fot):      # un evento: dove guarda all'inizio
             rrel = rest_root @ f['q']['Hips'].to_matrix() @ rest_root.inverted()
             d = rrel @ Vector((0, -1, 0))
             fx += d.x; fy += d.y
@@ -236,8 +246,10 @@ def scrivi_azione(arm, nome, fot, tipo):
     for k, f in enumerate(fot):
         t = k / max(1, L)
         # l'ultimo fotogramma ripete il primo: il ciclo si chiude senza scatto
-        g = fot[0] if k == L else f
-        off = g['h'] - (h0 + avanz * (0 if k == L else t))
+        evento = tipo.startswith('evento')
+        g = fot[0] if k == L and not evento else f
+        # un evento tiene lo spostamento (chi cade va avanti); gli altri lo tolgono
+        off = g['h'] - (h0 if evento else h0 + avanz * (0 if k == L else t))
         off.z = g['h'].z                 # quota rispetto alla posa a T
         for pb in arm.pose.bones:
             q = g['q'][pb.name]
@@ -273,6 +285,7 @@ def main():
         tratto = raddrizza(tratto, tipo, arm.data.bones['Hips'].matrix_local.to_3x3().normalized())
         info[nome] = scrivi_azione(arm, nome, tratto, tipo)
         info[nome]['fonte'] = 'CMU ' + file.replace('.bvh', '')
+        if tipo.startswith('evento'): info[nome]['una_volta'] = True      # non si ripete: finisce nell'ultima posa
         info[nome]['scarto_chiusura'] = round(d, 3)
         bpy.data.objects.remove(src, do_unlink=True)
         # via anche l'azione grezza del BVH: altrimenti finisce nel file accanto a quella trasferita, e lo raddoppia

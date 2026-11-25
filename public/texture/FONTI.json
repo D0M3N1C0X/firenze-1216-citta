@@ -145,5 +145,84 @@
   "licenza": "CC0",
   "url": "https://polyhaven.com/a/dry_mud_field_001",
   "nota": "solo il colore: si mescola alla terra delle strade a zone"
+ },
+ "pietraforte": {
+  "id": "medieval_blocks_03",
+  "nome": "Medieval Blocks 03",
+  "dimensioni_mm": [
+   2000,
+   2000
+  ],
+  "autori": [
+   "Rob Tuytel"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/medieval_blocks_03"
+ },
+ "intonacoRovinato": {
+  "id": "damaged_plaster",
+  "nome": "Damaged Plaster",
+  "dimensioni_mm": [
+   1850.0001430511475,
+   1850.0001430511475
+  ],
+  "autori": [
+   "Amal Kumar"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/damaged_plaster"
+ },
+ "intonacoArgilla": {
+  "id": "clay_plaster",
+  "nome": "Clay Plaster",
+  "dimensioni_mm": [
+   1999.9996423721313,
+   1999.9996423721313
+  ],
+  "autori": [
+   "Amal Kumar"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/clay_plaster"
+ },
+ "legnoVecchio": {
+  "id": "brown_planks_05",
+  "nome": "Brown Planks 05",
+  "dimensioni_mm": [
+   1000,
+   1000
+  ],
+  "autori": [
+   "Rob Tuytel"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/brown_planks_05"
+ },
+ "terraBattuta": {
+  "id": "dirt_floor",
+  "nome": "Dirt Floor",
+  "dimensioni_mm": [
+   2069.9996948242188,
+   2069.9996948242188
+  ],
+  "autori": [
+   "eye-candy.xyz"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/dirt_floor"
+ },
+ "lana": {
+  "id": "caban",
+  "nome": "Caban",
+  "dimensioni_mm": [
+   273.9921411828764,
+   273.2999920845032
+  ],
+  "autori": [
+   "colormass",
+   "Rico Cilliers"
+  ],
+  "licenza": "CC0",
+  "url": "https://polyhaven.com/a/caban"
  }
 }
